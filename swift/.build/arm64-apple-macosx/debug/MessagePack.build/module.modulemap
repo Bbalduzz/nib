@@ -1,4 +1,0 @@
-module MessagePack {
-    header "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/debug/MessagePack.build/MessagePack-Swift.h"
-    requires objc
-}
