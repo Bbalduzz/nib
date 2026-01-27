@@ -1,1 +1,9 @@
 swift/.build/
+
+
+examples/tests/*/dist/
+*.app/
+*.pyo
+
+*.pyc
+__pycache__/
