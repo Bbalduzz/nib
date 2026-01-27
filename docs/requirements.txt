@@ -1,0 +1,8 @@
+# Sphinx documentation dependencies
+# Note: revitron-sphinx-theme requires Sphinx <7.0 due to template compatibility
+sphinx>=5.0.0,<7.0.0
+revitron-sphinx-theme
+sphinx-autodoc-typehints>=1.0.0,<3.0.0
+
+# Project dependencies (needed for autodoc to import modules)
+msgpack>=1.0.0

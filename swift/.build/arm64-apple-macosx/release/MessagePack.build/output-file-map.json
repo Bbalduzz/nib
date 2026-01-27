@@ -1,0 +1,62 @@
+{
+  "": {
+    "dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePack.d",
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePack.o",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/master.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/AnyCodingKey.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/AnyCodingKey.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/AnyCodingKey~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/AnyCodingKey.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Box.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/Box.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/Box~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/Box.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Decoder/KeyedDecodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedDecodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedDecodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedDecodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Decoder/MessagePackDecoder.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackDecoder.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackDecoder~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackDecoder.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Decoder/SingleValueDecodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueDecodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueDecodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueDecodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Decoder/UnkeyedDecodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedDecodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedDecodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedDecodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Encoder/KeyedEncodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedEncodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedEncodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/KeyedEncodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Encoder/MessagePackEncoder.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackEncoder.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackEncoder~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/MessagePackEncoder.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Encoder/SingleValueEncodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueEncodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueEncodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/SingleValueEncodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/Encoder/UnkeyedEncodingContainer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedEncodingContainer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedEncodingContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/UnkeyedEncodingContainer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/.build/checkouts/MessagePack/Sources/MessagePack/FixedWidthInteger+Bytes.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/FixedWidthInteger+Bytes.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/FixedWidthInteger+Bytes~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/MessagePack.build/FixedWidthInteger+Bytes.swiftdeps"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "": {
+    "dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Nib.d",
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Nib.o",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/master.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/App/AppDelegate.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppDelegate.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppDelegate.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Core/Plugins/PluginLoader.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginLoader.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginLoader~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginLoader.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Core/Plugins/PluginProtocol.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginProtocol.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginProtocol~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PluginProtocol.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Core/Registries/ModifierRegistry.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierRegistry.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierRegistry~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierRegistry.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Core/Registries/ViewBuilderProtocol.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderProtocol.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderProtocol~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderProtocol.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Core/Registries/ViewBuilderRegistry.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderRegistry.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderRegistry~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewBuilderRegistry.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Network/SocketServer.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/SocketServer.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/SocketServer~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/SocketServer.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Protocol/NibMessage.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/NibMessage.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/NibMessage~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/NibMessage.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Protocol/ViewNode.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewNode.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewNode~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewNode.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Protocol/ViewProps/PropsTypes.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PropsTypes.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PropsTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/PropsTypes.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Protocol/ViewProps/ViewProps.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewProps.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewProps~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewProps.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/FontManager.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontManager.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontManager.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Builders/ChartBuilders.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ChartBuilders.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ChartBuilders~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ChartBuilders.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Builders/ControlBuilders.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ControlBuilders.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ControlBuilders~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ControlBuilders.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Builders/LayoutBuilders.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutBuilders.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutBuilders~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutBuilders.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Builders/ShapeBuilders.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ShapeBuilders.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ShapeBuilders~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ShapeBuilders.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Builders/VideoBuilder.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/VideoBuilder.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/VideoBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/VideoBuilder.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Components/StatefulControl.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatefulControl.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatefulControl~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatefulControl.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/DynamicView.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/DynamicView.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/DynamicView~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/DynamicView.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/AnimationModifiers.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AnimationModifiers.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AnimationModifiers~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AnimationModifiers.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/AppearanceModifiers.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppearanceModifiers.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppearanceModifiers~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/AppearanceModifiers.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/FontModifiers.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontModifiers.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontModifiers~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/FontModifiers.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/LayoutModifiers.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutModifiers.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutModifiers~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/LayoutModifiers.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/ModifierApplier.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierApplier.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierApplier~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ModifierApplier.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/Modifiers/TransitionModifiers.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/TransitionModifiers.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/TransitionModifiers~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/TransitionModifiers.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/Rendering/OptimizedDispatcher.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/OptimizedDispatcher.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/OptimizedDispatcher~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/OptimizedDispatcher.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/StatusBarController.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatusBarController.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatusBarController~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/StatusBarController.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/UI/ViewStore.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewStore.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/ViewStore.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Utils/Debug.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Debug.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Debug~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Debug.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/Version.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Version.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Version~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/Version.swiftdeps"
+  },
+  "/Users/edoardobalducci/Documents/work/nib/swift/Nib/main.swift": {
+    "object": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/main.swift.o",
+    "swiftmodule": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/edoardobalducci/Documents/work/nib/swift/.build/arm64-apple-macosx/release/Nib.build/main.swiftdeps"
+  }
+}

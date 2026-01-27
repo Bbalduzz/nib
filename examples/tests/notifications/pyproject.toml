@@ -1,0 +1,22 @@
+[project]
+name = "notifications"
+version = "0.1.0"
+description = "Notifications - A nib application"
+requires-python = ">=3.10"
+dependencies = [
+    "nib",
+]
+
+[tool.nib]
+# Entry point for the application
+entry = "src/main.py"
+
+[tool.nib.build]
+# App display name (defaults to project name)
+name = "Notifications"
+
+# Bundle identifier (defaults to com.nib.<name>)
+identifier = "com.nib.notifications"
+
+# App version (defaults to project version)
+version = "0.1.0"

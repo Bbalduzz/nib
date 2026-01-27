@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nib"
+version = "0.1.0"
+description = "Python-SwiftUI Bridge for macOS Status Bar Apps"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Edoardo Balducci" }
+]
+keywords = ["macos", "swiftui", "status-bar", "menu-bar", "ui"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: MacOS X",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Swift",
+    "Topic :: Desktop Environment",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+dependencies = [
+    "msgpack>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+]
+build = [
+    "py2app>=0.28",
+]
+
+[project.scripts]
+nib = "nib.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Bbalduzz/nib"
+Repository = "https://github.com/Bbalduzz/nib"
+
+[tool.hatch.build.targets.wheel]
+packages = ["python/nib"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

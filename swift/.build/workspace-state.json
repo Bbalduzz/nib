@@ -1,0 +1,30 @@
+{
+  "object" : {
+    "artifacts" : [
+
+    ],
+    "dependencies" : [
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "messagepack",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/Flight-School/MessagePack.git",
+          "name" : "MessagePack"
+        },
+        "state" : {
+          "checkoutState" : {
+            "revision" : "bbc5ab6362db234f2051e73e67296ebf5c3d2042",
+            "version" : "1.2.4"
+          },
+          "name" : "sourceControlCheckout"
+        },
+        "subpath" : "MessagePack"
+      }
+    ],
+    "prebuilts" : [
+
+    ]
+  },
+  "version" : 7
+}
