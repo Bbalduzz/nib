@@ -1,29 +1,37 @@
 """Text view for displaying static or dynamic text content.
 
-The Text view displays a string of text with optional styling including
-font, color, truncation, text transformations, and various text decorations
-like bold, italic, underline, and strikethrough.
+The Text view displays a string of text with optional styling via TextStyle,
+which groups font, decorations (bold, italic, underline, strikethrough),
+and spacing options into a single configuration object.
 
 Example:
     Basic text::
 
         nib.Text("Hello, World!")
 
-    Styled text::
+    Using a preset style::
+
+        nib.Text("Title", style=nib.TextStyle.TITLE)
+
+    Using a custom style::
 
         nib.Text(
-            "Title",
-            font=nib.Font.title,
-            foreground_color=nib.Color.blue,
-            bold=True,
+            "Custom styled text",
+            style=nib.TextStyle(
+                font=nib.Font.system(18),
+                bold=True,
+                underline=True,
+                color="#FF5733",
+            ),
         )
 
     Text with truncation::
 
         nib.Text(
             "Long text content...",
+            style=nib.TextStyle.BODY,
             line_limit=2,
-            truncation_mode=nib.TruncationMode.tail,
+            truncation_mode=nib.TruncationMode.TAIL,
         )
 """
 
@@ -48,8 +56,8 @@ class Text(View):
     """A view that displays one or more lines of text.
 
     Text is the fundamental view for displaying read-only text in the UI.
-    It supports rich styling options including fonts, colors, text decorations,
-    and layout controls like line limits and truncation.
+    Styling is configured via TextStyle, which groups font, decorations,
+    and spacing into a single object.
 
     The content property is reactive - changing it triggers a UI update.
 
@@ -68,21 +76,21 @@ class Text(View):
             def increment():
                 counter.content = str(int(counter.content) + 1)
 
-        Styled text with decorations::
+        Using preset styles::
+
+            nib.Text("Title", style=nib.TextStyle.TITLE)
+            nib.Text("Body text", style=nib.TextStyle.BODY)
+
+        Custom styled text::
 
             nib.Text(
                 "Important Notice",
-                font=nib.Font.title,
-                foreground_color=nib.Color.red,
-                bold=True,
-                underline=True,
-            )
-
-        Text with style preset::
-
-            nib.Text(
-                "Heading",
-                style=nib.TextStyle.headline,
+                style=nib.TextStyle(
+                    font=nib.Font.TITLE,
+                    color=nib.Color.RED,
+                    bold=True,
+                    underline=True,
+                ),
             )
     """
 
@@ -91,20 +99,8 @@ class Text(View):
     def __init__(
         self,
         content: str,
-        # TextStyle preset
+        # TextStyle (includes font, decorations, spacing)
         style: Optional[TextStyle] = None,
-        # Text-specific styling
-        bold: bool = False,
-        italic: bool = False,
-        strikethrough: bool = False,
-        strikethrough_color: Optional[str] = None,
-        underline: bool = False,
-        underline_color: Optional[str] = None,
-        monospaced: bool = False,
-        monospaced_digit: bool = False,
-        kerning: Optional[float] = None,
-        tracking: Optional[float] = None,
-        baseline_offset: Optional[float] = None,
         # Text layout
         line_limit: Optional[int] = None,
         truncation_mode: Optional[TruncationModeLike] = None,
@@ -119,41 +115,45 @@ class Text(View):
 
         Args:
             content: The text string to display.
-            style: A TextStyle preset that sets font, color, and weight together.
-                Individual font/color/weight parameters override style settings.
-            bold: Whether to render the text in bold.
-            italic: Whether to render the text in italic.
-            strikethrough: Whether to add a strikethrough line.
-            strikethrough_color: Color of the strikethrough line (hex string).
-            underline: Whether to add an underline.
-            underline_color: Color of the underline (hex string).
-            monospaced: Whether to use a monospaced font.
-            monospaced_digit: Whether to use monospaced digits for numbers.
-            kerning: Character spacing adjustment in points.
-            tracking: Additional spacing between characters.
-            baseline_offset: Vertical offset from the baseline in points.
+            style: A TextStyle that configures font, decorations, and spacing.
+                Can be a preset (TextStyle.TITLE) or custom TextStyle instance.
             line_limit: Maximum number of lines to display.
             truncation_mode: How to truncate text that exceeds line_limit.
-                Options: TruncationMode.head, TruncationMode.middle, TruncationMode.tail.
+                Options: TruncationMode.HEAD, TruncationMode.MIDDLE, TruncationMode.TAIL.
             minimum_scale_factor: Minimum scale factor for text shrinking (0.0-1.0).
             allows_tightening: Whether to allow tightening character spacing.
-            text_case: Text case transformation. Options: TextCase.uppercase,
-                TextCase.lowercase.
+            text_case: Text case transformation. Options: TextCase.UPPERCASE,
+                TextCase.LOWERCASE.
             **kwargs: Standard view modifiers including font, foreground_color,
                 padding, background, opacity, etc.
 
         Example:
-            Create styled text with truncation::
+            Using a preset style::
+
+                nib.Text("Title", style=nib.TextStyle.TITLE)
+
+            Using a custom style::
 
                 nib.Text(
-                    "This is a very long text that might get truncated",
-                    font=nib.Font.body,
-                    foreground_color=nib.Color.gray,
-                    line_limit=1,
-                    truncation_mode=nib.TruncationMode.tail,
+                    "Custom styled text",
+                    style=nib.TextStyle(
+                        font=nib.Font.system(18),
+                        bold=True,
+                        underline=True,
+                        color="#FF5733",
+                    ),
+                )
+
+            With layout options::
+
+                nib.Text(
+                    "Long text...",
+                    style=nib.TextStyle.BODY,
+                    line_limit=2,
+                    truncation_mode=nib.TruncationMode.TAIL,
                 )
         """
-        # Apply style preset first if provided
+        # Apply style settings to kwargs (style.font -> kwargs["font"], etc.)
         if style is not None:
             if style.font and "font" not in kwargs:
                 kwargs["font"] = style.font
@@ -167,31 +167,20 @@ class Text(View):
 
         self._content = content
 
-        # Build text-specific styles
+        # Build text-specific styles from TextStyle
         self._text_styles: dict = {}
 
-        if bold:
-            self._text_styles["bold"] = True
-        if italic:
-            self._text_styles["italic"] = True
-        if strikethrough:
-            self._text_styles["strikethrough"] = True
-            if strikethrough_color:
-                self._text_styles["strikethroughColor"] = strikethrough_color
-        if underline:
-            self._text_styles["underline"] = True
-            if underline_color:
-                self._text_styles["underlineColor"] = underline_color
-        if monospaced:
-            self._text_styles["monospaced"] = True
-        if monospaced_digit:
-            self._text_styles["monospacedDigit"] = True
-        if kerning is not None:
-            self._text_styles["kerning"] = _float(kerning)
-        if tracking is not None:
-            self._text_styles["tracking"] = _float(tracking)
-        if baseline_offset is not None:
-            self._text_styles["baselineOffset"] = _float(baseline_offset)
+        if style is not None:
+            # Extract text decorations and spacing from style
+            style_dict = style.to_dict()
+            # Copy relevant keys (excluding font/color/weight which are handled above)
+            for key in ["bold", "italic", "strikethrough", "strikethroughColor",
+                        "underline", "underlineColor", "monospaced", "monospacedDigit",
+                        "kerning", "tracking", "baselineOffset"]:
+                if key in style_dict:
+                    self._text_styles[key] = style_dict[key]
+
+        # Layout options
         if line_limit is not None:
             self._text_styles["lineLimit"] = line_limit
         if truncation_mode is not None:

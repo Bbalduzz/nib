@@ -191,6 +191,6 @@ class Button(View):
 
     def _get_children(self, parent_path: str) -> Optional[List[dict]]:
         """Return custom content as children if provided."""
-        if self._content:
+        if self._content and self._content._visible:
             return [self._content.to_dict(f"{parent_path}.0")]
         return None

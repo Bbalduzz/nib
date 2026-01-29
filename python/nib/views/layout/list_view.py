@@ -150,4 +150,5 @@ class List(View):
             A list of dictionaries, each representing a serialized child view
             (row or section) with its assigned path in the view hierarchy.
         """
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(self._children)]
+        visible = [c for c in self._children if c._visible]
+        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]

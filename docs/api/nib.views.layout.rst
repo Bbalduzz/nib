@@ -12,6 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   nib.views.layout.grid
    nib.views.layout.group
    nib.views.layout.hstack
    nib.views.layout.list_view

@@ -158,7 +158,8 @@ class NavigationStack(View):
             A list of dictionaries, each representing a serialized child view
             with its assigned path in the view hierarchy.
         """
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(self._children)]
+        visible = [c for c in self._children if c._visible]
+        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
 
 
 class NavigationLink(View):
@@ -255,7 +256,8 @@ class NavigationLink(View):
             A list of dictionaries, each representing a serialized destination
             view with its assigned path in the view hierarchy.
         """
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(self._destination)]
+        visible = [c for c in self._destination if c._visible]
+        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
 
 
 class DisclosureGroup(View):
@@ -389,7 +391,8 @@ class DisclosureGroup(View):
             A list of dictionaries, each representing a serialized child view
             with its assigned path in the view hierarchy.
         """
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(self._children)]
+        visible = [c for c in self._children if c._visible]
+        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
 
     def _handle_event(self, event: str) -> None:
         """Handle events from the Swift runtime.

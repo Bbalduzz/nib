@@ -146,8 +146,8 @@ class Label(View):
     def _get_children(self, parent_path: str) -> Optional[List[dict]]:
         """Return custom content as children if provided."""
         children = []
-        if self._title_view:
+        if self._title_view and self._title_view._visible:
             children.append({"role": "title", **self._title_view.to_dict(f"{parent_path}.title")})
-        if self._icon_view:
+        if self._icon_view and self._icon_view._visible:
             children.append({"role": "icon", **self._icon_view.to_dict(f"{parent_path}.icon")})
         return children if children else None

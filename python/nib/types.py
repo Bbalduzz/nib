@@ -93,10 +93,11 @@ def resolve_enum(value) -> Optional[str]:
     """
     if value is None:
         return None
-    if isinstance(value, str):
-        return value
+    # Check Enum BEFORE str because str-enums inherit from both
     if isinstance(value, Enum):
         return value.value
+    if isinstance(value, str):
+        return value
     return str(value)
 
 
@@ -402,8 +403,8 @@ class SymbolRenderingMode(str, Enum):
 class ContentMode(str, Enum):
     """Image content mode options for aspect ratio handling."""
 
-    FIT = "fit"      # Scale to fit within bounds, maintaining aspect ratio
-    FILL = "fill"    # Scale to fill bounds, maintaining aspect ratio (may clip)
+    FIT = "fit"  # Scale to fit within bounds, maintaining aspect ratio
+    FILL = "fill"  # Scale to fill bounds, maintaining aspect ratio (may clip)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -831,9 +832,7 @@ class Font:
     footnote = None
 
     @classmethod
-    def system(
-        cls, size: float, weight: Optional[FontWeightLike] = None
-    ) -> "Font":
+    def system(cls, size: float, weight: Optional[FontWeightLike] = None) -> "Font":
         """
         Create a system font with custom size and optional weight.
 
@@ -934,19 +933,70 @@ def resolve_color(color: ColorLike) -> str:
 
 @dataclass
 class TextStyle:
-    """Semantic text style combining font, color, and weight."""
+    """Text style configuration combining font, decorations, and spacing.
 
+    TextStyle groups all text-related styling options into a single object.
+    Use predefined presets like `TextStyle.title` or create custom styles.
+
+    Example:
+        Using a preset::
+
+            nib.Text("Hello", style=nib.TextStyle.title)
+
+        Custom style::
+
+            nib.Text(
+                "Custom",
+                style=nib.TextStyle(
+                    font=nib.Font.system(18),
+                    bold=True,
+                    underline=True,
+                ),
+            )
+    """
+
+    # Font settings
     font: Optional[Font] = None
     color: Optional[str] = None
     weight: Optional[str] = None
 
+    # Text decorations
+    bold: bool = False
+    italic: bool = False
+    strikethrough: bool = False
+    strikethrough_color: Optional[str] = None
+    underline: bool = False
+    underline_color: Optional[str] = None
+
+    # Font variations
+    monospaced: bool = False
+    monospaced_digit: bool = False
+
+    # Spacing
+    kerning: Optional[float] = None
+    tracking: Optional[float] = None
+    baseline_offset: Optional[float] = None
+
     # Predefined styles (set after class definition)
+    LARGE_TITLE = None
+    TITLE = None
+    TITLE2 = None
+    TITLE3 = None
+    HEADLINE = None
+    SUBHEADLINE = None
+    BODY = None
+    CALLOUT = None
+    CAPTION = None
+    CAPTION2 = None
+    FOOTNOTE = None
+
+    # Backwards-compatible aliases (deprecated)
     largeTitle = None
     title = None
     title2 = None
     title3 = None
-    heading = None  # Alias for headline
-    subheading = None  # Alias for subheadline
+    heading = None
+    subheading = None
     body = None
     callout = None
     caption = None
@@ -954,25 +1004,53 @@ class TextStyle:
     footnote = None
 
     def to_dict(self) -> dict:
-        return {
-            "font": self.font.to_dict() if self.font else None,
-            "color": self.color,
-            "weight": self.weight,
-        }
+        """Serialize the text style for transmission to Swift."""
+        result = {}
+
+        if self.font:
+            result["font"] = self.font.to_dict()
+        if self.color:
+            result["color"] = self.color
+        if self.weight:
+            result["weight"] = self.weight
+        if self.bold:
+            result["bold"] = True
+        if self.italic:
+            result["italic"] = True
+        if self.strikethrough:
+            result["strikethrough"] = True
+            if self.strikethrough_color:
+                result["strikethroughColor"] = self.strikethrough_color
+        if self.underline:
+            result["underline"] = True
+            if self.underline_color:
+                result["underlineColor"] = self.underline_color
+        if self.monospaced:
+            result["monospaced"] = True
+        if self.monospaced_digit:
+            result["monospacedDigit"] = True
+        if self.kerning is not None:
+            result["kerning"] = float(self.kerning)
+        if self.tracking is not None:
+            result["tracking"] = float(self.tracking)
+        if self.baseline_offset is not None:
+            result["baselineOffset"] = float(self.baseline_offset)
+
+        return result
 
 
-# Set up predefined text styles
-TextStyle.largeTitle = TextStyle(font=Font.largeTitle)
-TextStyle.title = TextStyle(font=Font.title)
-TextStyle.title2 = TextStyle(font=Font.title2)
-TextStyle.title3 = TextStyle(font=Font.title3)
-TextStyle.heading = TextStyle(font=Font.headline)
-TextStyle.subheading = TextStyle(font=Font.subheadline)
-TextStyle.body = TextStyle(font=Font.body)
-TextStyle.callout = TextStyle(font=Font.callout)
-TextStyle.caption = TextStyle(font=Font.caption)
-TextStyle.caption2 = TextStyle(font=Font.caption2)
-TextStyle.footnote = TextStyle(font=Font.footnote)
+# Set up predefined text styles (CAPS - preferred)
+TextStyle.LARGE_TITLE = TextStyle(font=Font.LARGE_TITLE)
+TextStyle.TITLE = TextStyle(font=Font.TITLE)
+TextStyle.TITLE2 = TextStyle(font=Font.TITLE2)
+TextStyle.TITLE3 = TextStyle(font=Font.TITLE3)
+TextStyle.HEADLINE = TextStyle(font=Font.HEADLINE)
+TextStyle.SUBHEADLINE = TextStyle(font=Font.SUBHEADLINE)
+TextStyle.BODY = TextStyle(font=Font.BODY)
+TextStyle.CALLOUT = TextStyle(font=Font.CALLOUT)
+TextStyle.CAPTION = TextStyle(font=Font.CAPTION)
+TextStyle.CAPTION2 = TextStyle(font=Font.CAPTION2)
+TextStyle.FOOTNOTE = TextStyle(font=Font.FOOTNOTE)
 
 
 @dataclass

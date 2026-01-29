@@ -228,8 +228,13 @@ class Image(View):
             else:
                 # Local file path - resolve through assets system
                 resolved = App.resolve_asset(src)
-                self._source_type = "file"
-                self._source_value = resolved
+                if resolved:
+                    self._source_type = "file"
+                    self._source_value = resolved
+                else:
+                    # Asset not found - clear source so Swift shows placeholder
+                    self._source_type = None
+                    self._source_value = None
 
     @property
     def label(self) -> Optional[str]:
@@ -266,14 +271,27 @@ class Image(View):
         # Image styles
         image_styles = {}
 
+        # Check if width/height are set via modifiers (stored as "frame" modifier)
+        has_size = False
+        if hasattr(self, '_modifiers'):
+            for mod in self._modifiers:
+                if mod.get("type") == "frame":
+                    args = mod.get("args", {})
+                    if args.get("width") is not None or args.get("height") is not None:
+                        has_size = True
+                        break
+
         if self._aspect_ratio is not None:
             aspect = resolve_enum(self._aspect_ratio)
             if aspect == "fit":
                 image_styles["scaledToFit"] = True
             elif aspect == "fill":
                 image_styles["scaledToFill"] = True
-            # Always make resizable when aspect ratio is set
             image_styles["resizable"] = True
+        elif has_size:
+            # If width/height specified without aspect_ratio, make resizable and fit
+            image_styles["resizable"] = True
+            image_styles["scaledToFit"] = True
 
         if not self._antialiased:
             image_styles["antialiased"] = False

@@ -194,12 +194,12 @@ def _get_mappings() -> dict[str, str]:
     return _IMPORT_TO_PACKAGE
 
 
-def detect_imports(script_path: Path) -> set[str]:
+def detect_imports(script_path: Path, project_dir: Optional[Path] = None) -> set[str]:
     """Extract third-party imports from a Python script using AST analysis.
 
     Parses the Python source file and extracts all import statements,
-    filtering out standard library modules and the nib package itself.
-    Uses AST analysis to avoid executing the code.
+    filtering out standard library modules, the nib package, and local
+    project modules. Uses AST analysis to avoid executing the code.
 
     Handles both import styles:
         - ``import module`` statements
@@ -211,10 +211,12 @@ def detect_imports(script_path: Path) -> set[str]:
     Args:
         script_path (Path): Path to the Python script to analyze. The file
             must be valid Python syntax.
+        project_dir (Path | None): Root directory of the project. Used to detect
+            local modules that should be excluded. If None, uses script's parent.
 
     Returns:
         set[str]: Set of third-party module/package names found in the script.
-            Standard library modules and ``nib`` are excluded.
+            Standard library modules, ``nib``, and local modules are excluded.
 
     Raises:
         SyntaxError: If the script contains invalid Python syntax.
@@ -228,6 +230,7 @@ def detect_imports(script_path: Path) -> set[str]:
             import requests
             from PIL import Image
             from nib import App
+            from services import downloader  # local module
 
         The function returns::
 
@@ -235,11 +238,12 @@ def detect_imports(script_path: Path) -> set[str]:
             >>> imports
             {'requests', 'PIL'}
 
-        Note that ``os``, ``json`` (stdlib) and ``nib`` are excluded.
+        Note that ``os``, ``json`` (stdlib), ``nib``, and ``services`` (local) are excluded.
 
     See Also:
         - :func:`resolve_packages`: Convert import names to pip package names
         - :func:`filter_third_party`: Filter out non-third-party imports
+        - :func:`detect_local_modules`: Detect local project modules
     """
     source = script_path.read_text()
     tree = ast.parse(source)
@@ -253,18 +257,65 @@ def detect_imports(script_path: Path) -> set[str]:
             if node.module:
                 imports.add(node.module.split(".")[0])
 
-    # Filter out stdlib and nib
-    return filter_third_party(imports)
+    # Detect local modules in the project
+    if project_dir is None:
+        project_dir = script_path.parent
+    local_modules = detect_local_modules(project_dir)
+
+    # Filter out stdlib, nib, and local modules
+    return filter_third_party(imports, local_modules)
 
 
-def filter_third_party(imports: set[str]) -> set[str]:
+def detect_local_modules(project_dir: Path) -> set[str]:
+    """Detect local Python modules/packages in the project directory.
+
+    Scans the project directory for local Python packages and modules that
+    should not be confused with third-party pip packages.
+
+    A directory is considered a local package if it contains an __init__.py.
+    A .py file (not __init__.py) is considered a local module.
+
+    Args:
+        project_dir (Path): Root directory of the project to scan.
+
+    Returns:
+        set[str]: Set of local module/package names found in the project.
+
+    Example:
+        >>> local = detect_local_modules(Path("/app/project"))
+        >>> local
+        {'services', 'utils', 'models'}
+    """
+    local_modules = set()
+
+    # Check immediate subdirectories for packages
+    for item in project_dir.iterdir():
+        if item.is_dir() and not item.name.startswith((".", "_")):
+            # Check if it's a Python package
+            if (item / "__init__.py").exists():
+                local_modules.add(item.name)
+            # Also check for common src layouts
+            elif item.name == "src":
+                for subitem in item.iterdir():
+                    if subitem.is_dir() and (subitem / "__init__.py").exists():
+                        local_modules.add(subitem.name)
+        elif item.is_file() and item.suffix == ".py" and item.name != "__init__.py":
+            # Single-file modules
+            local_modules.add(item.stem)
+
+    return local_modules
+
+
+def filter_third_party(imports: set[str], local_modules: Optional[set[str]] = None) -> set[str]:
     """Filter a set of imports to keep only third-party packages.
 
-    Removes standard library modules, the nib package, and private modules
-    (those starting with underscore) from the input set.
+    Removes standard library modules, the nib package, private modules
+    (those starting with underscore), and local project modules from the input set.
 
     Args:
         imports (set[str]): Set of module/package names to filter.
+        local_modules (set[str] | None): Set of local module names to exclude.
+            If None, no local module filtering is done.
 
     Returns:
         set[str]: Filtered set containing only third-party package names.
@@ -272,10 +323,12 @@ def filter_third_party(imports: set[str]) -> set[str]:
             - Standard library modules (os, json, asyncio, etc.)
             - The ``nib`` package (bundled automatically)
             - Private modules (names starting with ``_``)
+            - Local project modules (if local_modules is provided)
 
     Example:
-        >>> imports = {"os", "requests", "nib", "PIL", "_internal", "json"}
-        >>> third_party = filter_third_party(imports)
+        >>> imports = {"os", "requests", "nib", "PIL", "_internal", "json", "services"}
+        >>> local = {"services", "utils"}
+        >>> third_party = filter_third_party(imports, local)
         >>> third_party
         {'requests', 'PIL'}
 
@@ -284,6 +337,7 @@ def filter_third_party(imports: set[str]) -> set[str]:
         can also be used independently to filter arbitrary import sets.
     """
     stdlib = _get_stdlib()
+    local = local_modules or set()
     third_party = set()
     for module in imports:
         # Skip stdlib
@@ -294,6 +348,9 @@ def filter_third_party(imports: set[str]) -> set[str]:
             continue
         # Skip private modules
         if module.startswith("_"):
+            continue
+        # Skip local project modules
+        if module in local:
             continue
         third_party.add(module)
     return third_party

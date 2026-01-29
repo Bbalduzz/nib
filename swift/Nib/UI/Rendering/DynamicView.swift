@@ -79,6 +79,8 @@ extension DynamicView {
             buildImage()
         case .video:
             buildVideo()
+        case .markdown:
+            buildMarkdown()
 
         // Shapes (transparent by default unless fill specified)
         case .rectangle:
@@ -91,6 +93,16 @@ extension DynamicView {
             buildEllipse()
         case .capsule:
             buildCapsule()
+
+        // Gradients
+        case .linearGradient:
+            buildLinearGradient()
+        case .radialGradient:
+            buildRadialGradient()
+        case .angularGradient:
+            buildAngularGradient()
+        case .ellipticalGradient:
+            buildEllipticalGradient()
 
         // Lists & Collections
         case .list:
@@ -118,6 +130,38 @@ extension DynamicView {
         case .lineMark, .barMark, .areaMark, .pointMark, .ruleMark, .rectMark, .sectorMark:
             // Marks are rendered by the parent Chart view, not directly
             EmptyView()
+
+        // Map
+        case .map:
+            buildMap()
+
+        // Grid layouts
+        case .grid:
+            buildGrid()
+        case .gridRow:
+            buildGridRow()
+        case .lazyVGrid:
+            buildLazyVGrid()
+        case .lazyHGrid:
+            buildLazyHGrid()
+
+        // New controls
+        case .gauge:
+            buildGauge()
+        case .textEditor:
+            buildTextEditor()
+        case .table:
+            buildTable()
+        case .shareLink:
+            buildShareLink()
+
+        // Effects
+        case .visualEffectBlur:
+            buildVisualEffectBlur()
+
+        // Camera
+        case .cameraPreview:
+            buildCameraPreview()
         }
     }
 }

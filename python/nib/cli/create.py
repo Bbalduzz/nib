@@ -58,12 +58,6 @@ from typing import Optional
 
 MAIN_PY_TEMPLATE = '''"""
 {name} - A nib application
-
-Assets:
-    Place images, videos, and other files in src/assets/
-    Then use them with relative paths:
-        nib.Image("logo.png")           -> src/assets/logo.png
-        nib.Image("images/icon.png")    -> src/assets/images/icon.png
 """
 
 import nib
@@ -132,6 +126,9 @@ name = "{name}"
 
 # Additional dependencies to include (if auto-detection misses them)
 # extra_deps = []
+
+# Start app automatically at login (requires signed app)
+# launch_at_login = false
 
 # Info.plist options
 # [tool.nib.build.plist]

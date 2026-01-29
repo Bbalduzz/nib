@@ -255,8 +255,13 @@ class Video(View):
         else:
             # Local file path - resolve through assets system
             resolved = App.resolve_asset(src)
-            self._source_type = "file"
-            self._source_value = resolved
+            if resolved:
+                self._source_type = "file"
+                self._source_value = resolved
+            else:
+                # Asset not found
+                self._source_type = None
+                self._source_value = None
 
     @property
     def autoplay(self) -> bool:

@@ -74,6 +74,13 @@ from .layout import (
     NavigationStack,
     NavigationLink,
     DisclosureGroup,
+    # Grid layouts
+    Grid,
+    GridRow,
+    LazyVGrid,
+    LazyHGrid,
+    GridItem,
+    GridItemSize,
 )
 from .controls import (
     Text,
@@ -90,8 +97,39 @@ from .controls import (
     Image,
     Video,
     VideoGravity,
+    Markdown,
+    Map,
+    MapMarker,
+    MapAnnotation,
+    MapCircle,
+    MapPolyline,
+    MapPolygon,
+    MapStyle,
+    MapInteractionMode,
+    # New controls
+    Gauge,
+    GaugeStyle,
+    TextEditor,
+    Table,
+    TableColumn,
+    ShareLink,
+    CameraPreview,
 )
-from .shapes import RoundedRectangle, Circle, Rectangle, Ellipse, Capsule
+from .shapes import (
+    RoundedRectangle,
+    Circle,
+    Rectangle,
+    Ellipse,
+    Capsule,
+    LinearGradient,
+    RadialGradient,
+    AngularGradient,
+    EllipticalGradient,
+)
+from .effects import (
+    VisualEffectBlur,
+    BlurStyle,
+)
 from .charts import (
     Chart,
     LineMark,
@@ -123,6 +161,13 @@ __all__ = [
     "NavigationStack",
     "NavigationLink",
     "DisclosureGroup",
+    # Grid layouts
+    "Grid",
+    "GridRow",
+    "LazyVGrid",
+    "LazyHGrid",
+    "GridItem",
+    "GridItemSize",
     # Controls
     "Text",
     "Button",
@@ -138,12 +183,37 @@ __all__ = [
     "Image",
     "Video",
     "VideoGravity",
+    "Markdown",
+    "Map",
+    "MapMarker",
+    "MapAnnotation",
+    "MapCircle",
+    "MapPolyline",
+    "MapPolygon",
+    "MapStyle",
+    "MapInteractionMode",
+    # New controls
+    "Gauge",
+    "GaugeStyle",
+    "TextEditor",
+    "Table",
+    "TableColumn",
+    "ShareLink",
+    "CameraPreview",
     # Shapes
     "RoundedRectangle",
     "Circle",
     "Rectangle",
     "Ellipse",
     "Capsule",
+    # Gradients
+    "LinearGradient",
+    "RadialGradient",
+    "AngularGradient",
+    "EllipticalGradient",
+    # Effects
+    "VisualEffectBlur",
+    "BlurStyle",
     # Charts
     "Chart",
     "LineMark",

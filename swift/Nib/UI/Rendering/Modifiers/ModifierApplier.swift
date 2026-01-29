@@ -65,6 +65,8 @@ extension View {
             applyFrame(modifier.args)
         case .padding:
             applyPadding(modifier.args)
+        case .margin:
+            applyMargin(modifier.args)
         case .cornerRadius:
             applyCornerRadius(modifier.args)
         case .clipShape:

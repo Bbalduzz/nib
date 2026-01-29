@@ -25,8 +25,10 @@ Example:
         $ nib build src/main.py --name "My App" --icon icon.png
         Using nib-runtime: /path/to/nib-runtime
         Building: My App
+        Target architecture: arm64
         Detecting dependencies...
-        Running py2app...
+        Setting up Python runtime...
+        Installing dependencies...
         Success! App bundle created at: dist/My App.app
 
     Using pyproject.toml configuration::
@@ -60,7 +62,8 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
     """Load Nib configuration from pyproject.toml in the current directory.
 
     Searches for a ``pyproject.toml`` file in the current working directory
-    and extracts the ``[tool.nib]`` section if present. This allows users to
+    and extracts the ``[tool.nib]`` section if present, along with project
+    dependencies from ``[project].dependencies``. This allows users to
     define project-level defaults for build settings, entry points, and
     application metadata.
 
@@ -75,8 +78,14 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
             - The file cannot be parsed
             - No ``[tool.nib]`` section exists
 
+            The returned dict also includes a ``_project_dependencies`` key
+            with the list of dependencies from ``[project].dependencies``.
+
     Example:
         Configuration in pyproject.toml::
+
+            [project]
+            dependencies = ["requests", "pillow"]
 
             [tool.nib]
             entry = "src/main.py"
@@ -94,6 +103,8 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
             'src/main.py'
             >>> config.get("build", {}).get("name")
             'My App'
+            >>> config.get("_project_dependencies")
+            ['requests', 'pillow']
     """
     pyproject_path = Path.cwd() / "pyproject.toml"
     if not pyproject_path.exists():
@@ -111,7 +122,18 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
     try:
         with open(pyproject_path, "rb") as f:
             data = tomllib.load(f)
-        return data.get("tool", {}).get("nib", {})
+        nib_config = data.get("tool", {}).get("nib", {})
+        # Also extract project dependencies
+        project_deps = data.get("project", {}).get("dependencies", [])
+        # Parse dependency strings to extract package names (strip version specs)
+        parsed_deps = []
+        for dep in project_deps:
+            # Handle "package>=1.0" or "package[extra]>=1.0" formats
+            name = dep.split("[")[0].split("<")[0].split(">")[0].split("=")[0].split("!")[0].strip()
+            if name and name.lower() != "nib":  # Exclude nib itself
+                parsed_deps.append(name)
+        nib_config["_project_dependencies"] = parsed_deps
+        return nib_config
     except Exception:
         return None
 
@@ -222,6 +244,30 @@ def main() -> int:
         "--exclude",
         help="Packages to exclude from bundling (comma-separated)",
     )
+    build_parser.add_argument(
+        "--arch",
+        choices=["arm64", "x86_64"],
+        help="Target architecture (default: current machine)",
+    )
+
+    # Run command
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Run a nib app with hot reload",
+        description="Run a Nib application with automatic reload on file changes.",
+    )
+    run_parser.add_argument(
+        "script",
+        type=Path,
+        nargs="?",
+        help="Python script to run (default: from pyproject.toml)",
+    )
+    run_parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="Watch subdirectories for changes",
+    )
 
     args = parser.parse_args()
 
@@ -270,6 +316,15 @@ def main() -> int:
         # Get plist options from config
         plist_options = build_config.get("plist", {})
 
+        # Get explicit dependencies from [project].dependencies
+        project_deps = config.get("_project_dependencies", [])
+
+        # Get arch from CLI or config
+        arch = args.arch or build_config.get("arch")
+
+        # Launch at login setting
+        launch_at_login = build_config.get("launch_at_login", False)
+
         return build_app(
             script=script,
             name=name,
@@ -281,7 +336,43 @@ def main() -> int:
             min_macos=min_macos,
             excludes=excludes,
             plist_options=plist_options,
+            explicit_deps=project_deps if project_deps else None,
+            arch=arch,
+            launch_at_login=launch_at_login,
         )
+
+    elif args.command == "run":
+        from .run import run_with_reload
+
+        # Determine script path
+        script = args.script
+        if script is None:
+            config = load_pyproject_config() or {}
+            entry = config.get("entry", "src/main.py")
+            script = Path(entry)
+            if not script.exists():
+                print(f"Error: Entry point not found: {script}")
+                print("Specify a script or create pyproject.toml with [tool.nib] entry")
+                return 1
+
+        if not script.exists():
+            print(f"Error: Script not found: {script}")
+            return 1
+
+        # If script is a directory, look for src/main.py inside it
+        recursive = args.recursive
+        if script.is_dir():
+            project_dir = script
+            main_file = project_dir / "src" / "main.py"
+            if not main_file.exists():
+                print(f"Error: No src/main.py found in {project_dir}")
+                return 1
+            script = main_file
+            # Enable recursive watching for project directories
+            recursive = True
+
+        return run_with_reload(script, recursive=recursive)
+
     else:
         parser.print_help()
         return 0

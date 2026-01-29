@@ -15,5 +15,6 @@ Submodules
    nib.views.shapes.capsule
    nib.views.shapes.circle
    nib.views.shapes.ellipse
+   nib.views.shapes.gradients
    nib.views.shapes.rectangle
    nib.views.shapes.rounded_rectangle

@@ -14,12 +14,16 @@ let package = Package(
         .executable(name: "nib-runtime", targets: ["Nib"])
     ],
     dependencies: [
-        .package(url: "https://github.com/Flight-School/MessagePack.git", from: "1.2.4")
+        .package(url: "https://github.com/Flight-School/MessagePack.git", from: "1.2.4"),
+        .package(url: "https://github.com/gonzalezreal/swift-markdown-ui.git", from: "2.4.0")
     ],
     targets: [
         .executableTarget(
             name: "Nib",
-            dependencies: ["MessagePack"],
+            dependencies: [
+                "MessagePack",
+                .product(name: "MarkdownUI", package: "swift-markdown-ui")
+            ],
             path: "Nib",
             exclude: ["Info.plist"],
             linkerSettings: [

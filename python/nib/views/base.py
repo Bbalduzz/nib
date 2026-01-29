@@ -107,7 +107,8 @@ class View:
             - width, height: Fixed dimensions in points
             - min_width, min_height: Minimum dimensions
             - max_width, max_height: Maximum dimensions (use "infinity" for max)
-            - padding: Uniform float or dict with sides
+            - padding: Uniform float or dict with sides (inside background)
+            - margin: Uniform float or dict with sides (outside background)
 
         Appearance:
             - background: Color or View for background
@@ -172,6 +173,7 @@ class View:
         max_width: Optional[Union[float, str]] = None,
         max_height: Optional[Union[float, str]] = None,
         padding: Optional[Union[float, dict]] = None,
+        margin: Optional[Union[float, dict]] = None,
         # Appearance modifiers
         background: Optional[ColorLike] = None,
         foreground_color: Optional[ColorLike] = None,
@@ -203,6 +205,8 @@ class View:
         overlay: Optional["View"] = None,
         # Drag and drop
         on_drop: Optional[Callable[[List[str]], None]] = None,
+        # Visibility (if False, view is removed from tree entirely)
+        visible: bool = True,
     ) -> None:
         """Initialize a View with modifier parameters.
 
@@ -215,6 +219,9 @@ class View:
             max_height: Maximum height in points, or "infinity".
             padding: Padding around content. Either a uniform float or a dict
                 with keys: top, bottom, leading, trailing, horizontal, vertical.
+            margin: Outer spacing (applied after background). Either a uniform
+                float or a dict with keys: top, bottom, leading, trailing,
+                horizontal, vertical.
             background: Background color (string or Color) or a View.
             foreground_color: Content/text color.
             fill: Fill color for shapes.
@@ -238,11 +245,15 @@ class View:
             scale: Scale transform factor.
             overlay: View to render on top of this view.
             on_drop: Callback for drag-and-drop file handling.
+            visible: Whether the view is included in the tree. If False,
+                the view is completely removed (doesn't take up space).
+                Unlike opacity=0, invisible views don't occupy layout space.
         """
         self._id: Optional[str] = None  # Set during tree traversal
         self._action: Optional[Callable] = None
         self._app = None  # Reference to parent App for triggering rerenders
         self._on_drop = on_drop
+        self._visible = visible
 
         # Handle special cases: background/overlay views
         if background is not None and hasattr(background, "_type"):
@@ -264,6 +275,7 @@ class View:
             "max_width": max_width,
             "max_height": max_height,
             "padding": padding,
+            "margin": margin,
             "background": background,
             "foreground_color": foreground_color,
             "fill": fill,
@@ -289,6 +301,23 @@ class View:
 
         # Apply all modifiers via registry
         self._modifiers: List[dict] = ModifierRegistry.apply_all(kwargs)
+
+    def __setattr__(self, name: str, value) -> None:
+        """Override setattr to trigger re-render on any property change."""
+        # Always set the attribute
+        object.__setattr__(self, name, value)
+
+        # Only trigger re-render if connected to an app
+        app = getattr(self, "_app", None)
+        if app is None:
+            return
+
+        # Skip internal bookkeeping attributes
+        if name in ("_id", "_app", "_action", "_modifiers"):
+            return
+
+        # Trigger re-render
+        app._trigger_rerender()
 
     def _add_modifier(self, type: str, **args) -> None:
         """Add a modifier to the view's modifier list.
@@ -372,6 +401,53 @@ class View:
         """
         if self._app is not None:
             self._app._trigger_rerender()
+
+    def _update_modifier(self, modifier_type: str, **args) -> None:
+        """Update or add a modifier and trigger re-render.
+
+        Args:
+            modifier_type: The modifier type (e.g., "opacity", "frame").
+            **args: The modifier arguments.
+        """
+        # Find existing modifier of this type
+        for mod in self._modifiers:
+            if mod.get("type") == modifier_type:
+                mod["args"] = {k: v for k, v in args.items() if v is not None}
+                self._trigger_update()
+                return
+        # Add new modifier if not found
+        filtered_args = {k: v for k, v in args.items() if v is not None}
+        if filtered_args:
+            self._modifiers.append({"type": modifier_type, "args": filtered_args})
+        self._trigger_update()
+
+    @property
+    def opacity(self) -> Optional[float]:
+        """Get the view's opacity."""
+        for mod in self._modifiers:
+            if mod.get("type") == "opacity":
+                return mod.get("args", {}).get("opacity")
+        return None
+
+    @opacity.setter
+    def opacity(self, value: Optional[float]) -> None:
+        """Set the view's opacity and trigger UI update."""
+        self._update_modifier("opacity", opacity=value)
+
+    @property
+    def visible(self) -> bool:
+        """Get whether the view is visible (included in the tree)."""
+        return self._visible
+
+    @visible.setter
+    def visible(self, value: bool) -> None:
+        """Set whether the view is visible and trigger UI update.
+
+        When visible=False, the view is completely removed from the tree
+        and doesn't take up any layout space.
+        """
+        self._visible = value
+        self._trigger_update()
 
     def _set_app(self, app: "App") -> None:
         """Set the parent App reference recursively.

@@ -7,7 +7,7 @@ version: 2
 sphinx:
   configuration: docs/conf.py
   builder: html
-  fail_on_warning: false
+  fail_on_warning: true
 
 # Build on all supported formats
 formats:
@@ -21,7 +21,8 @@ build:
     python: "3.11"
   jobs:
     pre_build:
-      # Generate API documentation before building
+      # Clean and regenerate API documentation before building
+      - rm -rf docs/api/
       - sphinx-apidoc -f -e -M -o docs/api/ python/nib --implicit-namespaces
 
 # Install Python dependencies

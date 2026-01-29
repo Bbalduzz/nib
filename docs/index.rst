@@ -62,6 +62,7 @@ Features
    reference/views/list
    reference/views/section
    reference/views/group
+   reference/views/grid
    reference/views/navigation
    reference/views/disclosure
 
@@ -72,14 +73,17 @@ Features
    reference/views/text
    reference/views/button
    reference/views/textfield
+   reference/views/texteditor
    reference/views/toggle
    reference/views/slider
    reference/views/picker
+   reference/views/gauge
    reference/views/progressview
    reference/views/label
    reference/views/link
    reference/views/image
    reference/views/video
+   reference/views/sharelink
    reference/views/divider
 
 .. toctree::
@@ -101,6 +105,12 @@ Features
 
 .. toctree::
    :maxdepth: 2
+   :caption: Views - Effects
+
+   reference/views/visualeffectblur
+
+.. toctree::
+   :maxdepth: 2
    :caption: Types & Styling
 
    reference/types/color
@@ -115,6 +125,18 @@ Features
    reference/modifiers
    reference/state
    reference/userdefaults
+
+.. toctree::
+   :maxdepth: 2
+   :caption: System Services
+
+   reference/services
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Building & Distribution
+
+   reference/build
 
 
 Indices and tables

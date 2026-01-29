@@ -122,23 +122,61 @@ class App:
     @classmethod
     def _auto_detect_assets_dir(cls) -> Optional[Path]:
         """Auto-detect the assets directory based on execution mode."""
+        # Check for bundled mode via NIB_SOCKET environment variable
+        # This is set by Swift when launching embedded Python
+        if os.environ.get("NIB_SOCKET"):
+            # Bundled mode with python-build-standalone
+            # Try multiple detection methods
+
+            # Method 1: Use PYTHONHOME (Contents/MacOS/python -> Contents/Resources/assets)
+            python_home = os.environ.get("PYTHONHOME", "")
+            if python_home:
+                bundle_contents = Path(python_home).parent.parent
+                assets_path = bundle_contents / "Resources" / "assets"
+                if assets_path.exists():
+                    return assets_path
+
+            # Method 2: Use __file__ of this module to find bundle
+            # nib is in Contents/Resources/app/vendor/nib/core/app.py
+            # -> Contents/Resources/assets
+            try:
+                module_path = Path(__file__).resolve()
+                # Go up from nib/core/app.py -> vendor -> app -> Resources
+                resources_dir = module_path.parent.parent.parent.parent.parent
+                assets_path = resources_dir / "assets"
+                if assets_path.exists():
+                    return assets_path
+            except Exception:
+                pass
+
+            # Method 3: Use __main__.__file__ which is Contents/Resources/app/main.py
+            main_module = sys.modules.get("__main__")
+            if main_module and hasattr(main_module, "__file__") and main_module.__file__:
+                main_path = Path(main_module.__file__).resolve()
+                # main.py is in Contents/Resources/app/ -> Contents/Resources/assets
+                resources_dir = main_path.parent.parent
+                assets_path = resources_dir / "assets"
+                if assets_path.exists():
+                    return assets_path
+
+        # Legacy py2app bundled mode (sys.frozen)
         if getattr(sys, "frozen", False):
             # Bundled mode - assets are in Contents/Resources/assets
             bundle_dir = Path(sys.executable).parent.parent
             return bundle_dir / "Resources" / "assets"
-        else:
-            # Development mode - find assets relative to main script
-            import __main__
-            if hasattr(__main__, "__file__") and __main__.__file__:
-                script_dir = Path(__main__.__file__).parent
-                # Check common locations
-                for assets_path in [
-                    script_dir / "assets",           # Same dir as script
-                    script_dir.parent / "assets",    # Parent dir (if script is in src/)
-                    script_dir / "src" / "assets",   # src/assets from project root
-                ]:
-                    if assets_path.exists():
-                        return assets_path
+
+        # Development mode - find assets relative to main script
+        main_module = sys.modules.get("__main__")
+        if main_module and hasattr(main_module, "__file__") and main_module.__file__:
+            script_dir = Path(main_module.__file__).parent
+            # Check common locations
+            for assets_path in [
+                script_dir / "assets",           # Same dir as script
+                script_dir.parent / "assets",    # Parent dir (if script is in src/)
+                script_dir / "src" / "assets",   # src/assets from project root
+            ]:
+                if assets_path.exists():
+                    return assets_path
         return None
 
     @classmethod
@@ -149,7 +187,8 @@ class App:
             relative_path: Path relative to assets directory, or absolute/URL.
 
         Returns:
-            Resolved absolute path, or original path if not found in assets.
+            Resolved absolute path. Returns empty string if asset not found
+            (allows Swift to show placeholder).
         """
         # Don't resolve absolute paths or URLs
         if relative_path.startswith("/") or relative_path.startswith(("http://", "https://")):
@@ -159,15 +198,22 @@ class App:
         if not cls._assets_dir_initialized:
             cls._assets_dir = cls._auto_detect_assets_dir()
             cls._assets_dir_initialized = True
+            if cls._assets_dir:
+                print(f"[nib] Assets directory: {cls._assets_dir}")
 
         # Resolve relative to assets dir
         if cls._assets_dir and cls._assets_dir.exists():
             asset_path = cls._assets_dir / relative_path
             if asset_path.exists():
                 return str(asset_path)
+            else:
+                # Asset not found - log warning
+                print(f"[nib] Warning: Asset not found: {relative_path} (looked in {cls._assets_dir})")
+                return ""  # Return empty string so Swift shows placeholder
 
-        # Fallback: return as-is
-        return relative_path
+        # No assets directory configured
+        print(f"[nib] Warning: No assets directory configured, cannot resolve: {relative_path}")
+        return ""
 
     def __init__(
         self,
@@ -225,6 +271,9 @@ class App:
         - URLs: "https://example.com/fonts/MyFont.ttf"
         - System fonts are available by name without registration
 
+        Note: Fonts in the assets directory (assets/fonts/) are automatically
+        registered and don't need to be added here.
+
         Args:
             value: Dictionary mapping font names to paths or URLs.
 
@@ -238,6 +287,59 @@ class App:
             nib.Text("Hello", font=nib.Font.custom("CustomFont", size=16))
         """
         self._fonts = value
+
+    @classmethod
+    def _detect_fonts_in_assets(cls) -> Dict[str, str]:
+        """Auto-detect font files in the assets directory.
+
+        Scans the assets directory for font files (.ttf, .otf, .ttc, .woff, .woff2)
+        and returns a dictionary mapping font names to absolute paths.
+
+        The font name is derived from the filename without extension.
+        For example, "Geist-Regular.ttf" becomes "Geist-Regular".
+
+        Returns:
+            Dictionary mapping font names to absolute file paths.
+        """
+        # Initialize assets dir if not done
+        if not cls._assets_dir_initialized:
+            cls._assets_dir = cls._auto_detect_assets_dir()
+            cls._assets_dir_initialized = True
+
+        if not cls._assets_dir or not cls._assets_dir.exists():
+            return {}
+
+        font_extensions = {".ttf", ".otf", ".ttc", ".woff", ".woff2"}
+        fonts = {}
+
+        for font_file in cls._assets_dir.rglob("*"):
+            if font_file.is_file() and font_file.suffix.lower() in font_extensions:
+                # Use filename without extension as font name
+                font_name = font_file.stem
+                fonts[font_name] = str(font_file)
+
+        if fonts:
+            print(f"[nib] Auto-detected {len(fonts)} font(s) in assets")
+
+        return fonts
+
+    def _get_all_fonts(self) -> Optional[Dict[str, str]]:
+        """Get all fonts (auto-detected + user-specified).
+
+        Auto-detected fonts from assets are merged with user-specified fonts.
+        User-specified fonts take precedence in case of name conflicts.
+
+        Returns:
+            Combined fonts dictionary, or None if no fonts.
+        """
+        # Start with auto-detected fonts
+        all_fonts = self._detect_fonts_in_assets()
+
+        # Merge user-specified fonts (they override auto-detected)
+        if self._fonts:
+            all_fonts.update(self._fonts)
+
+        return all_fonts if all_fonts else None
 
     @property
     def on_appear(self) -> Optional[Callable[[], None]]:
@@ -263,6 +365,74 @@ class App:
             app.on_appear = on_open
         """
         self._on_appear = callback
+
+    # --- Service Properties ---
+
+    @property
+    def battery(self) -> "Battery":
+        """Access the battery service.
+
+        Example:
+            status = app.battery.get_status()
+            print(f"Battery: {status.level}%")
+        """
+        if not hasattr(self, "_battery"):
+            from ..services.battery import Battery
+            self._battery = Battery(self)
+        return self._battery
+
+    @property
+    def connectivity(self) -> "Connectivity":
+        """Access the connectivity service.
+
+        Example:
+            status = app.connectivity.get_status()
+            print(f"Connected: {status.is_connected}")
+        """
+        if not hasattr(self, "_connectivity"):
+            from ..services.connectivity import Connectivity
+            self._connectivity = Connectivity(self)
+        return self._connectivity
+
+    @property
+    def screen(self) -> "Screen":
+        """Access the screen service.
+
+        Example:
+            info = app.screen.get_info()
+            app.screen.set_brightness(0.5)
+        """
+        if not hasattr(self, "_screen"):
+            from ..services.screen import Screen
+            self._screen = Screen(self)
+        return self._screen
+
+    @property
+    def keychain(self) -> "Keychain":
+        """Access the keychain service for secure storage.
+
+        Example:
+            app.keychain.set("MyApp", "user", "password123")
+            pwd = app.keychain.get("MyApp", "user")
+        """
+        if not hasattr(self, "_keychain"):
+            from ..services.keychain import Keychain
+            self._keychain = Keychain(self)
+        return self._keychain
+
+    @property
+    def camera(self) -> "Camera":
+        """Access the camera service.
+
+        Example:
+            devices = app.camera.list_devices()
+            frame = app.camera.capture_photo()
+            frame.save("/tmp/photo.jpg")
+        """
+        if not hasattr(self, "_camera"):
+            from ..services.camera import Camera
+            self._camera = Camera(self)
+        return self._camera
 
     @property
     def title(self) -> Optional[str]:
@@ -615,28 +785,38 @@ class App:
 
     def _setup(self) -> None:
         """Set up the application."""
-        # Generate socket path
-        self._socket_path = f"/tmp/nib-{os.getpid()}.sock"
+        # Check if we're launched by Swift (bundled mode)
+        # In bundled mode, Swift passes NIB_SOCKET env var
+        socket_from_env = os.environ.get("NIB_SOCKET")
 
-        # Find and launch the Swift runtime
-        runtime_path = self._find_runtime()
-        if not runtime_path:
-            raise RuntimeError(
-                "Could not find nib-runtime. "
-                "Please build the Swift runtime first:\n"
-                "  cd swift && swift build -c release"
+        if socket_from_env:
+            # Bundled mode: Swift launched us, socket already exists
+            self._socket_path = socket_from_env
+            self._runtime_process = None  # We don't own the runtime process
+            print(f"[nib] Running in bundled mode, socket: {self._socket_path}")
+        else:
+            # Development mode: We launch Swift runtime
+            self._socket_path = f"/tmp/nib-{os.getpid()}.sock"
+
+            # Find and launch the Swift runtime
+            runtime_path = self._find_runtime()
+            if not runtime_path:
+                raise RuntimeError(
+                    "Could not find nib-runtime. "
+                    "Please build the Swift runtime first:\n"
+                    "  cd swift && swift build -c release"
+                )
+
+            # Launch runtime with socket path
+            env = os.environ.copy()
+            env["NIB_SOCKET"] = self._socket_path
+
+            self._runtime_process = subprocess.Popen(
+                [str(runtime_path)],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
-
-        # Launch runtime with socket path
-        env = os.environ.copy()
-        env["NIB_SOCKET"] = self._socket_path
-
-        self._runtime_process = subprocess.Popen(
-            [str(runtime_path)],
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
 
         # Connect to runtime
         self._connection = Connection(self._socket_path)
@@ -651,45 +831,64 @@ class App:
         signal.signal(signal.SIGTERM, self._signal_handler)
 
     def _find_runtime(self) -> Optional[Path]:
-        """Find the nib-runtime executable."""
+        """Find the nib-runtime executable.
+
+        Searches in the following order:
+        1. NIB_RUNTIME environment variable
+        2. System PATH
+        3. Common installation locations
+        4. Relative to nib package (for development)
+        5. Relative to current working directory
+        """
         import shutil
 
-        # Check for bundled runtime (py2app bundle)
-        # When running as a bundled app, sys.frozen is set to True
-        if getattr(sys, "frozen", False):
-            # Running inside a py2app bundle
-            # sys.executable points to Contents/MacOS/<app>
-            # nib-runtime is at Contents/Resources/nib-runtime
-            bundle_dir = Path(sys.executable).parent.parent
-            runtime = bundle_dir / "Resources" / "nib-runtime"
-            if runtime.exists():
-                return runtime
-
-        # Check common locations
-        # Path(__file__) = .../nib/python/nib/core/app.py
-        # .parent.parent.parent.parent = .../nib
-        nib_root = Path(__file__).parent.parent.parent.parent
-        locations = [
-            # Development: relative to this file
-            nib_root / "swift" / ".build" / "release" / "nib-runtime",
-            nib_root / "swift" / ".build" / "debug" / "nib-runtime",
-            # Also check current working directory
-            Path.cwd() / "swift" / ".build" / "release" / "nib-runtime",
-            Path.cwd() / "swift" / ".build" / "debug" / "nib-runtime",
-            # Installed in PATH
-            Path("/usr/local/bin/nib-runtime"),
-            # User local bin
-            Path.home() / ".local" / "bin" / "nib-runtime",
-        ]
-
-        for path in locations:
+        # 1. Check environment variable first
+        env_runtime = os.environ.get("NIB_RUNTIME")
+        if env_runtime:
+            path = Path(env_runtime)
             if path.exists() and path.is_file():
                 return path
 
-        # Check PATH
+        # 2. Check PATH (most portable)
         path_runtime = shutil.which("nib-runtime")
         if path_runtime:
             return Path(path_runtime)
+
+        # 3. Check common installation locations
+        common_locations = [
+            Path.home() / ".local" / "bin" / "nib-runtime",
+            Path.home() / ".nib" / "bin" / "nib-runtime",
+            Path("/usr/local/bin/nib-runtime"),
+            Path("/opt/homebrew/bin/nib-runtime"),
+        ]
+
+        for path in common_locations:
+            if path.exists() and path.is_file():
+                return path
+
+        # 4. Check relative to nib package (editable install during development)
+        try:
+            current = Path(__file__).resolve().parent
+            for _ in range(6):
+                swift_build = current / "swift" / ".build"
+                if swift_build.exists():
+                    for build_type in ["release", "debug"]:
+                        runtime = swift_build / build_type / "nib-runtime"
+                        if runtime.exists() and runtime.is_file():
+                            return runtime
+                current = current.parent
+        except Exception:
+            pass
+
+        # 5. Check relative to current working directory
+        cwd_locations = [
+            Path.cwd() / "swift" / ".build" / "release" / "nib-runtime",
+            Path.cwd() / "swift" / ".build" / "debug" / "nib-runtime",
+        ]
+
+        for path in cwd_locations:
+            if path.exists() and path.is_file():
+                return path
 
         return None
 
@@ -743,7 +942,7 @@ class App:
                 height=self._height,
                 menu=menu_config,
                 hotkeys=hotkeys,
-                fonts=self._fonts if self._fonts else None,
+                fonts=self._get_all_fonts(),
             )
         else:
             # Send incremental patches
@@ -1092,39 +1291,53 @@ class MenuItem:
     """
     A menu item for the right-click context menu.
 
-    Supports nested submenus, keyboard shortcuts, badges, and state indicators.
+    Supports nested submenus, keyboard shortcuts, badges, state indicators,
+    and custom views for rich menu content.
 
     Args:
-        title: The menu item text.
+        title: The menu item text (optional if content is provided).
         action: Callback when item is clicked.
         icon: SF Symbol name (str) or SFSymbol view with configuration.
+        content: Custom View for rich menu item content (replaces title/icon).
         menu: List of child MenuItems for submenus.
         shortcut: Keyboard shortcut (e.g., "cmd+q", "cmd+shift+n", "opt+x").
         state: Checkmark state - "on" (checkmark), "off" (none), or "mixed" (dash).
         badge: Badge text shown on the right (macOS 14+).
         enabled: Whether the item is clickable (default True).
+        height: Custom height for content-based items (default: auto).
 
     Usage:
         app.menu = [
-            # Simple string icon
+            # Simple text item
             nib.MenuItem("Settings", action=open_settings, icon="gear", shortcut="cmd+,"),
 
-            # SFSymbol with configuration
+            # Custom view content
             nib.MenuItem(
-                "Favorites",
-                action=show_favorites,
-                icon=nib.SFSymbol("star.fill", weight="bold", foreground_color="#FFD700"),
+                content=nib.HStack(
+                    controls=[
+                        nib.SFSymbol("star.fill", foreground_color=nib.Color.YELLOW),
+                        nib.VStack(
+                            controls=[
+                                nib.Text("Premium", font=nib.Font.HEADLINE),
+                                nib.Text("Upgrade now", font=nib.Font.CAPTION),
+                            ],
+                            alignment=nib.HorizontalAlignment.LEADING,
+                            spacing=2,
+                        ),
+                    ],
+                    spacing=8,
+                ),
+                action=upgrade,
+                height=50,
             ),
 
-            nib.MenuItem("Check for Updates", action=check_updates),
-            nib.MenuItem("Dark Mode", action=toggle_dark, state="on"),
-            nib.MenuItem("Downloads", badge="3"),
+            # Submenus
             nib.MenuItem(
                 "More Options",
                 icon="ellipsis.circle",
                 menu=[
-                    nib.MenuItem("Option A", action=option_a, shortcut="cmd+1"),
-                    nib.MenuItem("Option B", action=option_b, shortcut="cmd+2"),
+                    nib.MenuItem("Option A", action=option_a),
+                    nib.MenuItem("Option B", action=option_b),
                 ],
             ),
             nib.MenuDivider(),
@@ -1134,24 +1347,28 @@ class MenuItem:
 
     def __init__(
         self,
-        title: str,
+        title: Optional[str] = None,
         action: Optional[Callable[[], None]] = None,
         icon: Optional[Union[str, "SFSymbol"]] = None,
+        content: Optional[View] = None,
         menu: Optional[List["MenuItem"]] = None,
         shortcut: Optional[str] = None,
         state: Optional[str] = None,
         badge: Optional[str] = None,
         enabled: bool = True,
+        height: Optional[float] = None,
     ):
         self._id = str(uuid.uuid4())
         self.title = title
         self.action = action
         self.icon = icon
+        self.content = content
         self.menu = menu or []
         self.shortcut = shortcut
         self.state = state
         self.badge = badge
         self.enabled = enabled
+        self.height = height
 
     def _serialize_icon(self) -> Optional[Union[str, dict]]:
         """Serialize icon to string or config dict."""
@@ -1186,6 +1403,11 @@ class MenuItem:
             "icon": self._serialize_icon(),
             "divider": False,
         }
+        # Add custom content view if provided
+        if self.content is not None:
+            result["content"] = self.content.to_dict()
+        if self.height is not None:
+            result["height"] = self.height
         if self.menu:
             result["children"] = [item.to_dict() for item in self.menu]
         if self.shortcut:

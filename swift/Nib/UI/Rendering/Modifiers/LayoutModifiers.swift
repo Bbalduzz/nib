@@ -36,6 +36,26 @@ extension View {
         }
     }
 
+    /// Apply margin (outer padding, applied after background)
+    /// Margin uses the same implementation as padding but is positioned differently in the modifier chain
+    @ViewBuilder
+    func applyMargin(_ args: ViewNode.ViewModifier.ModifierArgs) -> some View {
+        if let value = args.value {
+            self.padding(value)
+        } else if args.horizontal != nil || args.vertical != nil {
+            self
+                .padding(.horizontal, args.horizontal ?? 0)
+                .padding(.vertical, args.vertical ?? 0)
+        } else {
+            self.padding(EdgeInsets(
+                top: args.top ?? 0,
+                leading: args.leading ?? 0,
+                bottom: args.bottom ?? 0,
+                trailing: args.trailing ?? 0
+            ))
+        }
+    }
+
     @ViewBuilder
     func applyCornerRadius(_ args: ViewNode.ViewModifier.ModifierArgs) -> some View {
         if let radius = args.value {

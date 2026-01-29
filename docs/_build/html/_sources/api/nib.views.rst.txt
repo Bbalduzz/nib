@@ -14,6 +14,7 @@ Subpackages
 
    nib.views.charts
    nib.views.controls
+   nib.views.effects
    nib.views.layout
    nib.views.shapes
 

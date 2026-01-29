@@ -15,6 +15,7 @@ Subpackages
    nib.cli
    nib.core
    nib.modifiers
+   nib.services
    nib.views
 
 Submodules

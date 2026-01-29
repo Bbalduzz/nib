@@ -9,6 +9,7 @@ from .list_view import List
 from .section import Section
 from .group import Group
 from .navigation import NavigationStack, NavigationLink, DisclosureGroup
+from .grid import Grid, GridRow, LazyVGrid, LazyHGrid, GridItem, GridItemSize
 
 __all__ = [
     "VStack",
@@ -22,4 +23,10 @@ __all__ = [
     "NavigationStack",
     "NavigationLink",
     "DisclosureGroup",
+    "Grid",
+    "GridRow",
+    "LazyVGrid",
+    "LazyHGrid",
+    "GridItem",
+    "GridItemSize",
 ]

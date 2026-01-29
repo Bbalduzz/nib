@@ -340,13 +340,25 @@ class StatusBarController {
                 menuItem.target = self
                 menuItem.representedObject = item.id
 
-                // Icon
-                if let iconConfig = item.icon {
-                    menuItem.image = createMenuImage(from: iconConfig)
+                // Custom content view (replaces title/icon)
+                if let content = item.content {
+                    let hostingView = NSHostingView(
+                        rootView: MenuItemContentView(node: content) { [weak self] in
+                            self?.emitEvent(nodeId: item.id, event: "menu:tap")
+                        }
+                    )
+                    let height = item.height ?? 36
+                    hostingView.frame = NSRect(x: 0, y: 0, width: 200, height: height)
+                    menuItem.view = hostingView
+                } else {
+                    // Standard icon
+                    if let iconConfig = item.icon {
+                        menuItem.image = createMenuImage(from: iconConfig)
+                    }
                 }
 
-                // State (checkmark)
-                if let state = item.state {
+                // State (checkmark) - only for non-custom items
+                if item.content == nil, let state = item.state {
                     switch state {
                     case "on": menuItem.state = .on
                     case "mixed": menuItem.state = .mixed
@@ -354,10 +366,12 @@ class StatusBarController {
                     }
                 }
 
-                // Badge (macOS 14+)
-                if #available(macOS 14.0, *) {
-                    if let badge = item.badge {
-                        menuItem.badge = NSMenuItemBadge(string: badge)
+                // Badge (macOS 14+) - only for non-custom items
+                if item.content == nil {
+                    if #available(macOS 14.0, *) {
+                        if let badge = item.badge {
+                            menuItem.badge = NSMenuItemBadge(string: badge)
+                        }
                     }
                 }
 
@@ -525,5 +539,20 @@ struct PopoverContentView: View {
             }
         }
         .frame(minWidth: 200, minHeight: 100)
+    }
+}
+
+/// Wrapper for custom menu item content
+struct MenuItemContentView: View {
+    let node: ViewNode
+    let onTap: () -> Void
+
+    var body: some View {
+        DynamicView(node: node, onEvent: { _, _ in })
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onTap()
+                NSApp.sendAction(#selector(NSMenu.cancelTracking), to: nil, from: nil)
+            }
     }
 }

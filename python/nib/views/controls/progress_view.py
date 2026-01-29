@@ -138,6 +138,68 @@ class ProgressView(View):
         if tint is not None:
             self._progress_styles["tint"] = resolve_color(tint)
 
+    @property
+    def value(self) -> Optional[float]:
+        """Get the current progress value."""
+        return self._value
+
+    @value.setter
+    def value(self, new_value: Optional[float]) -> None:
+        """Set the progress value and trigger UI update.
+
+        Args:
+            new_value: Progress value (0 to total), or None for indeterminate.
+        """
+        if self._value != new_value:
+            self._value = new_value
+            self._trigger_update()
+
+    @property
+    def progress(self) -> Optional[float]:
+        """Get the current progress as a fraction (0.0 to 1.0)."""
+        if self._value is None:
+            return None
+        return self._value / self._total
+
+    @progress.setter
+    def progress(self, new_progress: Optional[float]) -> None:
+        """Set the progress as a fraction and trigger UI update.
+
+        Args:
+            new_progress: Progress fraction (0.0 to 1.0), or None for indeterminate.
+        """
+        if new_progress is None:
+            new_value = None
+        else:
+            new_value = new_progress * self._total
+        if self._value != new_value:
+            self._value = new_value
+            self._trigger_update()
+
+    @property
+    def total(self) -> float:
+        """Get the total value (100% completion)."""
+        return self._total
+
+    @total.setter
+    def total(self, new_total: float) -> None:
+        """Set the total value and trigger UI update."""
+        if self._total != new_total:
+            self._total = new_total
+            self._trigger_update()
+
+    @property
+    def label(self) -> str:
+        """Get the progress label."""
+        return self._label
+
+    @label.setter
+    def label(self, new_label: str) -> None:
+        """Set the progress label and trigger UI update."""
+        if self._label != new_label:
+            self._label = new_label
+            self._trigger_update()
+
     def _get_props(self) -> dict:
         props = {}
         if self._value is not None:

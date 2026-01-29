@@ -1,15 +1,18 @@
 """Layout modifiers for view sizing and spacing.
 
 This module provides modifiers that control the size and spacing of views,
-including frame dimensions and padding. These modifiers map to SwiftUI's
+including frame dimensions, padding, and margin. These modifiers map to SwiftUI's
 .frame() and .padding() view modifiers.
 
 The layout modifiers support:
     - Fixed dimensions (width, height)
     - Minimum and maximum constraints (min_width, max_width, etc.)
-    - Uniform padding (single value)
-    - Edge-specific padding (top, bottom, leading, trailing)
-    - Directional padding (horizontal, vertical)
+    - Uniform padding/margin (single value)
+    - Edge-specific padding/margin (top, bottom, leading, trailing)
+    - Directional padding/margin (horizontal, vertical)
+
+Note: Padding is applied inside the view's background, while margin is applied
+outside (after the background), creating spacing between the view and its siblings.
 
 All numeric values are converted to floats for MessagePack serialization
 to ensure compatibility with the Swift runtime.
@@ -51,7 +54,8 @@ Example:
 
 Attributes:
     apply_frame: Modifier function for view sizing.
-    apply_padding: Modifier function for view spacing.
+    apply_padding: Modifier function for inner spacing (inside background).
+    apply_margin: Modifier function for outer spacing (outside background).
 """
 
 from typing import Any, Dict, Optional, Union
@@ -259,3 +263,65 @@ def apply_padding(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         return {"type": "padding", "args": args}
     else:
         return {"type": "padding", "args": {"value": _float(padding)}}
+
+
+@ModifierRegistry.modifier("margin", ["margin"])
+def apply_margin(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Apply the margin modifier for outer spacing.
+
+    The margin modifier adds space outside a view's bounds, applied after
+    the background. This creates spacing between the view (including its
+    background) and surrounding content.
+
+    Unlike padding (which is inside the background), margin creates space
+    outside the visual bounds of the view.
+
+    This modifier supports the same format as padding:
+    1. Uniform margin: A single numeric value applies equal margin to all edges
+    2. Directional margin: A dict with "horizontal" and/or "vertical" keys
+    3. Edge-specific margin: A dict with "top", "bottom", "leading", "trailing" keys
+
+    Args:
+        kwargs: Dictionary containing the view's constructor parameters.
+            The relevant key is "margin", which can be:
+            - A number (int or float) for uniform margin
+            - A dict with edge-specific or directional values
+
+    Returns:
+        A modifier dictionary with type "margin" and args containing the
+        margin values, or None if no margin is specified.
+
+    Example:
+        Uniform margin::
+
+            kwargs = {"margin": 16}
+            result = apply_margin(kwargs)
+            # Returns: {"type": "margin", "args": {"value": 16.0}}
+
+        Edge-specific margin::
+
+            kwargs = {"margin": {"top": 8, "bottom": 8}}
+            result = apply_margin(kwargs)
+            # Returns: {"type": "margin", "args": {"top": 8.0, "bottom": 8.0}}
+    """
+    margin = kwargs.get("margin")
+    if margin is None:
+        return None
+
+    if isinstance(margin, dict):
+        args = {}
+        if "horizontal" in margin:
+            args["horizontal"] = _float(margin["horizontal"])
+        if "vertical" in margin:
+            args["vertical"] = _float(margin["vertical"])
+        if "top" in margin:
+            args["top"] = _float(margin["top"])
+        if "leading" in margin:
+            args["leading"] = _float(margin["leading"])
+        if "bottom" in margin:
+            args["bottom"] = _float(margin["bottom"])
+        if "trailing" in margin:
+            args["trailing"] = _float(margin["trailing"])
+        return {"type": "margin", "args": args}
+    else:
+        return {"type": "margin", "args": {"value": _float(margin)}}

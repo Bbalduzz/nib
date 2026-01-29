@@ -7,6 +7,7 @@ enum NibMessage {
     case clipboard(ClipboardPayload)
     case fileDialog(FileDialogPayload)
     case userDefaults(UserDefaultsPayload)
+    case service(ServicePayload)
     case quit
 
     struct WindowConfig: Codable {
@@ -79,10 +80,19 @@ enum NibMessage {
         let requestId: String?
     }
 
+    struct ServicePayload: Codable {
+        let service: String  // "battery", "connectivity", "screen"
+        let action: String   // "status", "info", "setBrightness", etc.
+        let requestId: String
+        let params: [String: AnyCodable]?
+    }
+
     struct MenuItemConfig: Codable {
         let id: String
         let title: String?
         let icon: MenuIconConfig?
+        let content: ViewNode?  // Custom view content for rich menu items
+        let height: CGFloat?    // Custom height for content-based items
         let divider: Bool?
         let children: [MenuItemConfig]?
         let shortcut: String?
@@ -153,6 +163,74 @@ struct NibEvent: Codable {
     }
 }
 
+struct NibServiceResponse: Codable {
+    let type: String
+    let service: String
+    let requestId: String
+    let data: ServiceResponseData
+
+    init(service: String, requestId: String, data: ServiceResponseData) {
+        self.type = "serviceResponse"
+        self.service = service
+        self.requestId = requestId
+        self.data = data
+    }
+
+    struct ServiceResponseData: Codable {
+        // Battery
+        var level: Double?
+        var isCharging: Bool?
+        var state: String?
+        var hasBattery: Bool?
+        var isLowPowerMode: Bool?
+        var timeRemaining: Int?
+
+        // Connectivity
+        var isConnected: Bool?
+        var connectionType: String?
+        var isExpensive: Bool?
+        var isConstrained: Bool?
+        var ssid: String?
+        var interfaceName: String?
+
+        // Screen
+        var brightness: Double?
+        var isBuiltin: Bool?
+        var width: Double?
+        var height: Double?
+        var scale: Double?
+
+        // Generic success
+        var success: Bool?
+
+        // Keychain
+        var password: String?
+        var exists: Bool?
+
+        // LaunchAtLogin
+        var enabled: Bool?
+
+        // Camera
+        var devices: [CameraDevice]?
+        var imageData: Data?
+        var imageWidth: Int?
+        var imageHeight: Int?
+        var imageFormat: String?
+        var isStreaming: Bool?
+        var isStreamFrame: Bool?
+
+        private enum CodingKeys: String, CodingKey {
+            case level, isCharging, state, hasBattery, isLowPowerMode, timeRemaining
+            case isConnected, connectionType = "type", isExpensive, isConstrained, ssid, interfaceName
+            case brightness, isBuiltin, width, height, scale
+            case success
+            case password, exists
+            case enabled
+            case devices, imageData, imageWidth, imageHeight, imageFormat, isStreaming, isStreamFrame
+        }
+    }
+}
+
 // Raw message structure for decoding
 struct RawMessage: Codable {
     let type: String
@@ -185,6 +263,9 @@ struct RawMessage: Codable {
         let key: String?
         let value: AnyCodable?
         let prefix: String?
+        // For service
+        let service: String?
+        let params: [String: AnyCodable]?
         // Shared
         let statusBar: StatusBarConfig?
         let window: WindowConfig?

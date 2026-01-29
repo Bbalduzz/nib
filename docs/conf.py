@@ -27,6 +27,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
     "sphinx_autodoc_typehints",
 ]
 
@@ -104,6 +105,27 @@ html_css_files = []
 # -- Options for viewcode extension ------------------------------------------
 
 viewcode_follow_imported_members = True
+
+# -- Nitpicky mode (strict reference checking) -------------------------------
+
+# Enable strict mode for better documentation quality
+nitpicky = True
+
+# Ignore these missing references (third-party types, etc.)
+nitpick_ignore = [
+    ("py:class", "msgpack.Packer"),
+    ("py:class", "msgpack.Unpacker"),
+]
+
+# Suppress known acceptable warnings
+suppress_warnings = ["ref.python"]
+
+# -- Doctest configuration ---------------------------------------------------
+
+# Set up doctest to work with our import structure
+doctest_global_setup = """
+import nib
+"""
 
 # -- Custom setup ------------------------------------------------------------
 

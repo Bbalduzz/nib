@@ -264,6 +264,14 @@ class SocketServer {
                 requestId: raw.payload?.requestId ?? ""
             )
             return .fileDialog(payload)
+        case "service":
+            let payload = NibMessage.ServicePayload(
+                service: raw.payload?.service ?? "",
+                action: raw.payload?.action ?? "",
+                requestId: raw.payload?.requestId ?? "",
+                params: raw.payload?.params
+            )
+            return .service(payload)
         case "quit":
             return .quit
         default:
@@ -284,6 +292,22 @@ class SocketServer {
 
         _ = fullMessage.withUnsafeBytes { ptr in
             write(clientSocket, ptr.baseAddress!, fullMessage.count)
+        }
+    }
+
+    func sendServiceResponse(_ response: NibServiceResponse) {
+        debugPrint("Sending service response for:", response.service)
+        guard clientSocket >= 0 else {
+            debugPrint("No client connected for service response")
+            return
+        }
+
+        do {
+            let packed = try encoder.encode(response)
+            sendMessage(packed)
+            debugPrint("Service response sent successfully")
+        } catch {
+            debugPrint("Failed to encode service response:", error)
         }
     }
 }

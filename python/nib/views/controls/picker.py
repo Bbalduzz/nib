@@ -158,9 +158,14 @@ class Picker(View):
         # Normalize options to (value, label) format
         normalized_options = []
         for opt in self._options:
-            if isinstance(opt, tuple):
+            if isinstance(opt, dict):
+                # Already in dict format - pass through
+                normalized_options.append(opt)
+            elif isinstance(opt, tuple):
+                # Tuple of (value, label)
                 normalized_options.append({"value": opt[0], "label": opt[1]})
             else:
+                # Simple string - use as both value and label
                 normalized_options.append({"value": opt, "label": opt})
 
         props = {
@@ -171,3 +176,33 @@ class Picker(View):
         if self._picker_styles:
             props["pickerStyles"] = self._picker_styles
         return props
+
+    @property
+    def selection(self) -> str:
+        """The currently selected value."""
+        return self._selection
+
+    @selection.setter
+    def selection(self, value: str) -> None:
+        """Set the selected value."""
+        self._selection = value
+
+    @property
+    def options(self) -> List:
+        """The list of available options."""
+        return self._options
+
+    @options.setter
+    def options(self, value: List) -> None:
+        """Set the available options."""
+        self._options = value
+
+    @property
+    def on_change(self) -> Optional[Callable[[str], None]]:
+        """The callback for selection changes."""
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, value: Optional[Callable[[str], None]]) -> None:
+        """Set the callback for selection changes."""
+        self._on_change = value

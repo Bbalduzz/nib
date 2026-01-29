@@ -147,10 +147,6 @@ class Connection:
                 "fonts": fonts,
             },
         }
-        print(f"[nib.connection] Sending message type: {message['type']}")
-        import json
-
-        print("Sending:", json.dumps(message, indent=2, default=str))
         self._send(message)
 
     def send_patch(
@@ -191,7 +187,6 @@ class Connection:
                 "window": window if window else None,
             },
         }
-        print(f"[nib.connection] Sending patch with {len(patches)} changes")
         self._send(message)
 
     def send_quit(self) -> None:
@@ -328,6 +323,33 @@ class Connection:
         }
         self._send(message)
 
+    def send_service_query(
+        self,
+        service: str,
+        action: str,
+        request_id: str,
+        params: Optional[dict] = None,
+    ) -> None:
+        """Query a system service.
+
+        Args:
+            service: Service name ("battery", "connectivity", "screen").
+            action: Action to perform (e.g., "status", "info", "setBrightness").
+            request_id: Unique ID to match the response callback.
+            params: Optional parameters for the action.
+        """
+        message = {
+            "type": "service",
+            "payload": {
+                "service": service,
+                "action": action,
+                "requestId": request_id,
+            },
+        }
+        if params:
+            message["payload"]["params"] = params
+        self._send(message)
+
     def set_event_handler(self, handler: Callable[[str, str], None]) -> None:
         """Set the handler for events from the Swift runtime.
 
@@ -419,10 +441,43 @@ class Connection:
         if msg_type == "event" and self._on_event:
             node_id = message.get("nodeId", "")
             event = message.get("event", "")
-            try:
-                self._on_event(node_id, event)
-            except Exception as e:
-                print(f"[nib] Error in event handler: {e}")
-                import traceback
+            # Run event handlers on a separate thread to avoid blocking the read loop
+            # This allows service requests made in callbacks to complete
+            threading.Thread(
+                target=self._dispatch_event,
+                args=(node_id, event),
+                daemon=True,
+            ).start()
 
-                traceback.print_exc()
+        elif msg_type == "serviceResponse":
+            self._handle_service_response(message)
+
+    def _dispatch_event(self, node_id: str, event: str) -> None:
+        """Dispatch an event to the handler (runs on separate thread)."""
+        try:
+            self._on_event(node_id, event)
+        except Exception as e:
+            print(f"[nib] Error in event handler: {e}")
+            import traceback
+            traceback.print_exc()
+
+    def _handle_service_response(self, message: dict) -> None:
+        """Handle a service query response."""
+        service = message.get("service", "")
+        request_id = message.get("requestId", "")
+        data = message.get("data", {})
+
+        try:
+            # Handle camera stream frames specially (no request_id)
+            if service == "camera" and data.get("isStreamFrame"):
+                from ..services.camera import Camera
+                Camera._handle_stream_frame(data)
+                return
+
+            # All other service responses go through Service base class
+            from ..services.base import Service
+            Service._handle_response(request_id, data)
+        except Exception as e:
+            print(f"[nib] Error handling service response: {e}")
+            import traceback
+            traceback.print_exc()

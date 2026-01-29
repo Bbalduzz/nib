@@ -1,0 +1,1327 @@
+
+	
+
+<!DOCTYPE html>
+<html class="writer-html5 " lang="en" >
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+		<title>ShareLink &mdash; Nib 0.1.0 documentation</title>
+	
+	
+	
+	<link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+	
+	
+	
+	
+
+	
+	<!--[if lt IE 9]>
+		<script src="../../_static/js/html5shiv.min.js"></script>
+	<![endif]-->
+	
+		
+			<script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+				<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+				<script src="../../_static/doctools.js"></script>
+				<script src="../../_static/sphinx_highlight.js"></script>
+		
+		<script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+		
+		<link rel="index" title="Index" href="../../genindex.html" />
+		<link rel="search" title="Search" href="../../search.html" />
+		<link rel="next" title="Divider" href="divider.html" />
+		<link rel="prev" title="Video" href="video.html" /> 
+</head>
+<body class="wy-body-for-nav">
+
+
+	 
+	<div class="wy-grid-for-nav">
+		
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search">
+					
+						<div class="brand">
+							<a href="../../index.html">
+							
+								Nib
+							
+							</a>
+						</div>
+						
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+					
+				</div>
+				
+				<div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+					
+						
+						
+							
+						
+						
+							<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#install-from-source">Install from Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#quick-start">Quick Start</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#creating-your-first-app">Creating Your First App</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#core-concepts">Core Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#views">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#layout-containers">Layout Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#reactivity">Reactivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#event-handling">Event Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#app-features">App Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#notifications">Notifications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#menu-bar-context-menu">Menu Bar Context Menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#file-dialogs">File Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#clipboard">Clipboard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../app.html">App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#app-class">App Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../app.html#nib.App"><code class="docutils literal notranslate"><span class="pre">App</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.title"><code class="docutils literal notranslate"><span class="pre">App.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.icon"><code class="docutils literal notranslate"><span class="pre">App.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.width"><code class="docutils literal notranslate"><span class="pre">App.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.height"><code class="docutils literal notranslate"><span class="pre">App.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.menu"><code class="docutils literal notranslate"><span class="pre">App.menu</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.fonts"><code class="docutils literal notranslate"><span class="pre">App.fonts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.on_appear"><code class="docutils literal notranslate"><span class="pre">App.on_appear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.set_assets_dir"><code class="docutils literal notranslate"><span class="pre">App.set_assets_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.resolve_asset"><code class="docutils literal notranslate"><span class="pre">App.resolve_asset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.__init__"><code class="docutils literal notranslate"><span class="pre">App.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id0"><code class="docutils literal notranslate"><span class="pre">App.fonts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id1"><code class="docutils literal notranslate"><span class="pre">App.on_appear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id2"><code class="docutils literal notranslate"><span class="pre">App.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id3"><code class="docutils literal notranslate"><span class="pre">App.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.show_quit_item"><code class="docutils literal notranslate"><span class="pre">App.show_quit_item</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id4"><code class="docutils literal notranslate"><span class="pre">App.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id5"><code class="docutils literal notranslate"><span class="pre">App.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#id6"><code class="docutils literal notranslate"><span class="pre">App.menu</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.clipboard"><code class="docutils literal notranslate"><span class="pre">App.clipboard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.get_clipboard"><code class="docutils literal notranslate"><span class="pre">App.get_clipboard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.set_clipboard"><code class="docutils literal notranslate"><span class="pre">App.set_clipboard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.on_hotkey"><code class="docutils literal notranslate"><span class="pre">App.on_hotkey()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.hotkey"><code class="docutils literal notranslate"><span class="pre">App.hotkey()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.open_file_dialog"><code class="docutils literal notranslate"><span class="pre">App.open_file_dialog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.save_file_dialog"><code class="docutils literal notranslate"><span class="pre">App.save_file_dialog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.quit"><code class="docutils literal notranslate"><span class="pre">App.quit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.notify"><code class="docutils literal notranslate"><span class="pre">App.notify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.build"><code class="docutils literal notranslate"><span class="pre">App.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.body"><code class="docutils literal notranslate"><span class="pre">App.body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.App.run"><code class="docutils literal notranslate"><span class="pre">App.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#run-function">run Function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../app.html#nib.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#sfsymbol">SFSymbol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../app.html#nib.SFSymbol"><code class="docutils literal notranslate"><span class="pre">SFSymbol</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../app.html#nib.SFSymbol.__init__"><code class="docutils literal notranslate"><span class="pre">SFSymbol.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#window-configuration">Window Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html#system-features">System Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../menu.html">Menu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../menu.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../menu.html#menuitem">MenuItem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../menu.html#nib.MenuItem"><code class="docutils literal notranslate"><span class="pre">MenuItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../menu.html#nib.MenuItem.__init__"><code class="docutils literal notranslate"><span class="pre">MenuItem.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../menu.html#nib.MenuItem.to_dict"><code class="docutils literal notranslate"><span class="pre">MenuItem.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../menu.html#menudivider">MenuDivider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../menu.html#nib.MenuDivider"><code class="docutils literal notranslate"><span class="pre">MenuDivider</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../menu.html#nib.MenuDivider.__init__"><code class="docutils literal notranslate"><span class="pre">MenuDivider.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../menu.html#nib.MenuDivider.to_dict"><code class="docutils literal notranslate"><span class="pre">MenuDivider.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../menu.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Layout</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vstack.html">VStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vstack.html#nib.VStack"><code class="docutils literal notranslate"><span class="pre">VStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vstack.html#nib.VStack._type"><code class="docutils literal notranslate"><span class="pre">VStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="vstack.html#nib.VStack._children"><code class="docutils literal notranslate"><span class="pre">VStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="vstack.html#nib.VStack._spacing"><code class="docutils literal notranslate"><span class="pre">VStack._spacing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="vstack.html#nib.VStack._alignment"><code class="docutils literal notranslate"><span class="pre">VStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="vstack.html#nib.VStack.__init__"><code class="docutils literal notranslate"><span class="pre">VStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hstack.html">HStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hstack.html#nib.HStack"><code class="docutils literal notranslate"><span class="pre">HStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hstack.html#nib.HStack._type"><code class="docutils literal notranslate"><span class="pre">HStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="hstack.html#nib.HStack._children"><code class="docutils literal notranslate"><span class="pre">HStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="hstack.html#nib.HStack._spacing"><code class="docutils literal notranslate"><span class="pre">HStack._spacing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="hstack.html#nib.HStack._alignment"><code class="docutils literal notranslate"><span class="pre">HStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="hstack.html#nib.HStack.__init__"><code class="docutils literal notranslate"><span class="pre">HStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="zstack.html">ZStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="zstack.html#nib.ZStack"><code class="docutils literal notranslate"><span class="pre">ZStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="zstack.html#nib.ZStack._type"><code class="docutils literal notranslate"><span class="pre">ZStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="zstack.html#nib.ZStack._children"><code class="docutils literal notranslate"><span class="pre">ZStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="zstack.html#nib.ZStack._alignment"><code class="docutils literal notranslate"><span class="pre">ZStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="zstack.html#nib.ZStack.__init__"><code class="docutils literal notranslate"><span class="pre">ZStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="zstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spacer.html">Spacer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spacer.html#nib.Spacer"><code class="docutils literal notranslate"><span class="pre">Spacer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="spacer.html#nib.Spacer._type"><code class="docutils literal notranslate"><span class="pre">Spacer._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="spacer.html#nib.Spacer._min_length"><code class="docutils literal notranslate"><span class="pre">Spacer._min_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="spacer.html#nib.Spacer.__init__"><code class="docutils literal notranslate"><span class="pre">Spacer.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="spacer.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spacer.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scrollview.html">ScrollView</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scrollview.html#nib.ScrollView"><code class="docutils literal notranslate"><span class="pre">ScrollView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scrollview.html#nib.ScrollView._type"><code class="docutils literal notranslate"><span class="pre">ScrollView._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrollview.html#nib.ScrollView._children"><code class="docutils literal notranslate"><span class="pre">ScrollView._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrollview.html#nib.ScrollView._axes"><code class="docutils literal notranslate"><span class="pre">ScrollView._axes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrollview.html#nib.ScrollView._shows_indicators"><code class="docutils literal notranslate"><span class="pre">ScrollView._shows_indicators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrollview.html#nib.ScrollView.__init__"><code class="docutils literal notranslate"><span class="pre">ScrollView.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scrollview.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scrollview.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="list.html">List</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="list.html#nib.List"><code class="docutils literal notranslate"><span class="pre">List</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="list.html#nib.List._type"><code class="docutils literal notranslate"><span class="pre">List._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="list.html#nib.List._children"><code class="docutils literal notranslate"><span class="pre">List._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="list.html#nib.List.__init__"><code class="docutils literal notranslate"><span class="pre">List.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="list.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="list.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="section.html">Section</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="section.html#nib.Section"><code class="docutils literal notranslate"><span class="pre">Section</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="section.html#nib.Section._type"><code class="docutils literal notranslate"><span class="pre">Section._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="section.html#nib.Section._children"><code class="docutils literal notranslate"><span class="pre">Section._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="section.html#nib.Section._header"><code class="docutils literal notranslate"><span class="pre">Section._header</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="section.html#nib.Section._footer"><code class="docutils literal notranslate"><span class="pre">Section._footer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="section.html#nib.Section.__init__"><code class="docutils literal notranslate"><span class="pre">Section.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="section.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="section.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="group.html">Group</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="group.html#nib.Group"><code class="docutils literal notranslate"><span class="pre">Group</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="group.html#nib.Group._type"><code class="docutils literal notranslate"><span class="pre">Group._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="group.html#nib.Group._children"><code class="docutils literal notranslate"><span class="pre">Group._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="group.html#nib.Group.__init__"><code class="docutils literal notranslate"><span class="pre">Group.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grid.html">Grid Layouts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#lazyvgrid">LazyVGrid</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="grid.html#griditem-sizes">GridItem Sizes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grid.html#convenience-functions">Convenience Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#lazyhgrid">LazyHGrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#grid">Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#gridrow">GridRow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#example-photo-grid">Example: Photo Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html#example-adaptive-grid">Example: Adaptive Grid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="navigation.html#navigationstack">NavigationStack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="navigation.html#nib.NavigationStack"><code class="docutils literal notranslate"><span class="pre">NavigationStack</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationStack._type"><code class="docutils literal notranslate"><span class="pre">NavigationStack._type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationStack._children"><code class="docutils literal notranslate"><span class="pre">NavigationStack._children</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationStack.__init__"><code class="docutils literal notranslate"><span class="pre">NavigationStack.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="navigation.html#navigationlink">NavigationLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="navigation.html#nib.NavigationLink"><code class="docutils literal notranslate"><span class="pre">NavigationLink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationLink._type"><code class="docutils literal notranslate"><span class="pre">NavigationLink._type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationLink._label"><code class="docutils literal notranslate"><span class="pre">NavigationLink._label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationLink._destination"><code class="docutils literal notranslate"><span class="pre">NavigationLink._destination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigation.html#nib.NavigationLink.__init__"><code class="docutils literal notranslate"><span class="pre">NavigationLink.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="navigation.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="disclosure.html">DisclosureGroup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup._type"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup._label"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup._children"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup._is_expanded"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._is_expanded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup._on_expand"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._on_expand</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="disclosure.html#nib.DisclosureGroup.__init__"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="disclosure.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="disclosure.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Controls</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="text.html">Text</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="text.html#nib.Text"><code class="docutils literal notranslate"><span class="pre">Text</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="text.html#nib.Text.content"><code class="docutils literal notranslate"><span class="pre">Text.content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="text.html#nib.Text.__init__"><code class="docutils literal notranslate"><span class="pre">Text.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="text.html#id0"><code class="docutils literal notranslate"><span class="pre">Text.content</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="text.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="text.html#reactive-updates">Reactive Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="text.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="button.html">Button</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="button.html#nib.Button"><code class="docutils literal notranslate"><span class="pre">Button</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="button.html#nib.Button._label"><code class="docutils literal notranslate"><span class="pre">Button._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="button.html#nib.Button._icon"><code class="docutils literal notranslate"><span class="pre">Button._icon</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="button.html#nib.Button._action"><code class="docutils literal notranslate"><span class="pre">Button._action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="button.html#nib.Button._content"><code class="docutils literal notranslate"><span class="pre">Button._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="button.html#nib.Button.__init__"><code class="docutils literal notranslate"><span class="pre">Button.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="button.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="button.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="textfield.html">TextField</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="textfield.html#nib.TextField"><code class="docutils literal notranslate"><span class="pre">TextField</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="textfield.html#nib.TextField.value"><code class="docutils literal notranslate"><span class="pre">TextField.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="textfield.html#nib.TextField.__init__"><code class="docutils literal notranslate"><span class="pre">TextField.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="textfield.html#id0"><code class="docutils literal notranslate"><span class="pre">TextField.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="textfield.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textfield.html#securefield">SecureField</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="textfield.html#nib.SecureField"><code class="docutils literal notranslate"><span class="pre">SecureField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="textfield.html#nib.SecureField.value"><code class="docutils literal notranslate"><span class="pre">SecureField.value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="textfield.html#nib.SecureField.__init__"><code class="docutils literal notranslate"><span class="pre">SecureField.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="textfield.html#id1"><code class="docutils literal notranslate"><span class="pre">SecureField.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="textfield.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="texteditor.html">TextEditor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#using-textstyle">Using TextStyle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#custom-background">Custom Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#example-note-taking">Example: Note Taking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#updating-content">Updating Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texteditor.html#difference-from-textfield">Difference from TextField</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toggle.html">Toggle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="toggle.html#nib.Toggle"><code class="docutils literal notranslate"><span class="pre">Toggle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="toggle.html#nib.Toggle._label"><code class="docutils literal notranslate"><span class="pre">Toggle._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="toggle.html#nib.Toggle._is_on"><code class="docutils literal notranslate"><span class="pre">Toggle._is_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="toggle.html#nib.Toggle._on_change"><code class="docutils literal notranslate"><span class="pre">Toggle._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="toggle.html#nib.Toggle._content"><code class="docutils literal notranslate"><span class="pre">Toggle._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="toggle.html#nib.Toggle.__init__"><code class="docutils literal notranslate"><span class="pre">Toggle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="toggle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toggle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="slider.html">Slider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slider.html#nib.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider._value"><code class="docutils literal notranslate"><span class="pre">Slider._value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider._min_value"><code class="docutils literal notranslate"><span class="pre">Slider._min_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider._max_value"><code class="docutils literal notranslate"><span class="pre">Slider._max_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider._step"><code class="docutils literal notranslate"><span class="pre">Slider._step</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider._on_change"><code class="docutils literal notranslate"><span class="pre">Slider._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slider.html#nib.Slider.__init__"><code class="docutils literal notranslate"><span class="pre">Slider.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="slider.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slider.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="picker.html">Picker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="picker.html#nib.Picker"><code class="docutils literal notranslate"><span class="pre">Picker</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="picker.html#nib.Picker._label"><code class="docutils literal notranslate"><span class="pre">Picker._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="picker.html#nib.Picker._selection"><code class="docutils literal notranslate"><span class="pre">Picker._selection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="picker.html#nib.Picker._options"><code class="docutils literal notranslate"><span class="pre">Picker._options</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="picker.html#nib.Picker._on_change"><code class="docutils literal notranslate"><span class="pre">Picker._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="picker.html#nib.Picker.__init__"><code class="docutils literal notranslate"><span class="pre">Picker.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="picker.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="picker.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gauge.html">Gauge</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gauge.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gauge.html#gauge-styles">Gauge Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gauge.html#custom-view-labels">Custom View Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gauge.html#example-system-monitor">Example: System Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="progressview.html">ProgressView</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="progressview.html#nib.ProgressView"><code class="docutils literal notranslate"><span class="pre">ProgressView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView._value"><code class="docutils literal notranslate"><span class="pre">ProgressView._value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView._total"><code class="docutils literal notranslate"><span class="pre">ProgressView._total</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView._label"><code class="docutils literal notranslate"><span class="pre">ProgressView._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView.__init__"><code class="docutils literal notranslate"><span class="pre">ProgressView.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView.value"><code class="docutils literal notranslate"><span class="pre">ProgressView.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView.progress"><code class="docutils literal notranslate"><span class="pre">ProgressView.progress</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView.total"><code class="docutils literal notranslate"><span class="pre">ProgressView.total</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="progressview.html#nib.ProgressView.label"><code class="docutils literal notranslate"><span class="pre">ProgressView.label</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="progressview.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="progressview.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="label.html">Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="label.html#nib.Label"><code class="docutils literal notranslate"><span class="pre">Label</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="label.html#nib.Label._title"><code class="docutils literal notranslate"><span class="pre">Label._title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="label.html#nib.Label._icon"><code class="docutils literal notranslate"><span class="pre">Label._icon</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="label.html#nib.Label._title_view"><code class="docutils literal notranslate"><span class="pre">Label._title_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="label.html#nib.Label._icon_view"><code class="docutils literal notranslate"><span class="pre">Label._icon_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="label.html#nib.Label.__init__"><code class="docutils literal notranslate"><span class="pre">Label.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="label.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="label.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="link.html">Link</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="link.html#nib.Link"><code class="docutils literal notranslate"><span class="pre">Link</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="link.html#nib.Link._title"><code class="docutils literal notranslate"><span class="pre">Link._title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="link.html#nib.Link._url"><code class="docutils literal notranslate"><span class="pre">Link._url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="link.html#nib.Link._content"><code class="docutils literal notranslate"><span class="pre">Link._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="link.html#nib.Link.__init__"><code class="docutils literal notranslate"><span class="pre">Link.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="link.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="image.html#nib.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="image.html#nib.Image.src"><code class="docutils literal notranslate"><span class="pre">Image.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="image.html#nib.Image.label"><code class="docutils literal notranslate"><span class="pre">Image.label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="image.html#nib.Image.__init__"><code class="docutils literal notranslate"><span class="pre">Image.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="image.html#id0"><code class="docutils literal notranslate"><span class="pre">Image.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="image.html#id1"><code class="docutils literal notranslate"><span class="pre">Image.label</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="video.html">Video</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="video.html#nib.Video"><code class="docutils literal notranslate"><span class="pre">Video</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.src"><code class="docutils literal notranslate"><span class="pre">Video.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.autoplay"><code class="docutils literal notranslate"><span class="pre">Video.autoplay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.loop"><code class="docutils literal notranslate"><span class="pre">Video.loop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.muted"><code class="docutils literal notranslate"><span class="pre">Video.muted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.controls"><code class="docutils literal notranslate"><span class="pre">Video.controls</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.Video.__init__"><code class="docutils literal notranslate"><span class="pre">Video.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#id0"><code class="docutils literal notranslate"><span class="pre">Video.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#id1"><code class="docutils literal notranslate"><span class="pre">Video.autoplay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#id2"><code class="docutils literal notranslate"><span class="pre">Video.loop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#id3"><code class="docutils literal notranslate"><span class="pre">Video.muted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="video.html#id4"><code class="docutils literal notranslate"><span class="pre">Video.controls</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="video.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="video.html#videogravity">VideoGravity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="video.html#nib.VideoGravity"><code class="docutils literal notranslate"><span class="pre">VideoGravity</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="video.html#nib.VideoGravity.RESIZE_ASPECT"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="video.html#nib.VideoGravity.RESIZE_ASPECT_FILL"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT_FILL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="video.html#nib.VideoGravity.RESIZE"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="video.html#id5"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="video.html#id6"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT_FILL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="video.html#id7"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="video.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ShareLink</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simple-label">Simple Label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-view-label">Custom View Label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sharing-urls">Sharing URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sharing-files">Sharing Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-items">Multiple Items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-share-button">Example: Share Button</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="divider.html">Divider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="divider.html#nib.Divider"><code class="docutils literal notranslate"><span class="pre">Divider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="divider.html#nib.Divider.__init__"><code class="docutils literal notranslate"><span class="pre">Divider.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="divider.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Shapes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rectangle.html">Rectangle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rectangle.html#nib.Rectangle"><code class="docutils literal notranslate"><span class="pre">Rectangle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rectangle.html#nib.Rectangle._type"><code class="docutils literal notranslate"><span class="pre">Rectangle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rectangle.html#nib.Rectangle.__init__"><code class="docutils literal notranslate"><span class="pre">Rectangle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rectangle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rectangle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roundedrectangle.html">RoundedRectangle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle._type"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle._corner_radius"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._corner_radius</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle._stroke_color"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._stroke_color</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle._stroke_width"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._stroke_width</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="roundedrectangle.html#nib.RoundedRectangle.__init__"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roundedrectangle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roundedrectangle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="circle.html">Circle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="circle.html#nib.Circle"><code class="docutils literal notranslate"><span class="pre">Circle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="circle.html#nib.Circle._type"><code class="docutils literal notranslate"><span class="pre">Circle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="circle.html#nib.Circle._trim_from"><code class="docutils literal notranslate"><span class="pre">Circle._trim_from</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="circle.html#nib.Circle._trim_to"><code class="docutils literal notranslate"><span class="pre">Circle._trim_to</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="circle.html#nib.Circle._rotation"><code class="docutils literal notranslate"><span class="pre">Circle._rotation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="circle.html#nib.Circle.__init__"><code class="docutils literal notranslate"><span class="pre">Circle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ellipse.html">Ellipse</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ellipse.html#nib.Ellipse"><code class="docutils literal notranslate"><span class="pre">Ellipse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ellipse.html#nib.Ellipse._type"><code class="docutils literal notranslate"><span class="pre">Ellipse._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ellipse.html#nib.Ellipse.__init__"><code class="docutils literal notranslate"><span class="pre">Ellipse.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ellipse.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ellipse.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capsule.html">Capsule</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capsule.html#nib.Capsule"><code class="docutils literal notranslate"><span class="pre">Capsule</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capsule.html#nib.Capsule._type"><code class="docutils literal notranslate"><span class="pre">Capsule._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capsule.html#nib.Capsule.__init__"><code class="docutils literal notranslate"><span class="pre">Capsule.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capsule.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capsule.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Charts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="chart.html">Chart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chart.html#nib.Chart"><code class="docutils literal notranslate"><span class="pre">Chart</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.Chart.data"><code class="docutils literal notranslate"><span class="pre">Chart.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.Chart.__init__"><code class="docutils literal notranslate"><span class="pre">Chart.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#id0"><code class="docutils literal notranslate"><span class="pre">Chart.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.Chart.append_data"><code class="docutils literal notranslate"><span class="pre">Chart.append_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.Chart.update_data"><code class="docutils literal notranslate"><span class="pre">Chart.update_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.Chart.clear_data"><code class="docutils literal notranslate"><span class="pre">Chart.clear_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chart.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chart.html#chartaxis">ChartAxis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.ChartAxis"><code class="docutils literal notranslate"><span class="pre">ChartAxis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chart.html#nib.ChartAxis.__init__"><code class="docutils literal notranslate"><span class="pre">ChartAxis.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="chart.html#nib.ChartAxis.to_dict"><code class="docutils literal notranslate"><span class="pre">ChartAxis.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chart.html#chartlegend">ChartLegend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chart.html#nib.ChartLegend"><code class="docutils literal notranslate"><span class="pre">ChartLegend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chart.html#nib.ChartLegend.__init__"><code class="docutils literal notranslate"><span class="pre">ChartLegend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="chart.html#nib.ChartLegend.to_dict"><code class="docutils literal notranslate"><span class="pre">ChartLegend.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="marks.html">Chart Marks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#linemark">LineMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.LineMark"><code class="docutils literal notranslate"><span class="pre">LineMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.LineMark.__init__"><code class="docutils literal notranslate"><span class="pre">LineMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#barmark">BarMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.BarMark"><code class="docutils literal notranslate"><span class="pre">BarMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.BarMark.__init__"><code class="docutils literal notranslate"><span class="pre">BarMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#areamark">AreaMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.AreaMark"><code class="docutils literal notranslate"><span class="pre">AreaMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.AreaMark.__init__"><code class="docutils literal notranslate"><span class="pre">AreaMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#pointmark">PointMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.PointMark"><code class="docutils literal notranslate"><span class="pre">PointMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.PointMark.__init__"><code class="docutils literal notranslate"><span class="pre">PointMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#rulemark">RuleMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.RuleMark"><code class="docutils literal notranslate"><span class="pre">RuleMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.RuleMark.__init__"><code class="docutils literal notranslate"><span class="pre">RuleMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#rectmark">RectMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.RectMark"><code class="docutils literal notranslate"><span class="pre">RectMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.RectMark.__init__"><code class="docutils literal notranslate"><span class="pre">RectMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#sectormark">SectorMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#nib.SectorMark"><code class="docutils literal notranslate"><span class="pre">SectorMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.SectorMark.__init__"><code class="docutils literal notranslate"><span class="pre">SectorMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="marks.html#enums">Enums</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#interpolationmethod">InterpolationMethod</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.InterpolationMethod"><code class="docutils literal notranslate"><span class="pre">InterpolationMethod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#stackingmethod">StackingMethod</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.StackingMethod"><code class="docutils literal notranslate"><span class="pre">StackingMethod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="marks.html#symbolshape">SymbolShape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="marks.html#nib.SymbolShape"><code class="docutils literal notranslate"><span class="pre">SymbolShape</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Effects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="visualeffectblur.html">VisualEffectBlur</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#blur-styles">Blur Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#blending-modes">Blending Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#as-background">As Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#example-frosted-card">Example: Frosted Card</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualeffectblur.html#example-sidebar-style">Example: Sidebar Style</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Types &amp; Styling</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../types/color.html">Color</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../types/color.html#color-class">Color Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/color.html#nib.Color"><code class="docutils literal notranslate"><span class="pre">Color</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.RED"><code class="docutils literal notranslate"><span class="pre">Color.RED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.BLUE"><code class="docutils literal notranslate"><span class="pre">Color.BLUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.GREEN"><code class="docutils literal notranslate"><span class="pre">Color.GREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.YELLOW"><code class="docutils literal notranslate"><span class="pre">Color.YELLOW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.ORANGE"><code class="docutils literal notranslate"><span class="pre">Color.ORANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.PURPLE"><code class="docutils literal notranslate"><span class="pre">Color.PURPLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.PINK"><code class="docutils literal notranslate"><span class="pre">Color.PINK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.WHITE"><code class="docutils literal notranslate"><span class="pre">Color.WHITE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.BLACK"><code class="docutils literal notranslate"><span class="pre">Color.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.GRAY"><code class="docutils literal notranslate"><span class="pre">Color.GRAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.CLEAR"><code class="docutils literal notranslate"><span class="pre">Color.CLEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.INDIGO"><code class="docutils literal notranslate"><span class="pre">Color.INDIGO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.CYAN"><code class="docutils literal notranslate"><span class="pre">Color.CYAN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.MINT"><code class="docutils literal notranslate"><span class="pre">Color.MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.TEAL"><code class="docutils literal notranslate"><span class="pre">Color.TEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.BROWN"><code class="docutils literal notranslate"><span class="pre">Color.BROWN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.PRIMARY"><code class="docutils literal notranslate"><span class="pre">Color.PRIMARY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.SECONDARY"><code class="docutils literal notranslate"><span class="pre">Color.SECONDARY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.ACCENT"><code class="docutils literal notranslate"><span class="pre">Color.ACCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.red"><code class="docutils literal notranslate"><span class="pre">Color.red</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.blue"><code class="docutils literal notranslate"><span class="pre">Color.blue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.green"><code class="docutils literal notranslate"><span class="pre">Color.green</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.yellow"><code class="docutils literal notranslate"><span class="pre">Color.yellow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.orange"><code class="docutils literal notranslate"><span class="pre">Color.orange</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.purple"><code class="docutils literal notranslate"><span class="pre">Color.purple</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.pink"><code class="docutils literal notranslate"><span class="pre">Color.pink</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.white"><code class="docutils literal notranslate"><span class="pre">Color.white</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.black"><code class="docutils literal notranslate"><span class="pre">Color.black</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.gray"><code class="docutils literal notranslate"><span class="pre">Color.gray</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.clear"><code class="docutils literal notranslate"><span class="pre">Color.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.primary"><code class="docutils literal notranslate"><span class="pre">Color.primary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.secondary"><code class="docutils literal notranslate"><span class="pre">Color.secondary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.accent"><code class="docutils literal notranslate"><span class="pre">Color.accent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.__init__"><code class="docutils literal notranslate"><span class="pre">Color.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.value"><code class="docutils literal notranslate"><span class="pre">Color.value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.opacity"><code class="docutils literal notranslate"><span class="pre">Color.opacity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.with_opacity"><code class="docutils literal notranslate"><span class="pre">Color.with_opacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.hex"><code class="docutils literal notranslate"><span class="pre">Color.hex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.rgb"><code class="docutils literal notranslate"><span class="pre">Color.rgb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.rgba"><code class="docutils literal notranslate"><span class="pre">Color.rgba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/color.html#nib.Color.to_dict"><code class="docutils literal notranslate"><span class="pre">Color.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/color.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types/color.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../types/font.html">Font</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../types/font.html#font-class">Font Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/font.html#nib.Font"><code class="docutils literal notranslate"><span class="pre">Font</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.name"><code class="docutils literal notranslate"><span class="pre">Font.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.size"><code class="docutils literal notranslate"><span class="pre">Font.size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.weight"><code class="docutils literal notranslate"><span class="pre">Font.weight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.path"><code class="docutils literal notranslate"><span class="pre">Font.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.LARGE_TITLE"><code class="docutils literal notranslate"><span class="pre">Font.LARGE_TITLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.TITLE"><code class="docutils literal notranslate"><span class="pre">Font.TITLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.TITLE2"><code class="docutils literal notranslate"><span class="pre">Font.TITLE2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.TITLE3"><code class="docutils literal notranslate"><span class="pre">Font.TITLE3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.HEADLINE"><code class="docutils literal notranslate"><span class="pre">Font.HEADLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.SUBHEADLINE"><code class="docutils literal notranslate"><span class="pre">Font.SUBHEADLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.BODY"><code class="docutils literal notranslate"><span class="pre">Font.BODY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.CALLOUT"><code class="docutils literal notranslate"><span class="pre">Font.CALLOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.CAPTION"><code class="docutils literal notranslate"><span class="pre">Font.CAPTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.CAPTION2"><code class="docutils literal notranslate"><span class="pre">Font.CAPTION2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.FOOTNOTE"><code class="docutils literal notranslate"><span class="pre">Font.FOOTNOTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.largeTitle"><code class="docutils literal notranslate"><span class="pre">Font.largeTitle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.title"><code class="docutils literal notranslate"><span class="pre">Font.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.title2"><code class="docutils literal notranslate"><span class="pre">Font.title2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.title3"><code class="docutils literal notranslate"><span class="pre">Font.title3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.headline"><code class="docutils literal notranslate"><span class="pre">Font.headline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.subheadline"><code class="docutils literal notranslate"><span class="pre">Font.subheadline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.body"><code class="docutils literal notranslate"><span class="pre">Font.body</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.callout"><code class="docutils literal notranslate"><span class="pre">Font.callout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.caption"><code class="docutils literal notranslate"><span class="pre">Font.caption</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.caption2"><code class="docutils literal notranslate"><span class="pre">Font.caption2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.footnote"><code class="docutils literal notranslate"><span class="pre">Font.footnote</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.system"><code class="docutils literal notranslate"><span class="pre">Font.system()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.custom"><code class="docutils literal notranslate"><span class="pre">Font.custom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.to_dict"><code class="docutils literal notranslate"><span class="pre">Font.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.Font.__init__"><code class="docutils literal notranslate"><span class="pre">Font.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/font.html#system-fonts">System Fonts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types/font.html#custom-fonts">Custom Fonts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types/font.html#fontweight">FontWeight</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/font.html#nib.FontWeight"><code class="docutils literal notranslate"><span class="pre">FontWeight</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.ULTRA_LIGHT"><code class="docutils literal notranslate"><span class="pre">FontWeight.ULTRA_LIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.THIN"><code class="docutils literal notranslate"><span class="pre">FontWeight.THIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.LIGHT"><code class="docutils literal notranslate"><span class="pre">FontWeight.LIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.REGULAR"><code class="docutils literal notranslate"><span class="pre">FontWeight.REGULAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.MEDIUM"><code class="docutils literal notranslate"><span class="pre">FontWeight.MEDIUM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.SEMIBOLD"><code class="docutils literal notranslate"><span class="pre">FontWeight.SEMIBOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.BOLD"><code class="docutils literal notranslate"><span class="pre">FontWeight.BOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.HEAVY"><code class="docutils literal notranslate"><span class="pre">FontWeight.HEAVY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.BLACK"><code class="docutils literal notranslate"><span class="pre">FontWeight.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.ultraLight"><code class="docutils literal notranslate"><span class="pre">FontWeight.ultraLight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.thin"><code class="docutils literal notranslate"><span class="pre">FontWeight.thin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.light"><code class="docutils literal notranslate"><span class="pre">FontWeight.light</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.regular"><code class="docutils literal notranslate"><span class="pre">FontWeight.regular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.medium"><code class="docutils literal notranslate"><span class="pre">FontWeight.medium</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.semibold"><code class="docutils literal notranslate"><span class="pre">FontWeight.semibold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.bold"><code class="docutils literal notranslate"><span class="pre">FontWeight.bold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.heavy"><code class="docutils literal notranslate"><span class="pre">FontWeight.heavy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/font.html#nib.FontWeight.black"><code class="docutils literal notranslate"><span class="pre">FontWeight.black</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/font.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../types/animation.html">Animation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#animation-class">Animation Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/animation.html#nib.Animation"><code class="docutils literal notranslate"><span class="pre">Animation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.type"><code class="docutils literal notranslate"><span class="pre">Animation.type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.duration"><code class="docutils literal notranslate"><span class="pre">Animation.duration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.delay"><code class="docutils literal notranslate"><span class="pre">Animation.delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.response"><code class="docutils literal notranslate"><span class="pre">Animation.response</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.damping"><code class="docutils literal notranslate"><span class="pre">Animation.damping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.default"><code class="docutils literal notranslate"><span class="pre">Animation.default</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.fast"><code class="docutils literal notranslate"><span class="pre">Animation.fast</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.slow"><code class="docutils literal notranslate"><span class="pre">Animation.slow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.bouncy"><code class="docutils literal notranslate"><span class="pre">Animation.bouncy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.linear"><code class="docutils literal notranslate"><span class="pre">Animation.linear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.easeIn"><code class="docutils literal notranslate"><span class="pre">Animation.easeIn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.easeOut"><code class="docutils literal notranslate"><span class="pre">Animation.easeOut()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.__init__"><code class="docutils literal notranslate"><span class="pre">Animation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.easeInOut"><code class="docutils literal notranslate"><span class="pre">Animation.easeInOut()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.spring"><code class="docutils literal notranslate"><span class="pre">Animation.spring()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Animation.to_dict"><code class="docutils literal notranslate"><span class="pre">Animation.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#creating-animations">Creating Animations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#applying-animations">Applying Animations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#content-transitions">Content Transitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/animation.html#nib.ContentTransition"><code class="docutils literal notranslate"><span class="pre">ContentTransition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.IDENTITY"><code class="docutils literal notranslate"><span class="pre">ContentTransition.IDENTITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.INTERPOLATE"><code class="docutils literal notranslate"><span class="pre">ContentTransition.INTERPOLATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.NUMERIC_TEXT"><code class="docutils literal notranslate"><span class="pre">ContentTransition.NUMERIC_TEXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.NUMERIC_TEXT_DOWN"><code class="docutils literal notranslate"><span class="pre">ContentTransition.NUMERIC_TEXT_DOWN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.OPACITY"><code class="docutils literal notranslate"><span class="pre">ContentTransition.OPACITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.identity"><code class="docutils literal notranslate"><span class="pre">ContentTransition.identity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.interpolate"><code class="docutils literal notranslate"><span class="pre">ContentTransition.interpolate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.numericText"><code class="docutils literal notranslate"><span class="pre">ContentTransition.numericText</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.numericTextDown"><code class="docutils literal notranslate"><span class="pre">ContentTransition.numericTextDown</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.ContentTransition.opacity"><code class="docutils literal notranslate"><span class="pre">ContentTransition.opacity</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#view-transitions">View Transitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/animation.html#nib.Transition"><code class="docutils literal notranslate"><span class="pre">Transition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.IDENTITY"><code class="docutils literal notranslate"><span class="pre">Transition.IDENTITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.OPACITY"><code class="docutils literal notranslate"><span class="pre">Transition.OPACITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.SCALE"><code class="docutils literal notranslate"><span class="pre">Transition.SCALE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.SLIDE"><code class="docutils literal notranslate"><span class="pre">Transition.SLIDE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.MOVE_LEADING"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_LEADING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.MOVE_TRAILING"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_TRAILING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.MOVE_TOP"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_TOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.MOVE_BOTTOM"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_BOTTOM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.PUSH"><code class="docutils literal notranslate"><span class="pre">Transition.PUSH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.identity"><code class="docutils literal notranslate"><span class="pre">Transition.identity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.opacity"><code class="docutils literal notranslate"><span class="pre">Transition.opacity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.scale"><code class="docutils literal notranslate"><span class="pre">Transition.scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.slide"><code class="docutils literal notranslate"><span class="pre">Transition.slide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.moveLeading"><code class="docutils literal notranslate"><span class="pre">Transition.moveLeading</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.moveTrailing"><code class="docutils literal notranslate"><span class="pre">Transition.moveTrailing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.moveTop"><code class="docutils literal notranslate"><span class="pre">Transition.moveTop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.moveBottom"><code class="docutils literal notranslate"><span class="pre">Transition.moveBottom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/animation.html#nib.Transition.push"><code class="docutils literal notranslate"><span class="pre">Transition.push</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/animation.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../types/enums.html">Enums</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#alignment">Alignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#horizontalalignment">HorizontalAlignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.HorizontalAlignment"><code class="docutils literal notranslate"><span class="pre">HorizontalAlignment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#verticalalignment">VerticalAlignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.VerticalAlignment"><code class="docutils literal notranslate"><span class="pre">VerticalAlignment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#id1">Alignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.Alignment"><code class="docutils literal notranslate"><span class="pre">Alignment</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#button-styles">Button Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#buttonstyle">ButtonStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ButtonStyle"><code class="docutils literal notranslate"><span class="pre">ButtonStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#buttonrole">ButtonRole</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ButtonRole"><code class="docutils literal notranslate"><span class="pre">ButtonRole</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#controlsize">ControlSize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ControlSize"><code class="docutils literal notranslate"><span class="pre">ControlSize</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#control-styles">Control Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#togglestyle">ToggleStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ToggleStyle"><code class="docutils literal notranslate"><span class="pre">ToggleStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#textfieldstyle">TextFieldStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.TextFieldStyle"><code class="docutils literal notranslate"><span class="pre">TextFieldStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#pickerstyle">PickerStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.PickerStyle"><code class="docutils literal notranslate"><span class="pre">PickerStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#progressstyle">ProgressStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ProgressStyle"><code class="docutils literal notranslate"><span class="pre">ProgressStyle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#text-styles">Text Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#truncationmode">TruncationMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.TruncationMode"><code class="docutils literal notranslate"><span class="pre">TruncationMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#textcase">TextCase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.TextCase"><code class="docutils literal notranslate"><span class="pre">TextCase</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#image-styles">Image Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#contentmode">ContentMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ContentMode"><code class="docutils literal notranslate"><span class="pre">ContentMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#imagerenderingmode">ImageRenderingMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ImageRenderingMode"><code class="docutils literal notranslate"><span class="pre">ImageRenderingMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#symbolscale">SymbolScale</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.SymbolScale"><code class="docutils literal notranslate"><span class="pre">SymbolScale</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#symbolrenderingmode">SymbolRenderingMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.SymbolRenderingMode"><code class="docutils literal notranslate"><span class="pre">SymbolRenderingMode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#scroll">Scroll</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#scrollaxis">ScrollAxis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.ScrollAxis"><code class="docutils literal notranslate"><span class="pre">ScrollAxis</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../types/enums.html#effects">Effects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../types/enums.html#blendmode">BlendMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../types/enums.html#nib.BlendMode"><code class="docutils literal notranslate"><span class="pre">BlendMode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modifiers.html">Modifiers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#layout-modifiers">Layout Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#appearance-modifiers">Appearance Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#shape-modifiers">Shape Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#shadow-border">Shadow &amp; Border</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#typography-modifiers">Typography Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#animation-modifiers">Animation Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#transform-modifiers">Transform Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#overlay">Overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modifiers.html#drag-and-drop">Drag and Drop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../state.html">State</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../state.html#reactive-properties">Reactive Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../state.html#common-reactive-properties">Common Reactive Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../state.html#state-descriptor-class-based">State Descriptor (Class-based)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../state.html#nib.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State._initial"><code class="docutils literal notranslate"><span class="pre">State._initial</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State._name"><code class="docutils literal notranslate"><span class="pre">State._name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State.__set_name__"><code class="docutils literal notranslate"><span class="pre">State.__set_name__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State.__get__"><code class="docutils literal notranslate"><span class="pre">State.__get__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.State.__set__"><code class="docutils literal notranslate"><span class="pre">State.__set__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../state.html#binding">Binding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../state.html#nib.core.Binding"><code class="docutils literal notranslate"><span class="pre">Binding</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.core.Binding._getter"><code class="docutils literal notranslate"><span class="pre">Binding._getter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.core.Binding._setter"><code class="docutils literal notranslate"><span class="pre">Binding._setter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.core.Binding.__init__"><code class="docutils literal notranslate"><span class="pre">Binding.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../state.html#nib.core.Binding.value"><code class="docutils literal notranslate"><span class="pre">Binding.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../state.html#patterns">Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../userdefaults.html">UserDefaults</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults"><code class="docutils literal notranslate"><span class="pre">UserDefaults</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.__init__"><code class="docutils literal notranslate"><span class="pre">UserDefaults.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.set"><code class="docutils literal notranslate"><span class="pre">UserDefaults.set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.get"><code class="docutils literal notranslate"><span class="pre">UserDefaults.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.remove"><code class="docutils literal notranslate"><span class="pre">UserDefaults.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.clear"><code class="docutils literal notranslate"><span class="pre">UserDefaults.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.contains_key"><code class="docutils literal notranslate"><span class="pre">UserDefaults.contains_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdefaults.html#nib.UserDefaults.get_keys"><code class="docutils literal notranslate"><span class="pre">UserDefaults.get_keys()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../userdefaults.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../userdefaults.html#supported-types">Supported Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../userdefaults.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../userdefaults.html#persistence">Persistence</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../services.html">System Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#battery">Battery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#connectivity">Connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#screen">Screen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#keychain">Keychain</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../services.html#saving-credentials">Saving Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../services.html#retrieving-credentials">Retrieving Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../services.html#deleting-credentials">Deleting Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../services.html#checking-existence">Checking Existence</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#launch-at-login">Launch at Login</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Building &amp; Distribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Building &amp; Distribution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#building-your-app">Building Your App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../build.html#basic-build">Basic Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../build.html#build-options">Build Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#configuration-via-pyproject-toml">Configuration via pyproject.toml</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../build.html#info-plist-options">Info.plist Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#launch-at-login">Launch at Login</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#bundle-structure">Bundle Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../build.html#custom-fonts">Custom Fonts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#code-signing">Code Signing</a></li>
+</ul>
+</li>
+</ul>
+
+						
+					
+				</div>
+				
+			</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+			
+			<nav class="wy-nav-top" aria-label="top navigation">
+			
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="../../index.html">
+					
+						Nib
+					
+				</a>
+			
+			</nav>
+
+
+			<div class="wy-nav-content">
+				
+				<div class="rst-content style-external-links">
+				
+					<div role="navigation" aria-label="breadcrumbs navigation">
+
+	<ul class="wy-breadcrumbs">
+		
+			
+				<li><a href="../../index.html">Nib</a> ⁄&nbsp;</li>
+				
+				<li><a href="">ShareLink</a></li>
+			
+		
+		
+			<li class="wy-breadcrumbs-aside">
+			
+			</li>
+		
+	</ul>
+
+</div>
+					<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+					 <div itemprop="articleBody">
+						
+  <section id="sharelink">
+<h1>ShareLink<a class="headerlink" href="#sharelink" title="Permalink to this heading">¶</a></h1>
+<p>A button that presents the native macOS share sheet.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+
+<span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Check out this app!&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt>items<span class="classifier">list[str]</span></dt><dd><p>Items to share (text, URLs, or file paths).</p>
+</dd>
+<dt>content<span class="classifier">View, optional</span></dt><dd><p>Custom view to use as the button label.</p>
+</dd>
+<dt>label<span class="classifier">str, optional</span></dt><dd><p>Text label for the button (used if content is not provided).</p>
+</dd>
+<dt>icon<span class="classifier">str, optional</span></dt><dd><p>SF Symbol name to display with the label.</p>
+</dd>
+<dt>subject<span class="classifier">str, optional</span></dt><dd><p>Subject line for email shares.</p>
+</dd>
+<dt>message<span class="classifier">str, optional</span></dt><dd><p>Message body for social shares.</p>
+</dd>
+</dl>
+</section>
+<section id="simple-label">
+<h2>Simple Label<a class="headerlink" href="#simple-label" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Text label</span>
+<span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Label with icon</span>
+<span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://example.com&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share Link&quot;</span><span class="p">,</span>
+    <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;square.and.arrow.up&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-view-label">
+<h2>Custom View Label<a class="headerlink" href="#custom-view-label" title="Permalink to this heading">¶</a></h2>
+<p>For full control over the button’s appearance, use the <code class="docutils literal notranslate"><span class="pre">content</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Check out this amazing app!&quot;</span><span class="p">],</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">HStack</span><span class="p">(</span>
+        <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="s2">&quot;square.and.arrow.up&quot;</span><span class="p">),</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Share&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sharing-urls">
+<h2>Sharing URLs<a class="headerlink" href="#sharing-urls" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://github.com/your-repo/nib&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share Repository&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sharing-files">
+<h2>Sharing Files<a class="headerlink" href="#sharing-files" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/path/to/document.pdf&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share Document&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multiple-items">
+<h2>Multiple Items<a class="headerlink" href="#multiple-items" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">share</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Check out these links:&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://example.com/page1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://example.com/page2&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Share All&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-share-button">
+<h2>Example: Share Button<a class="headerlink" href="#example-share-button" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Share Demo&quot;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+            <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Share this app with friends!&quot;</span><span class="p">),</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">ShareLink</span><span class="p">(</span>
+                    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;I&#39;m using this awesome menu bar app!&quot;</span><span class="p">],</span>
+                    <span class="n">content</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">HStack</span><span class="p">(</span>
+                        <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                            <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span>
+                                <span class="s2">&quot;square.and.arrow.up&quot;</span><span class="p">,</span>
+                                <span class="n">foreground_color</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span>
+                            <span class="p">),</span>
+                            <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Share&quot;</span><span class="p">),</span>
+                        <span class="p">],</span>
+                        <span class="n">spacing</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ShareLink requires macOS 13.0 or later. On older systems, a fallback
+button is provided that opens the share picker manually.</p>
+</div>
+</section>
+</section>
+
+
+					 </div>
+					 
+					</div>
+					<footer>
+  
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2026, Nib Contributors
+	  <br>
+      
+      
+      
+      Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+      
+      <a href="https://github.com/revitron/revitron-sphinx-theme">theme</a>
+      
+      provided by <a href="https://github.com/revitron">Revitron</a>.
+
+    </p>
+  </div> 
+
+</footer>
+
+				</div>
+			</div>
+
+		</section>
+
+	</div>
+	
+
+	<script type="text/javascript">
+			jQuery(function () {
+					SphinxRtdTheme.Navigation.enable(true);
+			});
+	</script>
+
+	
+	
+		
+	 
+
+ 
+</body>	
+</html>

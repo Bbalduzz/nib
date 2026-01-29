@@ -1,20 +1,93 @@
 import AppKit
 import SwiftUI
-import UniformTypeIdentifiers
+import ServiceManagement
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarController: StatusBarController?
     var socketServer: SocketServer?
-    var globalHotkeyMonitor: Any?
-    var registeredHotkeys: Set<String> = []
+    var hotkeyManager = HotkeyManager()
+    var pythonProcess: Process?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         clearLog()
         debugPrint("Nib runtime starting...")
 
+        // Add Edit menu for standard commands (Cmd+V paste, etc.)
+        setupEditMenu()
+
+        // Handle launch at login registration (for bundled apps)
+        registerLaunchAtLoginIfNeeded()
+
         // Initialize status bar
         statusBarController = StatusBarController()
 
+        // Set up hotkey handler
+        hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
+            self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
+        }
+
+        // Check if we're running as a bundled app with embedded Python
+        if isBundledApp() {
+            debugPrint("Running in bundled mode - launching embedded Python")
+            launchEmbeddedPython()
+        } else {
+            // Development mode: Python launches us, we just start the socket server
+            debugPrint("Running in development mode - waiting for Python connection")
+            startSocketServer()
+        }
+    }
+
+    // MARK: - Launch at Login
+
+    private func registerLaunchAtLoginIfNeeded() {
+        // Check if launch_at_login is enabled in Info.plist
+        guard let launchAtLogin = Bundle.main.infoDictionary?["NibLaunchAtLogin"] as? Bool,
+              launchAtLogin else {
+            return
+        }
+
+        // Check if we've already registered (using UserDefaults)
+        let registeredKey = "NibLaunchAtLoginRegistered"
+        if UserDefaults.standard.bool(forKey: registeredKey) {
+            debugPrint("Launch at login already registered")
+            return
+        }
+
+        // Register with SMAppService (macOS 13+)
+        if #available(macOS 13.0, *) {
+            do {
+                try SMAppService.mainApp.register()
+                UserDefaults.standard.set(true, forKey: registeredKey)
+                debugPrint("Registered for launch at login")
+            } catch {
+                debugPrint("Failed to register for launch at login: \(error)")
+            }
+        } else {
+            debugPrint("Launch at login requires macOS 13+")
+        }
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // Terminate Python process if running
+        if let process = pythonProcess, process.isRunning {
+            debugPrint("Terminating Python process")
+            process.terminate()
+        }
+        hotkeyManager.cleanup()
+        socketServer?.stop()
+    }
+
+    // MARK: - Bundled Mode Detection
+
+    private func isBundledApp() -> Bool {
+        // Check if we're running inside a .app bundle with embedded Python
+        let bundlePath = Bundle.main.bundlePath
+        let pythonPath = (bundlePath as NSString)
+            .appendingPathComponent("Contents/MacOS/python/bin/python3")
+        return FileManager.default.fileExists(atPath: pythonPath)
+    }
+
+    private func startSocketServer() {
         // Get socket path from environment or use default
         let socketPath = ProcessInfo.processInfo.environment["NIB_SOCKET"]
             ?? "/tmp/nib-\(ProcessInfo.processInfo.processIdentifier).sock"
@@ -31,63 +104,147 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         socketServer?.start()
-
         print("Nib runtime started, socket: \(socketPath)")
     }
 
-    func applicationWillTerminate(_ notification: Notification) {
-        socketServer?.stop()
+    // MARK: - Embedded Python Launching
+
+    private func launchEmbeddedPython() {
+        let bundle = Bundle.main
+        let bundlePath = bundle.bundlePath
+
+        // Paths within bundle
+        let pythonDir = "\(bundlePath)/Contents/MacOS/python"
+        let pythonBin = "\(pythonDir)/bin/python3"
+        let appDir = "\(bundlePath)/Contents/Resources/app"
+        let vendorDir = "\(appDir)/vendor"
+        let mainScript = "\(appDir)/main.py"
+
+        // Verify Python exists
+        guard FileManager.default.fileExists(atPath: pythonBin) else {
+            showLaunchError("Python interpreter not found at: \(pythonBin)")
+            return
+        }
+
+        // Verify main script exists
+        guard FileManager.default.fileExists(atPath: mainScript) else {
+            showLaunchError("Main script not found at: \(mainScript)")
+            return
+        }
+
+        // Generate socket path
+        let socketPath = "/tmp/nib-\(ProcessInfo.processInfo.processIdentifier).sock"
+
+        // Start socket server BEFORE launching Python (to avoid race condition)
+        socketServer = SocketServer(path: socketPath)
+        socketServer?.onMessage = { [weak self] message in
+            self?.handleMessage(message)
+        }
+
+        // Wire up event handler
+        statusBarController?.setEventHandler { [weak self] nodeId, event in
+            self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+        }
+
+        socketServer?.start()
+        debugPrint("Socket server started at: \(socketPath)")
+
+        // Set up Python environment
+        var env = ProcessInfo.processInfo.environment
+        env["NIB_SOCKET"] = socketPath
+        env["PYTHONPATH"] = vendorDir
+        env["PYTHONDONTWRITEBYTECODE"] = "1"  // Don't create .pyc files in bundle
+        env["PYTHONHOME"] = pythonDir
+        // Set LC_ALL for proper encoding
+        env["LC_ALL"] = "en_US.UTF-8"
+        env["LANG"] = "en_US.UTF-8"
+
+        // Launch Python process
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: pythonBin)
+        process.arguments = [mainScript]
+        process.environment = env
+        process.currentDirectoryURL = URL(fileURLWithPath: appDir)
+
+        // Capture Python output for debugging
+        let outputPipe = Pipe()
+        let errorPipe = Pipe()
+        process.standardOutput = outputPipe
+        process.standardError = errorPipe
+
+        // Read stdout
+        outputPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if !data.isEmpty, let output = String(data: data, encoding: .utf8) {
+                for line in output.split(separator: "\n") {
+                    debugPrint("[Python] \(line)")
+                }
+            }
+        }
+
+        // Read stderr
+        errorPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if !data.isEmpty, let output = String(data: data, encoding: .utf8) {
+                for line in output.split(separator: "\n") {
+                    debugPrint("[Python ERR] \(line)")
+                }
+            }
+        }
+
+        // Handle Python termination
+        process.terminationHandler = { [weak self] proc in
+            DispatchQueue.main.async {
+                let exitCode = proc.terminationStatus
+                debugPrint("Python process exited with code: \(exitCode)")
+
+                // Clean up pipe handlers
+                outputPipe.fileHandleForReading.readabilityHandler = nil
+                errorPipe.fileHandleForReading.readabilityHandler = nil
+
+                if exitCode != 0 {
+                    self?.showLaunchError("Python exited with error code: \(exitCode)\nCheck /tmp/nib.log for details")
+                }
+
+                // Exit the app when Python exits
+                NSApp.terminate(nil)
+            }
+        }
+
+        do {
+            try process.run()
+            pythonProcess = process
+            debugPrint("Launched Python: \(pythonBin)")
+            print("Nib app started (bundled mode)")
+        } catch {
+            debugPrint("Failed to launch Python: \(error)")
+            showLaunchError("Failed to launch Python: \(error.localizedDescription)")
+        }
     }
+
+    private func showLaunchError(_ message: String) {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Failed to Start Application"
+            alert.informativeText = message
+            alert.alertStyle = .critical
+            alert.addButton(withTitle: "Quit")
+            alert.runModal()
+            NSApp.terminate(nil)
+        }
+    }
+
+    // MARK: - Message Handling
 
     private func handleMessage(_ message: NibMessage) {
         debugPrint("handleMessage called")
         DispatchQueue.main.async { [weak self] in
             switch message {
             case .render(let payload):
-                debugPrint("Rendering - icon:", payload.statusBar?.icon ?? "nil", "title:", payload.statusBar?.title ?? "nil")
-
-                // Register custom fonts before rendering
-                if let fonts = payload.fonts {
-                    debugPrint("Registering \(fonts.count) custom fonts")
-                    FontManager.shared.registerFonts(fonts)
-                }
-
-                self?.statusBarController?.updateStatusBar(
-                    icon: payload.statusBar?.icon,
-                    title: payload.statusBar?.title
-                )
-                if let window = payload.window {
-                    self?.statusBarController?.updateWindowSize(
-                        width: window.width,
-                        height: window.height
-                    )
-                }
-                if let menu = payload.menu {
-                    self?.statusBarController?.updateMenu(menu)
-                }
-                if let hotkeys = payload.hotkeys {
-                    self?.updateHotkeys(hotkeys)
-                }
-                if let root = payload.root {
-                    debugPrint("Updating content with root type:", root.type)
-                    self?.statusBarController?.updateContent(root)
-                } else {
-                    debugPrint("No root view in payload")
-                }
+                self?.handleRender(payload)
 
             case .patch(let payload):
-                debugPrint("Patching - \(payload.patches.count) patches")
-                self?.statusBarController?.updateStatusBar(
-                    icon: payload.statusBar?.icon,
-                    title: payload.statusBar?.title
-                )
-                if let window = payload.window {
-                    self?.statusBarController?.updateWindowSize(
-                        width: window.width,
-                        height: window.height
-                    )
-                }
-                self?.statusBarController?.applyPatches(payload.patches)
+                self?.handlePatch(payload)
 
             case .notify(let payload):
                 debugPrint("Notification - title:", payload.title)
@@ -95,21 +252,79 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             case .clipboard(let payload):
                 debugPrint("Clipboard - action:", payload.action)
-                self?.handleClipboard(payload)
+                ClipboardHandler.handle(payload) { nodeId, event in
+                    self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+                }
 
             case .fileDialog(let payload):
                 debugPrint("FileDialog - action:", payload.action)
-                self?.handleFileDialog(payload)
+                FileDialogHandler.handle(payload) { nodeId, event in
+                    self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+                }
 
             case .userDefaults(let payload):
                 debugPrint("UserDefaults - action:", payload.action)
-                self?.handleUserDefaults(payload)
+                UserDefaultsHandler.handle(payload) { nodeId, event in
+                    self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+                }
+
+            case .service(let payload):
+                debugPrint("Service - \(payload.service):\(payload.action)")
+                self?.handleService(payload)
 
             case .quit:
                 debugPrint("Quit message received")
                 NSApp.terminate(nil)
             }
         }
+    }
+
+    private func handleRender(_ payload: NibMessage.RenderPayload) {
+        debugPrint("Rendering - icon:", payload.statusBar?.icon ?? "nil", "title:", payload.statusBar?.title ?? "nil")
+
+        // Register custom fonts before rendering
+        if let fonts = payload.fonts {
+            debugPrint("Registering \(fonts.count) custom fonts")
+            FontManager.shared.registerFonts(fonts)
+        }
+
+        statusBarController?.updateStatusBar(
+            icon: payload.statusBar?.icon,
+            title: payload.statusBar?.title
+        )
+        if let window = payload.window {
+            statusBarController?.updateWindowSize(
+                width: window.width,
+                height: window.height
+            )
+        }
+        if let menu = payload.menu {
+            statusBarController?.updateMenu(menu)
+        }
+        if let hotkeys = payload.hotkeys {
+            hotkeyManager.updateHotkeys(hotkeys)
+        }
+        if let root = payload.root {
+            debugPrint("Updating content with root type:", root.type)
+            statusBarController?.updateContent(root)
+        } else {
+            debugPrint("No root view in payload")
+        }
+    }
+
+    private func handlePatch(_ payload: NibMessage.PatchPayload) {
+        debugPrint("Patching - \(payload.patches.count) patches")
+        statusBarController?.updateStatusBar(
+            icon: payload.statusBar?.icon,
+            title: payload.statusBar?.title
+        )
+        if let window = payload.window {
+            statusBarController?.updateWindowSize(
+                width: window.width,
+                height: window.height
+            )
+        }
+        statusBarController?.applyPatches(payload.patches)
     }
 
     private func sendNotification(_ payload: NibMessage.NotifyPayload) {
@@ -133,233 +348,63 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         debugPrint("Notification sent: \(payload.title)")
     }
 
-    // MARK: - Clipboard
+    // MARK: - Service Routing
 
-    private func handleClipboard(_ payload: NibMessage.ClipboardPayload) {
-        switch payload.action {
-        case "write":
-            if let content = payload.content {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(content, forType: .string)
-                debugPrint("Clipboard write successful")
-            }
-        case "read":
-            let content = NSPasteboard.general.string(forType: .string) ?? ""
-            let requestId = payload.requestId ?? ""
-            socketServer?.sendEvent(nodeId: requestId, event: "clipboard:\(content)")
-            debugPrint("Clipboard read:", content.prefix(50))
-        default:
-            debugPrint("Unknown clipboard action:", payload.action)
+    private func handleService(_ payload: NibMessage.ServicePayload) {
+        let sendResponse: (NibServiceResponse) -> Void = { [weak self] response in
+            self?.socketServer?.sendServiceResponse(response)
         }
-    }
 
-    // MARK: - File Dialog
-
-    private func handleFileDialog(_ payload: NibMessage.FileDialogPayload) {
-        switch payload.action {
-        case "open":
-            let panel = NSOpenPanel()
-            panel.title = payload.title ?? "Open File"
-            panel.allowsMultipleSelection = payload.multiple ?? false
-            panel.canChooseDirectories = false
-            panel.canChooseFiles = true
-
-            if let directory = payload.directory {
-                panel.directoryURL = URL(fileURLWithPath: directory)
-            }
-
-            if let types = payload.types, !types.isEmpty {
-                panel.allowedContentTypes = types.compactMap { ext in
-                    UTType(filenameExtension: ext)
-                }
-            }
-
-            let response = panel.runModal()
-            if response == .OK {
-                let paths = panel.urls.map { $0.path }.joined(separator: "\n")
-                socketServer?.sendEvent(nodeId: payload.requestId, event: "fileDialog:\(paths)")
+        switch payload.service {
+        case "battery":
+            if payload.action == "status" {
+                BatteryService.handleStatus(requestId: payload.requestId, sendResponse: sendResponse)
             } else {
-                socketServer?.sendEvent(nodeId: payload.requestId, event: "fileDialog:")
+                debugPrint("Unknown battery action:", payload.action)
             }
-
-        case "save":
-            let panel = NSSavePanel()
-            panel.title = payload.title ?? "Save File"
-
-            if let directory = payload.directory {
-                panel.directoryURL = URL(fileURLWithPath: directory)
-            }
-            if let defaultName = payload.defaultName {
-                panel.nameFieldStringValue = defaultName
-            }
-
-            if let types = payload.types, !types.isEmpty {
-                panel.allowedContentTypes = types.compactMap { ext in
-                    UTType(filenameExtension: ext)
-                }
-            }
-
-            let response = panel.runModal()
-            if response == .OK, let url = panel.url {
-                socketServer?.sendEvent(nodeId: payload.requestId, event: "fileDialog:\(url.path)")
+        case "connectivity":
+            if payload.action == "status" {
+                ConnectivityService.handleStatus(requestId: payload.requestId, sendResponse: sendResponse)
             } else {
-                socketServer?.sendEvent(nodeId: payload.requestId, event: "fileDialog:")
+                debugPrint("Unknown connectivity action:", payload.action)
             }
-
+        case "screen":
+            ScreenService.handle(payload, sendResponse: sendResponse)
+        case "keychain":
+            KeychainService.handle(payload, sendResponse: sendResponse)
+        case "camera":
+            CameraService.shared.handle(payload, sendResponse: sendResponse)
         default:
-            debugPrint("Unknown fileDialog action:", payload.action)
+            debugPrint("Unknown service:", payload.service)
         }
     }
 
-    // MARK: - Global Hotkeys
+    // MARK: - Edit Menu (for Cmd+V paste support in TextFields)
 
-    private func updateHotkeys(_ hotkeys: [String]) {
-        let newHotkeys = Set(hotkeys)
-        guard newHotkeys != registeredHotkeys else { return }
+    private func setupEditMenu() {
+        let editMenu = NSMenu(title: "Edit")
 
-        registeredHotkeys = newHotkeys
+        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        editMenu.addItem(NSMenuItem.separator())
+        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
 
-        // Remove existing monitor
-        if let monitor = globalHotkeyMonitor {
-            NSEvent.removeMonitor(monitor)
-            globalHotkeyMonitor = nil
+        let editMenuItem = NSMenuItem(title: "Edit", action: nil, keyEquivalent: "")
+        editMenuItem.submenu = editMenu
+
+        // Insert Edit menu after the app menu (index 1)
+        if NSApp.mainMenu == nil {
+            NSApp.mainMenu = NSMenu()
         }
-
-        guard !hotkeys.isEmpty else { return }
-
-        // Add global key monitor
-        globalHotkeyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            self?.handleKeyEvent(event)
-        }
-
-        debugPrint("Registered hotkeys:", hotkeys)
-    }
-
-    private func handleKeyEvent(_ event: NSEvent) {
-        var parts: [String] = []
-
-        if event.modifierFlags.contains(.command) { parts.append("cmd") }
-        if event.modifierFlags.contains(.shift) { parts.append("shift") }
-        if event.modifierFlags.contains(.option) { parts.append("opt") }
-        if event.modifierFlags.contains(.control) { parts.append("ctrl") }
-
-        if let chars = event.charactersIgnoringModifiers?.lowercased() {
-            parts.append(chars)
-        }
-
-        let hotkeyString = parts.joined(separator: "+")
-
-        if registeredHotkeys.contains(hotkeyString) {
-            debugPrint("Hotkey triggered:", hotkeyString)
-            socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
-        }
-    }
-
-    // MARK: - UserDefaults
-
-    private func handleUserDefaults(_ payload: NibMessage.UserDefaultsPayload) {
-        let defaults = UserDefaults.standard
-        let requestId = payload.requestId ?? ""
-
-        switch payload.action {
-        case "get":
-            guard let key = payload.key else {
-                socketServer?.sendEvent(nodeId: requestId, event: "userDefaults:error:key required")
-                return
-            }
-            let value = defaults.object(forKey: key)
-            let response = encodeUserDefaultsValue(value)
-            socketServer?.sendEvent(nodeId: requestId, event: "userDefaults:get:\(response)")
-            debugPrint("UserDefaults get:", key, "=", response)
-
-        case "set":
-            guard let key = payload.key else {
-                debugPrint("UserDefaults set: key required")
-                return
-            }
-            if let value = payload.value?.value {
-                defaults.set(value, forKey: key)
-                debugPrint("UserDefaults set:", key, "=", value)
+        if let mainMenu = NSApp.mainMenu {
+            if mainMenu.items.count > 0 {
+                mainMenu.insertItem(editMenuItem, at: 1)
             } else {
-                defaults.removeObject(forKey: key)
-                debugPrint("UserDefaults set nil for:", key)
+                mainMenu.addItem(editMenuItem)
             }
-
-        case "remove":
-            guard let key = payload.key else {
-                debugPrint("UserDefaults remove: key required")
-                return
-            }
-            defaults.removeObject(forKey: key)
-            debugPrint("UserDefaults removed:", key)
-
-        case "clear":
-            // Clear all keys with the app's bundle identifier prefix
-            let domain = Bundle.main.bundleIdentifier ?? "nib"
-            defaults.removePersistentDomain(forName: domain)
-            debugPrint("UserDefaults cleared for domain:", domain)
-
-        case "containsKey":
-            guard let key = payload.key else {
-                socketServer?.sendEvent(nodeId: requestId, event: "userDefaults:containsKey:false")
-                return
-            }
-            let exists = defaults.object(forKey: key) != nil
-            socketServer?.sendEvent(nodeId: requestId, event: "userDefaults:containsKey:\(exists)")
-            debugPrint("UserDefaults containsKey:", key, "=", exists)
-
-        case "getKeys":
-            let prefix = payload.prefix ?? ""
-            let allKeys = defaults.dictionaryRepresentation().keys
-            let matchingKeys = allKeys.filter { $0.hasPrefix(prefix) }
-            let keysString = matchingKeys.joined(separator: "\n")
-            socketServer?.sendEvent(nodeId: requestId, event: "userDefaults:getKeys:\(keysString)")
-            debugPrint("UserDefaults getKeys with prefix:", prefix, "found:", matchingKeys.count)
-
-        default:
-            debugPrint("Unknown userDefaults action:", payload.action)
-        }
-    }
-
-    private func encodeUserDefaultsValue(_ value: Any?) -> String {
-        guard let value = value else { return "null" }
-
-        switch value {
-        case let string as String:
-            // Escape special characters for safe transmission
-            let escaped = string
-                .replacingOccurrences(of: "\\", with: "\\\\")
-                .replacingOccurrences(of: "\n", with: "\\n")
-                .replacingOccurrences(of: ":", with: "\\:")
-            return "string:\(escaped)"
-        case let number as NSNumber:
-            // Check if it's a boolean
-            if CFGetTypeID(number) == CFBooleanGetTypeID() {
-                return "bool:\(number.boolValue)"
-            }
-            // Check if it's an integer or floating point
-            if floor(number.doubleValue) == number.doubleValue {
-                return "int:\(number.intValue)"
-            }
-            return "float:\(number.doubleValue)"
-        case let data as Data:
-            return "data:\(data.base64EncodedString())"
-        case let array as [Any]:
-            // Encode array as JSON
-            if let jsonData = try? JSONSerialization.data(withJSONObject: array),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                return "array:\(jsonString)"
-            }
-            return "null"
-        case let dict as [String: Any]:
-            // Encode dictionary as JSON
-            if let jsonData = try? JSONSerialization.data(withJSONObject: dict),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                return "dict:\(jsonString)"
-            }
-            return "null"
-        default:
-            return "null"
         }
     }
 }

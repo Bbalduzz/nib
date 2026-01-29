@@ -12,6 +12,22 @@ from .label import Label
 from .link import Link
 from .image import Image
 from .video import Video, VideoGravity
+from .markdown import Markdown
+from .map_view import (
+    Map,
+    MapMarker,
+    MapAnnotation,
+    MapCircle,
+    MapPolyline,
+    MapPolygon,
+    MapStyle,
+    MapInteractionMode,
+)
+from .gauge import Gauge, GaugeStyle
+from .text_editor import TextEditor
+from .table import Table, TableColumn
+from .share_link import ShareLink
+from .camera_preview import CameraPreview
 
 __all__ = [
     "Text",
@@ -28,4 +44,20 @@ __all__ = [
     "Image",
     "Video",
     "VideoGravity",
+    "Markdown",
+    "Map",
+    "MapMarker",
+    "MapAnnotation",
+    "MapCircle",
+    "MapPolyline",
+    "MapPolygon",
+    "MapStyle",
+    "MapInteractionMode",
+    "Gauge",
+    "GaugeStyle",
+    "TextEditor",
+    "Table",
+    "TableColumn",
+    "ShareLink",
+    "CameraPreview",
 ]

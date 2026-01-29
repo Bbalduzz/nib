@@ -15,3 +15,4 @@ Submodules
    nib.cli.build
    nib.cli.create
    nib.cli.deps
+   nib.cli.run

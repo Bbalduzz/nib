@@ -123,7 +123,7 @@ class Counter(App):
                     # Icon
                     SFSymbol(
                         icon,
-                        font=Font.system(size * 0.4, FontWeight.semibold),
+                        font=Font.system(size=size * 0.4, weight=FontWeight.SEMIBOLD),
                         foreground_color=color,
                     ),
                 ],

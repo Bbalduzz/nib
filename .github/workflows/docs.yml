@@ -43,9 +43,22 @@ jobs:
           pip install --upgrade pip
           pip install -r docs/requirements.txt
 
-      - name: Build documentation
+      - name: Build documentation (strict)
         run: |
-          cd docs && make html
+          cd docs && make html-strict
+
+      - name: Check links
+        run: |
+          cd docs && make linkcheck
+        continue-on-error: true
+
+      - name: Upload link check results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linkcheck-results
+          path: docs/_build/linkcheck/
+          if-no-files-found: ignore
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

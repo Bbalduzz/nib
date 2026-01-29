@@ -1,0 +1,55 @@
+[project]
+name = "rayondl"
+version = "0.1.0"
+description = "Rayondl - A nib application"
+requires-python = ">=3.10"
+dependencies = [
+    "nib",
+    "httpx",
+    "pycognito",
+    "cryptography",
+]
+
+[tool.nib]
+# Entry point for the application
+entry = "src/main.py"
+
+[tool.nib.build]
+# App display name (defaults to project name)
+name = "Rayondl"
+
+# Bundle identifier (defaults to com.nib.<name>)
+identifier = "com.example.rayondl"
+
+# App version (defaults to project version)
+# version = "1.0.0"
+
+# Icon file (defaults to src/assets/icon.png if exists)
+# icon = "src/assets/icon.png"
+
+# Minimum macOS version (defaults to current)
+# min_macos = "14.0"
+
+# Additional packages to exclude from bundling
+# exclude = []
+
+# Additional dependencies to include (if auto-detection misses them)
+# extra_deps = []
+
+# Info.plist options
+# [tool.nib.build.plist]
+# copyright = "Copyright © 2025 Your Name"
+# category = "public.app-category.utilities"
+# notification_style = "banner"  # "banner", "alert", or "none"
+# url_schemes = ["myapp"]
+
+# Privacy usage descriptions
+# [tool.nib.build.plist.usage]
+# microphone = "This app needs microphone access for..."
+# camera = "This app needs camera access for..."
+# location = "This app needs location access for..."
+# apple_events = "This app needs to control other apps for..."
+
+# Custom plist keys
+# [tool.nib.build.plist.custom]
+# MyCustomKey = "value"
