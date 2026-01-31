@@ -9,6 +9,28 @@ extension View {
         // This modifier is a no-op; the animation config is extracted and used there
         self
     }
+
+    /// Apply per-view animation context for reactive animations.
+    /// When a view has an animationContext, all its property changes animate with this config.
+    /// The animation is applied using the node's hash as a value, so it triggers when
+    /// the view's content changes.
+    @ViewBuilder
+    func applyAnimationContext(_ context: ViewNode.AnimationContext?, nodeHash: Int) -> some View {
+        if let ctx = context {
+            let animation = Animation.nib(
+                type: ctx.animationType ?? "default",
+                duration: ctx.animationDuration,
+                delay: ctx.animationDelay,
+                response: ctx.springResponse,
+                damping: ctx.springDamping
+            )
+            // Apply animation using node hash as trigger value
+            // This ensures animation fires when the view's content changes
+            self.animation(animation, value: nodeHash)
+        } else {
+            self
+        }
+    }
 }
 
 // MARK: - Animation Helpers

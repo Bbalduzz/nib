@@ -87,12 +87,9 @@ def _float(value: Optional[Union[int, float]]) -> Optional[float]:
 def apply_background(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Apply the background modifier for view backgrounds.
 
-    The background modifier sets a color behind a view's content. This modifier
-    only handles color backgrounds; View backgrounds (where the background is
-    another View like a RoundedRectangle) are handled separately in View.to_dict().
-
-    This distinction exists because View backgrounds require recursive rendering
-    and cannot be expressed as a simple modifier dictionary.
+    The background modifier sets a color or gradient behind a view's content.
+    For non-gradient Views (like RoundedRectangle), backgrounds are handled
+    separately in View.to_dict() as background views.
 
     This modifier is registered with the "background" parameter.
 
@@ -101,13 +98,14 @@ def apply_background(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             The relevant key is "background", which can be:
             - A color string (hex like "#FF0000" or named like "red")
             - A Color object (nib.Color.blue)
-            - A View object (handled separately, returns None here)
+            - A gradient View (LinearGradient, RadialGradient, etc.)
+            - A non-gradient View (handled separately, returns None here)
 
     Returns:
         A modifier dictionary with type "background" and args containing
-        the resolved color, or None if:
+        the resolved color or gradient data, or None if:
         - No background is specified
-        - The background is a View (has _type attribute)
+        - The background is a non-gradient View (has _type attribute)
 
     Example:
         Color background::
@@ -115,6 +113,12 @@ def apply_background(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             kwargs = {"background": "#FF0000"}
             result = apply_background(kwargs)
             # Returns: {"type": "background", "args": {"color": "#FF0000"}}
+
+        Gradient background::
+
+            kwargs = {"background": nib.LinearGradient(colors=["red", "blue"])}
+            result = apply_background(kwargs)
+            # Returns: {"type": "background", "args": {"gradientType": "LinearGradient", ...}}
 
         View background (handled elsewhere)::
 
@@ -132,9 +136,15 @@ def apply_background(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if background is None:
         return None
 
-    # Check if it's a View (has _type attribute)
+    # Check if it's a gradient View - handle here as modifier
+    if hasattr(background, "_type") and background._type in GRADIENT_TYPES:
+        args = {"gradientType": background._type}
+        args.update(background._get_props())
+        return {"type": "background", "args": args}
+
+    # Check if it's a non-gradient View (has _type attribute)
     if hasattr(background, "_type"):
-        # View backgrounds are handled separately in View.to_dict()
+        # Non-gradient View backgrounds are handled separately in View.to_dict()
         return None
 
     return {"type": "background", "args": {"color": resolve_color(background)}}
@@ -183,12 +193,15 @@ def apply_foreground_color(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     return {"type": "foregroundColor", "args": {"color": resolve_color(color)}}
 
 
+GRADIENT_TYPES = ("LinearGradient", "RadialGradient", "AngularGradient", "EllipticalGradient")
+
+
 @ModifierRegistry.modifier("fill", ["fill"])
 def apply_fill(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Apply the fill modifier for shape interiors.
 
-    The fill modifier sets the interior color of shape views like Rectangle,
-    Circle, Capsule, etc. It maps to SwiftUI's .fill() shape modifier.
+    The fill modifier sets the interior color or gradient of shape views like
+    Rectangle, Circle, Capsule, etc. It maps to SwiftUI's .fill() shape modifier.
 
     Note: This modifier is intended for shape views. Using it on non-shape
     views may have no effect or unexpected behavior.
@@ -200,21 +213,24 @@ def apply_fill(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             The relevant key is "fill", which can be:
             - A color string (hex like "#0000FF" or named like "blue")
             - A Color object (nib.Color.blue)
+            - A gradient View (LinearGradient, RadialGradient, etc.)
 
     Returns:
         A modifier dictionary with type "fill" and args containing the
-        resolved color, or None if no fill is specified.
+        resolved color or gradient data, or None if no fill is specified.
 
     Example:
-        Filling a shape::
+        Filling a shape with color::
 
             kwargs = {"fill": "#0000FF"}
             result = apply_fill(kwargs)
             # Returns: {"type": "fill", "args": {"color": "#0000FF"}}
 
-            kwargs = {"fill": nib.Color.red}
+        Filling a shape with gradient::
+
+            kwargs = {"fill": nib.LinearGradient(colors=["red", "blue"])}
             result = apply_fill(kwargs)
-            # Returns: {"type": "fill", "args": {"color": "red"}}
+            # Returns: {"type": "fill", "args": {"gradientType": "LinearGradient", ...}}
 
         No fill::
 
@@ -225,6 +241,15 @@ def apply_fill(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     fill = kwargs.get("fill")
     if fill is None:
         return None
+
+    # Check if it's a gradient View
+    if hasattr(fill, "_type") and fill._type in GRADIENT_TYPES:
+        args = {"gradientType": fill._type}
+        # Include gradient props (colors, stops, points, etc.)
+        args.update(fill._get_props())
+        return {"type": "fill", "args": args}
+
+    # Regular color
     return {"type": "fill", "args": {"color": resolve_color(fill)}}
 
 

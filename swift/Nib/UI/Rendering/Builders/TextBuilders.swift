@@ -6,8 +6,100 @@ import MarkdownUI
 extension DynamicView {
     @ViewBuilder
     func buildText() -> some View {
-        let baseText = Text(node.props.content ?? "")
-        baseText.applyTextStyles(node.props.textStyles)
+        // Check for attributed strings first
+        if let attributedStrings = node.props.attributedStrings, !attributedStrings.isEmpty {
+            let _ = debugPrint("[TextBuilder] Building attributed text with \(attributedStrings.count) segments: \(attributedStrings.map { $0.content })")
+            buildAttributedText(attributedStrings)
+                .applyTextViewModifiers(node.props.textStyles)
+        } else {
+            let _ = debugPrint("[TextBuilder] Building plain text: '\(node.props.content ?? "(nil)")'")
+            let baseText = Text(node.props.content ?? "")
+            baseText.applyTextStyles(node.props.textStyles)
+        }
+    }
+
+    /// Build rich text from attributed string segments
+    private func buildAttributedText(_ segments: [AttributedStringItem]) -> Text {
+        segments.reduce(Text("")) { result, segment in
+            result + buildStyledTextSegment(segment)
+        }
+    }
+
+    /// Build a single styled text segment
+    private func buildStyledTextSegment(_ segment: AttributedStringItem) -> Text {
+        var text = Text(segment.content)
+
+        guard let styles = segment.styles else {
+            return text
+        }
+
+        // Apply font
+        if let fontConfig = styles.font {
+            if let fontName = fontConfig.fontName {
+                text = text.font(
+                    Font.nib(
+                        name: fontName,
+                        size: fontConfig.fontSize,
+                        weight: fontConfig.fontWeight,
+                        path: fontConfig.fontPath
+                    )
+                )
+            } else if let fontSize = fontConfig.fontSize {
+                // Size without name = system font
+                let weight = Font.Weight.nib(fontConfig.fontWeight)
+                text = text.font(.system(size: fontSize, weight: weight))
+            }
+        }
+
+        // Apply color
+        if let colorName = styles.color {
+            text = text.foregroundColor(Color(nibColor: colorName))
+        }
+
+        // Apply text styling
+        if styles.bold == true {
+            text = text.bold()
+        }
+        if styles.italic == true {
+            text = text.italic()
+        }
+        if #available(macOS 13.3, *) {
+            if styles.monospaced == true {
+                text = text.monospaced()
+            }
+        }
+        if styles.monospacedDigit == true {
+            text = text.monospacedDigit()
+        }
+
+        // Apply decorations
+        if styles.strikethrough == true {
+            if let colorName = styles.strikethroughColor {
+                text = text.strikethrough(true, color: Color(nibColor: colorName))
+            } else {
+                text = text.strikethrough()
+            }
+        }
+        if styles.underline == true {
+            if let colorName = styles.underlineColor {
+                text = text.underline(true, color: Color(nibColor: colorName))
+            } else {
+                text = text.underline()
+            }
+        }
+
+        // Apply spacing
+        if let kerning = styles.kerning {
+            text = text.kerning(kerning)
+        }
+        if let tracking = styles.tracking {
+            text = text.tracking(tracking)
+        }
+        if let baselineOffset = styles.baselineOffset {
+            text = text.baselineOffset(baselineOffset)
+        }
+
+        return text
     }
 
     @ViewBuilder

@@ -7,8 +7,5 @@ sphinx==6.2.1
 # Theme
 revitron-sphinx-theme @ git+https://github.com/revitron/revitron-sphinx-theme.git@0.3.36
 
-# Extensions
-sphinx-autodoc-typehints==2.0.1
-
 # Project dependencies (needed for autodoc to import modules)
 msgpack==1.1.0

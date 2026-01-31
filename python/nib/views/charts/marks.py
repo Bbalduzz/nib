@@ -20,6 +20,13 @@ Available Marks:
     - RectMark: Rectangle marks for heatmaps and range visualizations
     - SectorMark: Pie and donut chart segments
 
+Coordinate system:
+    (0,0)-----(1,0)
+        |         |
+        |  (0.5,0.5)
+        |         |
+    (0,1)-----(1,1)
+
 Example:
     Simple line chart mark::
 
@@ -45,6 +52,7 @@ Example:
 
 from typing import Optional, Union
 
+from ...types import resolve_enum
 from .types import (
     InterpolationMethod,
     PlottableField,
@@ -52,11 +60,49 @@ from .types import (
     StackingMethod,
     SymbolShape,
 )
-from ...types import resolve_enum
+
+GRADIENT_TYPES = (
+    "LinearGradient",
+    "RadialGradient",
+    "AngularGradient",
+    "EllipticalGradient",
+)
+
+
+def _is_color_string(value: str) -> bool:
+    """Check if a string looks like a color value rather than a field name."""
+    # Hex colors: #RGB, #RRGGBB, #RRGGBBAA
+    if value.startswith("#"):
+        return True
+    # RGB/RGBA: rgb(...) or rgba(...)
+    if value.startswith("rgb"):
+        return True
+    # Named CSS colors (common ones)
+    named_colors = {
+        "white",
+        "black",
+        "red",
+        "green",
+        "blue",
+        "yellow",
+        "orange",
+        "purple",
+        "pink",
+        "cyan",
+        "magenta",
+        "gray",
+        "grey",
+        "brown",
+        "clear",
+        "transparent",
+    }
+    if value.lower() in named_colors:
+        return True
+    return False
 
 
 def _resolve_field(
-    value: Optional[Union[str, PlottableField, PlottableValue]]
+    value: Optional[Union[str, PlottableField, PlottableValue]],
 ) -> Optional[dict]:
     """Convert a field reference to dictionary format for serialization.
 
@@ -67,9 +113,11 @@ def _resolve_field(
     Args:
         value: The field reference to resolve. Can be:
             - None: Returns None
-            - str: Interpreted as a field name, returns {"field": value}
+            - str: If it looks like a color (hex, rgb, named), returns {"color": value}
+                   Otherwise interpreted as a field name, returns {"field": value}
             - PlottableField: Calls its to_dict() method
             - PlottableValue: Calls its to_dict() method
+            - Gradient View: Returns gradient data with gradientType
 
     Returns:
         Dictionary representation of the field reference, or None if the
@@ -78,12 +126,23 @@ def _resolve_field(
     Example:
         >>> _resolve_field("sales")
         {"field": "sales"}
+        >>> _resolve_field("#ffffff")
+        {"color": "#ffffff"}
         >>> _resolve_field(PlottableField("date", type="temporal"))
         {"field": "date", "type": "temporal"}
+        >>> _resolve_field(LinearGradient(colors=["red", "blue"]))
+        {"gradientType": "LinearGradient", "colors": [...], ...}
     """
     if value is None:
         return None
+    # Check for gradient Views
+    if hasattr(value, "_type") and value._type in GRADIENT_TYPES:
+        result = {"gradientType": value._type}
+        result.update(value._get_props())
+        return result
     if isinstance(value, str):
+        if _is_color_string(value):
+            return {"color": value}
         return {"field": value}
     if isinstance(value, (PlottableField, PlottableValue)):
         return value.to_dict()

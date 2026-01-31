@@ -56,6 +56,7 @@ import uuid
 
 from .connection import Connection
 from .diff import diff_trees
+from .logging import logger
 from ..views import View
 from ..types import SymbolRenderingMode, resolve_enum
 
@@ -199,7 +200,7 @@ class App:
             cls._assets_dir = cls._auto_detect_assets_dir()
             cls._assets_dir_initialized = True
             if cls._assets_dir:
-                print(f"[nib] Assets directory: {cls._assets_dir}")
+                logger.debug(f"Assets directory: {cls._assets_dir}")
 
         # Resolve relative to assets dir
         if cls._assets_dir and cls._assets_dir.exists():
@@ -208,11 +209,11 @@ class App:
                 return str(asset_path)
             else:
                 # Asset not found - log warning
-                print(f"[nib] Warning: Asset not found: {relative_path} (looked in {cls._assets_dir})")
+                logger.warn(f"Asset not found: {relative_path}", path=str(cls._assets_dir))
                 return ""  # Return empty string so Swift shows placeholder
 
         # No assets directory configured
-        print(f"[nib] Warning: No assets directory configured, cannot resolve: {relative_path}")
+        logger.warn(f"No assets directory configured, cannot resolve: {relative_path}")
         return ""
 
     def __init__(
@@ -231,10 +232,13 @@ class App:
         self._socket_path: Optional[str] = None
         self._action_map: Dict[str, Callable] = {}
         self._change_map: Dict[str, Callable] = {}
+        self._submit_map: Dict[str, Callable] = {}
         self._running = False
         self._previous_tree: Optional[dict] = None  # For diffing
-        self._render_scheduled = False
-        self._render_lock = None  # Will be threading.Lock()
+        # Render loop (single thread, event-based)
+        self._render_lock = threading.Lock()
+        self._render_requested = threading.Event()
+        self._render_thread: Optional[threading.Thread] = None
         # Menu bar right-click menu
         self._menu: List["MenuItem"] = []
         self._menu_action_map: Dict[str, Callable] = {}
@@ -246,10 +250,17 @@ class App:
         self._clipboard_callbacks: Dict[str, Callable] = {}
         # Drop handlers
         self._drop_map: Dict[str, Callable] = {}
+        # Canvas pan/hover handlers
+        self._pan_start_map: Dict[str, Callable] = {}
+        self._pan_update_map: Dict[str, Callable] = {}
+        self._pan_end_map: Dict[str, Callable] = {}
+        self._hover_map: Dict[str, Callable] = {}
         # Custom fonts
         self._fonts: Dict[str, str] = {}
         # App lifecycle callbacks
         self._on_appear: Optional[Callable[[], None]] = None
+        self._on_disappear: Optional[Callable[[], None]] = None
+        self._on_quit: Optional[Callable[[], None]] = None
 
     @property
     def fonts(self) -> Dict[str, str]:
@@ -319,7 +330,7 @@ class App:
                 fonts[font_name] = str(font_file)
 
         if fonts:
-            print(f"[nib] Auto-detected {len(fonts)} font(s) in assets")
+            logger.info(f"Auto-detected {len(fonts)} font(s) in assets")
 
         return fonts
 
@@ -365,6 +376,57 @@ class App:
             app.on_appear = on_open
         """
         self._on_appear = callback
+
+    @property
+    def on_disappear(self) -> Optional[Callable[[], None]]:
+        """Get the on_disappear callback."""
+        return self._on_disappear
+
+    @on_disappear.setter
+    def on_disappear(self, callback: Callable[[], None]) -> None:
+        """
+        Set a callback to be called when the popover disappears.
+
+        The callback is fired every time the popover closes (user clicks
+        outside, presses escape, or clicks the menu bar icon again).
+
+        Args:
+            callback: A function with no arguments to call on disappear.
+
+        Example:
+            def on_close():
+                print("Popover closed!")
+                # Save state, pause updates, etc.
+
+            app.on_disappear = on_close
+        """
+        self._on_disappear = callback
+
+    @property
+    def on_quit(self) -> Optional[Callable[[], None]]:
+        """Get the on_quit callback."""
+        return self._on_quit
+
+    @on_quit.setter
+    def on_quit(self, callback: Callable[[], None]) -> None:
+        """
+        Set a callback to be called when the app is quitting.
+
+        The callback is fired once when the app is shutting down,
+        before cleanup. Use this for saving state, closing connections, etc.
+
+        Args:
+            callback: A function with no arguments to call on quit.
+
+        Example:
+            def cleanup():
+                print("App quitting!")
+                save_settings()
+                close_database()
+
+            app.on_quit = cleanup
+        """
+        self._on_quit = callback
 
     # --- Service Properties ---
 
@@ -450,9 +512,12 @@ class App:
         return self._icon
 
     @icon.setter
-    def icon(self, value: Union[str, "SFSymbol"]) -> None:
-        """Set the app icon (SF Symbol name or SFSymbol instance)."""
+    def icon(self, value: Union[str, "SFSymbol", View]) -> None:
+        """Set the app icon (SF Symbol name, SFSymbol instance, or View)."""
         self._icon = value
+        # Set app reference on icon if it's a View
+        if hasattr(value, "_set_app"):
+            value._set_app(self)
 
     def _serialize_icon(self) -> Optional[Union[str, dict]]:
         """Serialize app icon to string or config dict for Swift."""
@@ -477,6 +542,9 @@ class App:
                 else:
                     config["color"] = color
             return config
+        # View instance - serialize as view tree
+        if hasattr(self._icon, "to_dict"):
+            return {"view": self._icon.to_dict()}
         return None
 
     @property
@@ -692,6 +760,41 @@ class App:
                 identifier=identifier,
             )
 
+    def update(self) -> None:
+        """
+        Manually trigger a UI re-render.
+
+        Use this to force an update when you've made changes that the
+        automatic reactivity system might not detect, or when you want
+        to batch multiple changes and update once.
+
+        Example:
+            # Batch multiple changes
+            label1.content = "New text 1"
+            label2.content = "New text 2"
+            app.update()  # Single re-render for both changes
+        """
+        self._trigger_rerender()
+
+    def _send_action(
+        self,
+        node_id: str,
+        action: str,
+        params: Optional[dict] = None,
+    ) -> None:
+        """Send an action to a specific view node.
+
+        Used internally by views like WebView to trigger actions
+        (reload, goBack, goForward, evaluateJS, etc.).
+
+        Args:
+            node_id: The ID of the target view node.
+            action: The action to perform.
+            params: Optional parameters for the action.
+        """
+        if self._connection:
+            self._connection.send_action(node_id, action, params)
+
     def build(self, view: View) -> None:
         """
         Set the root view of the app and trigger a rerender if running.
@@ -702,6 +805,9 @@ class App:
         self._root_view = view
         # Set app reference on all views for reactive updates
         view._set_app(self)
+        # Also set app reference on icon if it's a View
+        if hasattr(self._icon, "_set_app"):
+            self._icon._set_app(self)
         # Trigger rerender if app is already running
         if self._running:
             self._trigger_rerender()
@@ -752,7 +858,8 @@ class App:
         try:
             self._setup()
             self._running = True
-            self._render()
+            self._start_render_loop()
+            self._render()  # Initial render
             self._main_loop()
         except KeyboardInterrupt:
             pass
@@ -760,28 +867,30 @@ class App:
             self._teardown()
 
     def _trigger_rerender(self) -> None:
-        """Trigger a re-render of the UI (debounced to prevent CPU spikes)."""
+        """Trigger a re-render of the UI."""
         if not self._running or not self._connection:
             return
+        self._render_requested.set()
 
-        # Initialize lock if needed
-        if self._render_lock is None:
-            self._render_lock = threading.Lock()
+    def _start_render_loop(self) -> None:
+        """Start the background render loop (single thread, event-based)."""
+        def render_loop():
+            min_interval = 0.002  # ~500fps max
+            while self._running:
+                # Wait for a render request (with timeout to check _running)
+                if not self._render_requested.wait(timeout=0.1):
+                    continue
 
-        with self._render_lock:
-            if self._render_scheduled:
-                return  # Already scheduled, skip
-            self._render_scheduled = True
+                # Clear and render (coalesces rapid requests)
+                self._render_requested.clear()
+                if self._running and self._connection:
+                    self._render()
 
-        # Schedule render after short delay to batch rapid updates
-        def do_render():
-            time.sleep(0.016)  # ~60fps max
-            with self._render_lock:
-                self._render_scheduled = False
-            if self._running:
-                self._render()
+                # Throttle to prevent CPU spinning
+                time.sleep(min_interval)
 
-        threading.Thread(target=do_render, daemon=True).start()
+        self._render_thread = threading.Thread(target=render_loop, daemon=True)
+        self._render_thread.start()
 
     def _setup(self) -> None:
         """Set up the application."""
@@ -793,7 +902,7 @@ class App:
             # Bundled mode: Swift launched us, socket already exists
             self._socket_path = socket_from_env
             self._runtime_process = None  # We don't own the runtime process
-            print(f"[nib] Running in bundled mode, socket: {self._socket_path}")
+            logger.info(f"Running in bundled mode", socket=self._socket_path)
         else:
             # Development mode: We launch Swift runtime
             self._socket_path = f"/tmp/nib-{os.getpid()}.sock"
@@ -900,13 +1009,22 @@ class App:
         # Clear action maps
         self._action_map.clear()
         self._change_map.clear()
+        self._submit_map.clear()
         self._drop_map.clear()
+        self._pan_start_map.clear()
+        self._pan_update_map.clear()
+        self._pan_end_map.clear()
+        self._hover_map.clear()
 
         # Build view tree
         root = self.body()
 
         # Collect actions (also assigns IDs)
         self._collect_actions(root)
+
+        # Collect actions from icon view if it's a View
+        if hasattr(self._icon, "to_dict"):
+            self._collect_actions(self._icon, "_icon")
 
         # Serialize
         root_dict = root.to_dict()
@@ -916,11 +1034,11 @@ class App:
 
         # Debug output
         if self._previous_tree is None:
-            print(f"[nib] Initial render with root type: {root_dict.get('type')}")
+            logger.info(f"Initial render", root_type=root_dict.get('type'))
         else:
-            print(f"[nib] Sending {len(patches)} patches:")
+            logger.debug(f"Sending {len(patches)} patches")
             for p in patches:
-                print(f"  - {p['op']} @ {p['id']}: {p.get('props', p.get('node', {}).get('props', ''))}")
+                logger.debug(f"  Patch: {p['op']} @ {p['id']}", props=p.get('props', p.get('node', {}).get('props', '')))
 
         # Send patches or full render
         # NOTE: Incremental patching disabled - Swift-side handling has bugs
@@ -973,9 +1091,23 @@ class App:
         if hasattr(view, "_on_change") and view._on_change is not None:
             self._change_map[view._id] = view._on_change
 
+        # Collect submit handlers (TextField, SecureField)
+        if hasattr(view, "_on_submit") and view._on_submit is not None:
+            self._submit_map[view._id] = view._on_submit
+
         # Collect drop handlers
         if hasattr(view, "_on_drop") and view._on_drop is not None:
             self._drop_map[view._id] = view._on_drop
+
+        # Collect canvas pan/hover handlers
+        if hasattr(view, "_on_pan_start") and view._on_pan_start is not None:
+            self._pan_start_map[view._id] = view._on_pan_start
+        if hasattr(view, "_on_pan_update") and view._on_pan_update is not None:
+            self._pan_update_map[view._id] = view._on_pan_update
+        if hasattr(view, "_on_pan_end") and view._on_pan_end is not None:
+            self._pan_end_map[view._id] = view._on_pan_end
+        if hasattr(view, "_on_hover") and view._on_hover is not None:
+            self._hover_map[view._id] = view._on_hover
 
         # Recurse into children with indexed paths
         if hasattr(view, "_children") and view._children:
@@ -1002,13 +1134,21 @@ class App:
     def _handle_event(self, node_id: str, event: str) -> None:
         """Handle an event from the Swift runtime."""
         # Handle app lifecycle events
-        if node_id == "_app" and event == "appear":
-            if self._on_appear:
-                try:
-                    self._on_appear()
-                except Exception as e:
-                    print(f"Error in on_appear handler: {e}")
-            return
+        if node_id == "_app":
+            if event == "appear":
+                if self._on_appear:
+                    try:
+                        self._on_appear()
+                    except Exception as e:
+                        logger.error("Error in on_appear handler", exc=e)
+                return
+            elif event == "disappear":
+                if self._on_disappear:
+                    try:
+                        self._on_disappear()
+                    except Exception as e:
+                        logger.error("Error in on_disappear handler", exc=e)
+                return
 
         # Handle tap events
         if event == "tap" and node_id in self._action_map:
@@ -1016,7 +1156,7 @@ class App:
             try:
                 action()
             except Exception as e:
-                print(f"Error in action handler: {e}")
+                logger.error("Error in action handler", exc=e, node_id=node_id)
 
         # Handle menu tap events
         elif event == "menu:tap" and node_id in self._menu_action_map:
@@ -1024,7 +1164,7 @@ class App:
             try:
                 action()
             except Exception as e:
-                print(f"Error in menu action handler: {e}")
+                logger.error("Error in menu action handler", exc=e)
 
         # Handle hotkey events
         elif event.startswith("hotkey:"):
@@ -1033,7 +1173,7 @@ class App:
                 try:
                     self._hotkey_map[shortcut]()
                 except Exception as e:
-                    print(f"Error in hotkey handler: {e}")
+                    logger.error("Error in hotkey handler", exc=e, shortcut=shortcut)
 
         # Handle clipboard read response
         elif event.startswith("clipboard:"):
@@ -1043,7 +1183,7 @@ class App:
                 try:
                     callback(content)
                 except Exception as e:
-                    print(f"Error in clipboard callback: {e}")
+                    logger.error("Error in clipboard callback", exc=e)
 
         # Handle file dialog response
         elif event.startswith("fileDialog:"):
@@ -1054,7 +1194,7 @@ class App:
                 try:
                     callback(paths)
                 except Exception as e:
-                    print(f"Error in file dialog callback: {e}")
+                    logger.error("Error in file dialog callback", exc=e)
 
         # Handle userDefaults response
         elif event.startswith("userDefaults:"):
@@ -1074,7 +1214,21 @@ class App:
             try:
                 handler(paths)
             except Exception as e:
-                print(f"Error in drop handler: {e}")
+                logger.error("Error in drop handler", exc=e)
+
+        # Handle canvas pan events
+        elif event.startswith("pan:"):
+            self._handle_pan_event(node_id, event)
+
+        # Handle canvas hover events
+        elif event.startswith("hover:") and node_id in self._hover_map:
+            coords = event[6:]  # Remove "hover:" prefix
+            try:
+                x, y = map(float, coords.split(","))
+                from ..views.canvas import PanEvent
+                self._hover_map[node_id](PanEvent(x=x, y=y))
+            except Exception as e:
+                logger.error("Error in drop handler", exc=e, node_id=node_id)
 
         # Handle change events (change:value)
         elif event.startswith("change:") and node_id in self._change_map:
@@ -1094,7 +1248,40 @@ class App:
                         value = value_str
                 handler(value)
             except Exception as e:
-                print(f"Error in change handler: {e}")
+                logger.error("Error in change handler", exc=e, node_id=node_id)
+
+        # Handle submit events (submit:value) - TextField, SecureField
+        elif event.startswith("submit:") and node_id in self._submit_map:
+            value_str = event[7:]  # Remove "submit:" prefix
+            handler = self._submit_map[node_id]
+            try:
+                handler(value_str)
+            except Exception as e:
+                logger.error("Error in submit handler", exc=e, node_id=node_id)
+
+    def _handle_pan_event(self, node_id: str, event: str) -> None:
+        """Handle canvas pan events (pan:start, pan:update, pan:end)."""
+        # Parse event: "pan:type:x,y"
+        parts = event.split(":", 2)
+        if len(parts) < 3:
+            return
+
+        event_type = parts[1]  # start, update, or end
+        coords = parts[2]
+
+        try:
+            x, y = map(float, coords.split(","))
+            from ..views.canvas import PanEvent
+            pan_event = PanEvent(x=x, y=y)
+
+            if event_type == "start" and node_id in self._pan_start_map:
+                self._pan_start_map[node_id](pan_event)
+            elif event_type == "update" and node_id in self._pan_update_map:
+                self._pan_update_map[node_id](pan_event)
+            elif event_type == "end" and node_id in self._pan_end_map:
+                self._pan_end_map[node_id](pan_event)
+        except Exception as e:
+            logger.error("Error in pan handler", exc=e, node_id=node_id, event=event)
 
     def _main_loop(self) -> None:
         """Main event loop."""
@@ -1113,7 +1300,16 @@ class App:
 
     def _teardown(self) -> None:
         """Clean up resources."""
+        # Call on_quit callback before cleanup
+        if self._on_quit:
+            try:
+                self._on_quit()
+            except Exception as e:
+                logger.error("Error in on_quit handler", exc=e)
+
         self._running = False
+        # Wake up render thread so it exits promptly
+        self._render_requested.set()
 
         if self._connection:
             self._connection.send_quit()

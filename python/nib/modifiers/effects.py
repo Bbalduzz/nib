@@ -460,8 +460,9 @@ def apply_transition(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     .transition() view modifier.
 
     Transitions can be specified as:
-    - A Transition enum value
-    - A string naming the transition type
+    - A Transition enum value (simple transition)
+    - A string naming the transition type (simple transition)
+    - A TransitionConfig object (asymmetric, combined, or custom transitions)
 
     Common transition types include: "opacity", "slide", "scale", "move"
 
@@ -472,34 +473,47 @@ def apply_transition(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             The relevant key is "transition", which can be:
             - A Transition enum value (with .value attribute)
             - A string naming the transition type
+            - A TransitionConfig object (with .to_dict() method)
 
     Returns:
         A modifier dictionary with type "transition" and args containing
-        the transition type, or None if no transition is specified.
+        the transition configuration, or None if no transition is specified.
 
     Example:
-        Enum transition::
+        Simple transition::
 
-            kwargs = {"transition": Transition.slide}
+            kwargs = {"transition": Transition.SLIDE}
             result = apply_transition(kwargs)
             # Returns: {"type": "transition", "args": {"transitionType": "slide"}}
 
-        String transition::
+        Asymmetric transition::
 
-            kwargs = {"transition": "opacity"}
+            kwargs = {"transition": Transition.asymmetric(Transition.SCALE, Transition.OPACITY)}
             result = apply_transition(kwargs)
-            # Returns: {"type": "transition", "args": {"transitionType": "opacity"}}
+            # Returns: {"type": "transition", "args": {
+            #     "transitionConfigType": "asymmetric",
+            #     "transitionInsertion": "scale",
+            #     "transitionRemoval": "opacity"
+            # }}
 
-        No transition::
+        Combined transition::
 
-            kwargs = {"content": "Hello"}
+            kwargs = {"transition": Transition.combined(Transition.OPACITY, Transition.SCALE)}
             result = apply_transition(kwargs)
-            # Returns: None
+            # Returns: {"type": "transition", "args": {
+            #     "transitionConfigType": "combined",
+            #     "transitionList": ["opacity", "scale"]
+            # }}
     """
     transition = kwargs.get("transition")
     if transition is None:
         return None
 
+    # Handle TransitionConfig objects (asymmetric, combined, custom)
+    if hasattr(transition, "to_dict"):
+        return {"type": "transition", "args": transition.to_dict()}
+
+    # Handle simple Transition enum or string (backwards compatible)
     value = transition.value if hasattr(transition, "value") else transition
     return {"type": "transition", "args": {"transitionType": value}}
 

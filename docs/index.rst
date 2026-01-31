@@ -35,7 +35,10 @@ Features
 - **Declarative UI**: Build interfaces with a SwiftUI-like API
 - **Native Performance**: Swift runtime renders actual SwiftUI views
 - **Python Logic**: Handle events and state in Python
-- **Full macOS Integration**: Notifications, keyboard shortcuts, file dialogs, clipboard, and more
+- **Full macOS Integration**: Notifications, keyboard shortcuts, file dialogs, clipboard
+- **Canvas Drawing**: Core Graphics drawing with gestures
+- **Charts**: SwiftUI Charts for data visualization
+- **Hot Reload**: ``nib run`` for instant development feedback
 
 .. toctree::
    :maxdepth: 2
@@ -47,101 +50,34 @@ Features
    :maxdepth: 2
    :caption: Core
 
-   reference/app
-   reference/menu
+   core/app
+   core/menu
+   core/state
 
 .. toctree::
    :maxdepth: 2
-   :caption: Views - Layout
+   :caption: Views
 
-   reference/views/vstack
-   reference/views/hstack
-   reference/views/zstack
-   reference/views/spacer
-   reference/views/scrollview
-   reference/views/list
-   reference/views/section
-   reference/views/group
-   reference/views/grid
-   reference/views/navigation
-   reference/views/disclosure
+   views/layout
+   views/text
+   views/controls
+   views/media
+   views/shapes
+   views/charts
+   views/canvas
+   views/effects
 
 .. toctree::
    :maxdepth: 2
-   :caption: Views - Controls
+   :caption: Reference
 
-   reference/views/text
-   reference/views/button
-   reference/views/textfield
-   reference/views/texteditor
-   reference/views/toggle
-   reference/views/slider
-   reference/views/picker
-   reference/views/gauge
-   reference/views/progressview
-   reference/views/label
-   reference/views/link
-   reference/views/image
-   reference/views/video
-   reference/views/sharelink
-   reference/views/divider
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Views - Shapes
-
-   reference/views/rectangle
-   reference/views/roundedrectangle
-   reference/views/circle
-   reference/views/ellipse
-   reference/views/capsule
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Views - Charts
-
-   reference/views/chart
-   reference/views/marks
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Views - Effects
-
-   reference/views/visualeffectblur
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Types & Styling
-
-   reference/types/color
-   reference/types/font
-   reference/types/animation
-   reference/types/enums
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Advanced
-
-   reference/modifiers
-   reference/state
-   reference/userdefaults
-
-.. toctree::
-   :maxdepth: 2
-   :caption: System Services
-
-   reference/services
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Building & Distribution
-
-   reference/build
+   types/index
+   services/index
+   building
 
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

@@ -66,6 +66,7 @@ https://nib.readthedocs.io/
 """
 
 from .core import App, MenuDivider, MenuItem, SFSymbol, State, UserDefaults, run
+from . import draw
 from .services import (
     Battery,
     BatteryInfo,
@@ -85,6 +86,7 @@ from .types import (
     Alignment,
     # Core types
     Animation,
+    AttributedString,
     BlendMode,
     BorderShape,
     ButtonRole,
@@ -95,6 +97,8 @@ from .types import (
     # Transition enums
     ContentTransition,
     ControlSize,
+    # Custom transitions
+    CustomTransitionBuilder,
     Font,
     FontWeight,
     # Alignment enums
@@ -102,6 +106,7 @@ from .types import (
     # Image enums
     ImageRenderingMode,
     LabelStyle,
+    Offset,
     PickerStyle,
     ProgressStyle,
     ScrollAxis,
@@ -113,6 +118,7 @@ from .types import (
     # Control style enums
     ToggleStyle,
     Transition,
+    TransitionConfig,
     # Text enums
     TruncationMode,
     VerticalAlignment,
@@ -123,6 +129,9 @@ from .views import (
     BarMark,
     BlurStyle,
     Button,
+    # Canvas (Core Graphics drawing)
+    Canvas,
+    PanEvent,
     Capsule,
     # Charts
     Chart,
@@ -200,6 +209,8 @@ from .views import (
     ZStack,
     # Camera
     CameraPreview,
+    # WebView
+    WebView,
 )
 
 __version__ = "0.1.0"
@@ -278,6 +289,10 @@ __all__ = [
     # Effects
     "VisualEffectBlur",
     "BlurStyle",
+    # Canvas
+    "Canvas",
+    "PanEvent",
+    "draw",
     # Charts
     "Chart",
     "LineMark",
@@ -294,9 +309,11 @@ __all__ = [
     "SymbolShape",
     # Core Types
     "Animation",
+    "AttributedString",
     "Color",
     "Font",
     "FontWeight",
+    "Offset",
     "TextStyle",
     # Button Enums
     "ButtonStyle",
@@ -325,6 +342,8 @@ __all__ = [
     # Transition Enums
     "ContentTransition",
     "Transition",
+    "TransitionConfig",
+    "CustomTransitionBuilder",
     "BlendMode",
     # Services
     "Battery",
@@ -335,6 +354,7 @@ __all__ = [
     "CameraFrame",
     "CameraPosition",
     "CameraPreview",
+    "WebView",
     "Connectivity",
     "ConnectivityInfo",
     "ConnectionType",

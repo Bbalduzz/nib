@@ -16,8 +16,8 @@ sys.path.insert(0, os.path.abspath("../python"))
 project = "Nib"
 copyright = "2026, Nib Contributors"
 author = "Nib Contributors"
-release = "0.1.0"
-version = "0.1.0"
+release = "0.1.2"
+version = "0.1.2"
 
 # -- General configuration ---------------------------------------------------
 
@@ -26,9 +26,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.doctest",
-    "sphinx_autodoc_typehints",
 ]
 
 templates_path = ["_templates"]
@@ -51,8 +48,6 @@ autodoc_default_options = {
 # Include both class and __init__ docstrings
 autoclass_content = "both"
 
-# Generate autosummary stubs
-autosummary_generate = True
 
 # -- Options for Napoleon (Google-style docstrings) --------------------------
 
@@ -69,12 +64,6 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
-
-# -- Options for sphinx-autodoc-typehints ------------------------------------
-
-typehints_fully_qualified = False
-always_document_param_types = True
-typehints_document_rtype = True
 
 # -- Options for intersphinx -------------------------------------------------
 
@@ -119,13 +108,6 @@ nitpick_ignore = [
 
 # Suppress known acceptable warnings
 suppress_warnings = ["ref.python"]
-
-# -- Doctest configuration ---------------------------------------------------
-
-# Set up doctest to work with our import structure
-doctest_global_setup = """
-import nib
-"""
 
 # -- Custom setup ------------------------------------------------------------
 

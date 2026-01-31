@@ -71,6 +71,8 @@ extension View {
             applyCornerRadius(modifier.args)
         case .clipShape:
             applyClipShape(modifier.args)
+        case .offset:
+            applyOffset(modifier.args)
 
         // Appearance
         case .background:

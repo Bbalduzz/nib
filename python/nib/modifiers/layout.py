@@ -325,3 +325,57 @@ def apply_margin(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         return {"type": "margin", "args": args}
     else:
         return {"type": "margin", "args": {"value": _float(margin)}}
+
+
+@ModifierRegistry.modifier("offset", ["offset"])
+def apply_offset(kwargs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Apply the offset modifier for view positioning.
+
+    The offset modifier maps to SwiftUI's .offset(x:y:) view modifier and shifts
+    a view from its natural position by the specified x and y amounts. This is
+    useful for positioning children within a ZStack or creating overlapping layouts.
+
+    Unlike absolute positioning, offset preserves the view's layout participation -
+    the view still occupies its original space in the layout, but is rendered at
+    the offset position.
+
+    This modifier is registered with the "offset" parameter, which accepts an
+    Offset instance with x and y values.
+
+    Args:
+        kwargs: Dictionary containing the view's constructor parameters.
+            Relevant key is "offset" (an Offset instance).
+
+    Returns:
+        A modifier dictionary with type "offset" and args containing the
+        offset values, or None if no offset is specified.
+
+    Example:
+        Applying offset to kwargs::
+
+            from nib.types import Offset
+
+            kwargs = {"offset": Offset(10, 20)}
+            result = apply_offset(kwargs)
+            # Returns: {"type": "offset", "args": {"offsetX": 10.0, "offsetY": 20.0}}
+
+            kwargs = {"offset": Offset(x=-5)}  # Only horizontal offset
+            result = apply_offset(kwargs)
+            # Returns: {"type": "offset", "args": {"offsetX": -5.0, "offsetY": 0.0}}
+
+            kwargs = {"content": "Hello"}  # No offset
+            result = apply_offset(kwargs)
+            # Returns: None
+    """
+    offset = kwargs.get("offset")
+
+    if offset is None:
+        return None
+
+    return {
+        "type": "offset",
+        "args": {
+            "offsetX": _float(offset.x),
+            "offsetY": _float(offset.y),
+        },
+    }

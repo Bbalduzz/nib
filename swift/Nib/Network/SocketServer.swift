@@ -272,6 +272,13 @@ class SocketServer {
                 params: raw.payload?.params
             )
             return .service(payload)
+        case "action":
+            let payload = NibMessage.ActionPayload(
+                nodeId: raw.payload?.nodeId ?? "",
+                action: raw.payload?.action ?? "",
+                params: raw.payload?.params
+            )
+            return .action(payload)
         case "quit":
             return .quit
         default:

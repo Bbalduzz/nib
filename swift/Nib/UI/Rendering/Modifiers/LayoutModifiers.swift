@@ -64,4 +64,11 @@ extension View {
             self
         }
     }
+
+    @ViewBuilder
+    func applyOffset(_ args: ViewNode.ViewModifier.ModifierArgs) -> some View {
+        let x = args.offsetX ?? 0
+        let y = args.offsetY ?? 0
+        self.offset(x: x, y: y)
+    }
 }

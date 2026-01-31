@@ -18,8 +18,45 @@ struct CommonProps: Codable, Equatable {
 
 // MARK: - Text Props
 
+/// Represents a styled text segment for rich text rendering
+struct AttributedStringItem: Codable, Equatable {
+    var content: String
+    var styles: AttributedStringStyles?
+
+    /// Styles that can be applied to an attributed string segment
+    struct AttributedStringStyles: Codable, Equatable {
+        // Font (using same structure as ViewModifier.FontStyle)
+        var font: FontConfig?
+        var color: String?
+
+        // Text decorations (from TextStyle)
+        var bold: Bool?
+        var italic: Bool?
+        var monospaced: Bool?
+        var monospacedDigit: Bool?
+        var strikethrough: Bool?
+        var strikethroughColor: String?
+        var underline: Bool?
+        var underlineColor: String?
+
+        // Spacing
+        var kerning: CGFloat?
+        var tracking: CGFloat?
+        var baselineOffset: CGFloat?
+
+        /// Font configuration matching Python's Font.to_dict()
+        struct FontConfig: Codable, Equatable {
+            var fontName: String?
+            var fontSize: CGFloat?
+            var fontWeight: String?
+            var fontPath: String?
+        }
+    }
+}
+
 struct TextProps: Codable, Equatable {
     var content: String?
+    var attributedStrings: [AttributedStringItem]?
     var textStyles: ViewNode.TextStyles?
 }
 

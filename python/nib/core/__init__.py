@@ -43,6 +43,7 @@ from .app import App, SFSymbol, run, MenuItem, MenuDivider
 from .state import State, Binding
 from .connection import Connection
 from .user_defaults import UserDefaults
+from .logging import logger, LogLevel
 
 __all__ = [
     "App",
@@ -54,4 +55,6 @@ __all__ = [
     "Binding",
     "Connection",
     "UserDefaults",
+    "logger",
+    "LogLevel",
 ]

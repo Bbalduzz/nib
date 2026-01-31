@@ -69,10 +69,13 @@ class TextField(View):
 
         Text field with submit action::
 
+            def on_search(query: str):
+                print(f"Searching for: {query}")
+
             nib.TextField(
-                placeholder="Press Enter to submit",
+                placeholder="Press Enter to search",
                 value="",
-                on_submit=handle_submit,
+                on_submit=on_search,
                 submit_label="Search",
             )
     """
@@ -86,7 +89,7 @@ class TextField(View):
         # Alias for backwards compatibility
         text: str = None,
         on_change: Optional[Callable[[str], None]] = None,
-        on_submit: Optional[Callable[[], None]] = None,
+        on_submit: Optional[Callable[[str], None]] = None,
         # TextField-specific styling
         style: Optional[Union[TextFieldStyle, str]] = None,
         autocapitalization: Optional[str] = None,
@@ -106,7 +109,7 @@ class TextField(View):
             on_change: Callback function called when text changes.
                 Receives the new text value as a string argument.
             on_submit: Callback function called when the user presses Return/Enter.
-                Called with no arguments.
+                Receives the current text value as a string argument.
             style: Visual style of the text field. Options:
                 - TextFieldStyle.automatic: System default
                 - TextFieldStyle.plain: Plain style without decorations
@@ -220,6 +223,10 @@ class SecureField(View):
 
         Secure field with submit action::
 
+            def authenticate(password: str):
+                # Verify password
+                pass
+
             nib.SecureField(
                 placeholder="Password",
                 value="",
@@ -236,7 +243,7 @@ class SecureField(View):
         # Alias for backwards compatibility
         text: str = None,
         on_change: Optional[Callable[[str], None]] = None,
-        on_submit: Optional[Callable[[], None]] = None,
+        on_submit: Optional[Callable[[str], None]] = None,
         # SecureField-specific styling
         style: Optional[Union[TextFieldStyle, str]] = None,
         disabled: bool = False,
@@ -252,7 +259,7 @@ class SecureField(View):
             on_change: Callback function called when text changes.
                 Receives the new text value as a string argument.
             on_submit: Callback function called when the user presses Return/Enter.
-                Called with no arguments.
+                Receives the current text value as a string argument.
             style: Visual style of the secure field. Options:
                 - TextFieldStyle.automatic: System default
                 - TextFieldStyle.plain: Plain style without decorations

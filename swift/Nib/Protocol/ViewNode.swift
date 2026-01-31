@@ -12,6 +12,19 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
     var overlayViews: [ViewNode]?
     // Slot identifier for views used as named children (e.g., Gauge labels)
     var slot: String?
+    // Animation context for per-view reactive animations
+    var animationContext: AnimationContext?
+
+    // MARK: - Animation Context
+    /// Configuration for per-view reactive animations.
+    /// When a view has an animationContext, all property changes animate with this config.
+    struct AnimationContext: Codable, Equatable, Hashable {
+        var animationType: String?
+        var animationDuration: Double?
+        var animationDelay: Double?
+        var springResponse: Double?
+        var springDamping: Double?
+    }
 
     // MARK: - Equatable (for SwiftUI diffing optimization)
     static func == (lhs: ViewNode, rhs: ViewNode) -> Bool {
@@ -22,7 +35,8 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         lhs.modifiers == rhs.modifiers &&
         lhs.backgroundViews == rhs.backgroundViews &&
         lhs.overlayViews == rhs.overlayViews &&
-        lhs.slot == rhs.slot
+        lhs.slot == rhs.slot &&
+        lhs.animationContext == rhs.animationContext
     }
 
     // MARK: - Hashable
@@ -55,6 +69,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         children = try container.decodeIfPresent([ViewNode].self, forKey: .children)
         modifiers = try container.decodeIfPresent([ViewModifier].self, forKey: .modifiers)
         slot = try container.decodeIfPresent(String.self, forKey: .slot)
+        animationContext = try container.decodeIfPresent(AnimationContext.self, forKey: .animationContext)
         // Decode single backgroundView into array
         if let bgView = try container.decodeIfPresent(ViewNode.self, forKey: .backgroundView) {
             backgroundViews = [bgView]
@@ -70,7 +85,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, type, props, children, modifiers, backgroundView, backgroundViews, overlayView, overlayViews, slot
+        case id, type, props, children, modifiers, backgroundView, backgroundViews, overlayView, overlayViews, slot, animationContext
     }
 
     func encode(to encoder: Encoder) throws {
@@ -82,6 +97,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         try container.encodeIfPresent(modifiers, forKey: .modifiers)
         try container.encodeIfPresent(backgroundViews, forKey: .backgroundViews)
         try container.encodeIfPresent(slot, forKey: .slot)
+        try container.encodeIfPresent(animationContext, forKey: .animationContext)
     }
 
     // MARK: - View Type Enum
@@ -171,6 +187,12 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
 
         // Camera
         case cameraPreview = "CameraPreview"
+
+        // Canvas (Core Graphics drawing)
+        case canvas = "Canvas"
+
+        // WebView
+        case webView = "WebView"
     }
 
     // MARK: - Props
@@ -184,6 +206,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
 
         // Text
         var content: String?
+        var attributedStrings: [AttributedStringItem]?
         var textStyles: TextStyles?
 
         // Markdown
@@ -350,5 +373,18 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
 
         // CameraPreview
         var deviceId: String?
+
+        // Canvas
+        var canvasWidth: Double?
+        var canvasHeight: Double?
+        var commands: [DrawCommand]?
+        var backgroundColor: String?
+        var canvasGestures: Bool?  // Enable pan/hover gestures
+
+        // WebView (reuses url from Link)
+        var html: String?
+        var baseURL: String?
+        var allowsBackForward: Bool?
+        var allowsMagnification: Bool?
     }
 }

@@ -28,6 +28,7 @@ from .text_editor import TextEditor
 from .table import Table, TableColumn
 from .share_link import ShareLink
 from .camera_preview import CameraPreview
+from .web_view import WebView
 
 __all__ = [
     "Text",
@@ -60,4 +61,5 @@ __all__ = [
     "TableColumn",
     "ShareLink",
     "CameraPreview",
+    "WebView",
 ]

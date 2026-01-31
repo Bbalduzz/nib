@@ -114,6 +114,7 @@ from .controls import (
     TableColumn,
     ShareLink,
     CameraPreview,
+    WebView,
 )
 from .shapes import (
     RoundedRectangle,
@@ -130,6 +131,7 @@ from .effects import (
     VisualEffectBlur,
     BlurStyle,
 )
+from .canvas import Canvas, PanEvent
 from .charts import (
     Chart,
     LineMark,
@@ -200,6 +202,10 @@ __all__ = [
     "TableColumn",
     "ShareLink",
     "CameraPreview",
+    "WebView",
+    # Canvas
+    "Canvas",
+    "PanEvent",
     # Shapes
     "RoundedRectangle",
     "Circle",

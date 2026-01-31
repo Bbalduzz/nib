@@ -41,6 +41,23 @@ struct NibChartView: View {
         chartData.parseColumns()
     }
 
+    // MARK: - Gradient Helpers
+
+    /// Build gradient from PlottableField
+    private func gradientFromField(_ field: ViewNode.PlottableField) -> Gradient {
+        if let colors = field.colors {
+            let swiftColors = colors.map { Color(nibColor: $0) }
+            return Gradient(colors: swiftColors)
+        }
+        return Gradient(colors: [.clear])
+    }
+
+    /// Convert [x, y] array to UnitPoint
+    private func unitPointFromField(_ array: [Double]?, default defaultPoint: UnitPoint) -> UnitPoint {
+        guard let arr = array, arr.count >= 2 else { return defaultPoint }
+        return UnitPoint(x: arr[0], y: arr[1])
+    }
+
     var body: some View {
         let cols = columns
         let _ = debugPrint("[Chart] rowCount: \(chartData.rowCount), marks: \(marks.count), columns: \(cols.keys)")
@@ -103,6 +120,38 @@ struct NibChartView: View {
                 .foregroundStyle(by: .value(styleField, styleValue))
                 .lineStyle(StrokeStyle(lineWidth: lineWidth))
                 .interpolationMethod(interpolationMethod(interpolation))
+            } else if let gradientType = node.props.foregroundStyle?.gradientType,
+                      let style = node.props.foregroundStyle {
+                // Gradient foreground style
+                let grad = gradientFromField(style)
+                switch gradientType {
+                case "LinearGradient":
+                    let start = unitPointFromField(style.startPoint, default: UnitPoint(x: 0.5, y: 0))
+                    let end = unitPointFromField(style.endPoint, default: UnitPoint(x: 0.5, y: 1))
+                    LineMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .foregroundStyle(LinearGradient(gradient: grad, startPoint: start, endPoint: end))
+                        .lineStyle(StrokeStyle(lineWidth: lineWidth))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                case "RadialGradient":
+                    let center = unitPointFromField(style.center, default: .center)
+                    LineMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .foregroundStyle(RadialGradient(gradient: grad, center: center, startRadius: style.startRadius ?? 0, endRadius: style.endRadius ?? 100))
+                        .lineStyle(StrokeStyle(lineWidth: lineWidth))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                default:
+                    LineMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .lineStyle(StrokeStyle(lineWidth: lineWidth))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                }
+            } else if let colorStr = node.props.foregroundStyle?.color {
+                // Direct color
+                LineMark(
+                    x: .value(xField, xValue),
+                    y: .value(yField, yValue)
+                )
+                .foregroundStyle(Color(nibColor: colorStr))
+                .lineStyle(StrokeStyle(lineWidth: lineWidth))
+                .interpolationMethod(interpolationMethod(interpolation))
             } else {
                 // Without foreground style
                 LineMark(
@@ -134,6 +183,13 @@ struct NibChartView: View {
                 )
                 .foregroundStyle(by: .value(styleField, styleValue))
                 .cornerRadius(cornerRadius)
+            } else if let colorStr = node.props.foregroundStyle?.color {
+                BarMark(
+                    x: .value(xField, xValue),
+                    y: .value(yField, yValue)
+                )
+                .foregroundStyle(Color(nibColor: colorStr))
+                .cornerRadius(cornerRadius)
             } else {
                 BarMark(
                     x: .value(xField, xValue),
@@ -163,6 +219,43 @@ struct NibChartView: View {
                     y: .value(yField, yValue)
                 )
                 .foregroundStyle(by: .value(styleField, styleValue))
+                .interpolationMethod(interpolationMethod(interpolation))
+                .opacity(opacity)
+            } else if let gradientType = node.props.foregroundStyle?.gradientType,
+                      let style = node.props.foregroundStyle {
+                // Gradient foreground style
+                let grad = gradientFromField(style)
+                switch gradientType {
+                case "LinearGradient":
+                    let start = unitPointFromField(style.startPoint, default: UnitPoint(x: 0.5, y: 0))
+                    let end = unitPointFromField(style.endPoint, default: UnitPoint(x: 0.5, y: 1))
+                    AreaMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .foregroundStyle(LinearGradient(gradient: grad, startPoint: start, endPoint: end))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                        .opacity(opacity)
+                case "RadialGradient":
+                    let center = unitPointFromField(style.center, default: .center)
+                    AreaMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .foregroundStyle(RadialGradient(gradient: grad, center: center, startRadius: style.startRadius ?? 0, endRadius: style.endRadius ?? 100))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                        .opacity(opacity)
+                case "AngularGradient":
+                    let center = unitPointFromField(style.center, default: .center)
+                    AreaMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .foregroundStyle(AngularGradient(gradient: grad, center: center, startAngle: .degrees(style.startAngle ?? 0), endAngle: .degrees(style.endAngle ?? 360)))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                        .opacity(opacity)
+                default:
+                    AreaMark(x: .value(xField, xValue), y: .value(yField, yValue))
+                        .interpolationMethod(interpolationMethod(interpolation))
+                        .opacity(opacity)
+                }
+            } else if let colorStr = node.props.foregroundStyle?.color {
+                AreaMark(
+                    x: .value(xField, xValue),
+                    y: .value(yField, yValue)
+                )
+                .foregroundStyle(Color(nibColor: colorStr))
                 .interpolationMethod(interpolationMethod(interpolation))
                 .opacity(opacity)
             } else {

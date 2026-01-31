@@ -1,8 +1,9 @@
 import AppKit
 import SwiftUI
 import ServiceManagement
+import UserNotifications
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarController: StatusBarController?
     var socketServer: SocketServer?
     var hotkeyManager = HotkeyManager()
@@ -17,6 +18,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Handle launch at login registration (for bundled apps)
         registerLaunchAtLoginIfNeeded()
+
+        // Set up notification center delegate and request authorization
+        setupNotifications()
 
         // Initialize status bar
         statusBarController = StatusBarController()
@@ -272,6 +276,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 debugPrint("Service - \(payload.service):\(payload.action)")
                 self?.handleService(payload)
 
+            case .action(let payload):
+                debugPrint("Action - nodeId:", payload.nodeId, "action:", payload.action)
+                self?.statusBarController?.handleAction(nodeId: payload.nodeId, action: payload.action, params: payload.params)
+
             case .quit:
                 debugPrint("Quit message received")
                 NSApp.terminate(nil)
@@ -327,8 +335,82 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarController?.applyPatches(payload.patches)
     }
 
+    // MARK: - Notifications
+
+    /// Whether we're running from a proper .app bundle
+    /// UserNotifications framework crashes without a proper app bundle
+    private lazy var isRunningFromAppBundle: Bool = {
+        // Check if we're inside a .app bundle - this is the only reliable way
+        // Bundle.main.bundleIdentifier can be non-nil even for raw executables
+        let bundlePath = Bundle.main.bundlePath
+        return bundlePath.hasSuffix(".app") || bundlePath.contains(".app/")
+    }()
+
+    private func setupNotifications() {
+        // IMPORTANT: Do NOT call UNUserNotificationCenter.current() outside of an .app bundle
+        // It will crash with "bundleProxyForCurrentProcess is nil"
+        guard isRunningFromAppBundle else {
+            debugPrint("Skipping notification setup (not running from .app bundle - dev mode)")
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+
+        // Request authorization for notifications
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                debugPrint("Notification authorization error: \(error)")
+            } else {
+                debugPrint("Notification authorization granted: \(granted)")
+            }
+        }
+    }
+
     private func sendNotification(_ payload: NibMessage.NotifyPayload) {
-        // Use NSUserNotification (deprecated but works without bundle identity issues)
+        // IMPORTANT: Must check app bundle BEFORE touching UNUserNotificationCenter
+        if isRunningFromAppBundle {
+            sendNotificationModern(payload)
+        } else {
+            sendNotificationLegacy(payload)
+        }
+    }
+
+    private func sendNotificationModern(_ payload: NibMessage.NotifyPayload) {
+        let content = UNMutableNotificationContent()
+        content.title = payload.title
+
+        if let body = payload.body {
+            content.body = body
+        }
+        if let subtitle = payload.subtitle {
+            content.subtitle = subtitle
+        }
+        if payload.sound ?? true {
+            content.sound = .default
+        }
+
+        // Use provided identifier or generate a unique one
+        let identifier = payload.identifier ?? UUID().uuidString
+
+        // Create request with no trigger (immediate delivery)
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                debugPrint("Failed to send notification: \(error)")
+            } else {
+                debugPrint("Notification sent: \(payload.title)")
+            }
+        }
+    }
+
+    private func sendNotificationLegacy(_ payload: NibMessage.NotifyPayload) {
+        // Fall back to deprecated NSUserNotification for dev mode (no bundle)
         let notification = NSUserNotification()
         notification.title = payload.title
         if let body = payload.body {
@@ -345,7 +427,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         NSUserNotificationCenter.default.deliver(notification)
-        debugPrint("Notification sent: \(payload.title)")
+        debugPrint("Notification sent (legacy): \(payload.title)")
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show notification even when app is in foreground
+        completionHandler([.banner, .sound])
     }
 
     // MARK: - Service Routing
@@ -357,11 +450,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch payload.service {
         case "battery":
-            if payload.action == "status" {
-                BatteryService.handleStatus(requestId: payload.requestId, sendResponse: sendResponse)
-            } else {
-                debugPrint("Unknown battery action:", payload.action)
-            }
+            BatteryService.handle(payload, sendResponse: sendResponse)
         case "connectivity":
             if payload.action == "status" {
                 ConnectivityService.handleStatus(requestId: payload.requestId, sendResponse: sendResponse)

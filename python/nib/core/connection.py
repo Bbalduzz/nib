@@ -21,6 +21,8 @@ import threading
 from typing import Callable, Optional, Any
 import msgpack
 
+from .logging import logger
+
 
 class Connection:
     """Unix socket connection to the Swift runtime.
@@ -350,6 +352,32 @@ class Connection:
             message["payload"]["params"] = params
         self._send(message)
 
+    def send_action(
+        self,
+        node_id: str,
+        action: str,
+        params: Optional[dict] = None,
+    ) -> None:
+        """Send an action to a specific view node.
+
+        Used for triggering actions on views like WebView (reload, goBack, etc.).
+
+        Args:
+            node_id: The ID of the target view node.
+            action: The action to perform (e.g., "reload", "goBack", "goForward").
+            params: Optional parameters for the action.
+        """
+        message = {
+            "type": "action",
+            "payload": {
+                "nodeId": node_id,
+                "action": action,
+            },
+        }
+        if params:
+            message["payload"]["params"] = params
+        self._send(message)
+
     def set_event_handler(self, handler: Callable[[str, str], None]) -> None:
         """Set the handler for events from the Swift runtime.
 
@@ -384,7 +412,7 @@ class Connection:
                 length = struct.pack(">I", len(packed))
                 self._socket.sendall(length + packed)
             except Exception as e:
-                print(f"[nib] Error sending message: {e}")
+                logger.error("Error sending message", exc=e)
                 self._connected = False
 
     def _start_read_thread(self) -> None:
@@ -425,11 +453,11 @@ class Connection:
                         message = msgpack.unpackb(message_data, raw=False)
                         self._handle_message(message)
                     except Exception as e:
-                        print(f"Error unpacking message: {e}")
+                        logger.error("Error unpacking message", exc=e)
 
             except Exception as e:
                 if self._connected:
-                    print(f"Error reading from socket: {e}")
+                    logger.error("Error reading from socket", exc=e)
                 break
 
         self._connected = False
@@ -457,9 +485,7 @@ class Connection:
         try:
             self._on_event(node_id, event)
         except Exception as e:
-            print(f"[nib] Error in event handler: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error("Error in event handler", exc=e, node_id=node_id, event=event)
 
     def _handle_service_response(self, message: dict) -> None:
         """Handle a service query response."""
@@ -478,6 +504,4 @@ class Connection:
             from ..services.base import Service
             Service._handle_response(request_id, data)
         except Exception as e:
-            print(f"[nib] Error handling service response: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error("Error handling service response", exc=e, service=service)

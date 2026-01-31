@@ -10,6 +10,7 @@ struct DynamicView: View {
     var body: some View {
         buildView(for: node)
             .applyModifiers(node.modifiers)
+            .applyAnimationContext(node.animationContext, nodeHash: node.hashValue)
             .applyBackgroundView(node.backgroundView, onEvent: onEvent)
             .applyOverlayView(node.overlayView, onEvent: onEvent)
             .applyDropZone(enabled: node.props.onDrop ?? false, nodeId: node.id, onEvent: onEvent)
@@ -162,6 +163,14 @@ extension DynamicView {
         // Camera
         case .cameraPreview:
             buildCameraPreview()
+
+        // Canvas (Core Graphics drawing)
+        case .canvas:
+            buildCanvas()
+
+        // WebView
+        case .webView:
+            buildWebView()
         }
     }
 }

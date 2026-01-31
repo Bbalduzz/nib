@@ -140,9 +140,9 @@ extension View {
     private func applySymbolConfiguration(_ styles: ViewNode.ImageStyles) -> some View {
         if let scale = styles.symbolScale, let s = Image.Scale.nib(scale) {
             self.imageScale(s)
-                .fontWeight(Font.Weight.nib(styles.symbolWeight) ?? .regular)
-        } else if let weight = styles.symbolWeight, let w = Font.Weight.nib(weight) {
-            self.fontWeight(w)
+                .fontWeight(Font.Weight.nib(styles.symbolWeight))
+        } else if let weight = styles.symbolWeight {
+            self.fontWeight(Font.Weight.nib(weight))
         } else {
             self
         }
@@ -231,23 +231,7 @@ extension View {
 }
 
 // MARK: - Type Conversions
-
-extension Font.Weight {
-    static func nib(_ value: String?) -> Font.Weight? {
-        switch value?.lowercased() {
-        case "ultralight": return .ultraLight
-        case "thin": return .thin
-        case "light": return .light
-        case "regular": return .regular
-        case "medium": return .medium
-        case "semibold": return .semibold
-        case "bold": return .bold
-        case "heavy": return .heavy
-        case "black": return .black
-        default: return nil
-        }
-    }
-}
+// Note: Font.Weight.nib is defined in FontModifiers.swift
 
 extension Image.Scale {
     static func nib(_ value: String?) -> Image.Scale? {

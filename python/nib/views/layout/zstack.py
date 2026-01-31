@@ -125,6 +125,17 @@ class ZStack(View):
         self._children = controls if controls is not None else (children or [])
         self._alignment = resolve_enum(alignment)
 
+    @property
+    def controls(self) -> List[View]:
+        """Get the child views."""
+        return self._children
+
+    @controls.setter
+    def controls(self, value: List[View]) -> None:
+        """Set the child views and trigger UI update."""
+        self._children = value
+        self._trigger_update()
+
     def _get_props(self) -> dict:
         """Get the ZStack-specific properties for serialization.
 

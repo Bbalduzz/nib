@@ -1,19 +1,24 @@
 import AppKit
 import SwiftUI
 
-class StatusBarController {
+class StatusBarController: NSObject, NSPopoverDelegate {
     private var statusItem: NSStatusItem
     private var popover: NSPopover
     private var viewStore = ViewStore()
     private var eventHandler: ((String, String) -> Void)?
     private var rightClickMenu: NSMenu?
     private var menuItems: [NibMessage.MenuItemConfig] = []
+    private var iconHostingView: NSHostingView<AnyView>?
 
-    init() {
+    override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         popover = NSPopover()
         popover.behavior = .transient
         popover.animates = true
+
+        super.init()
+
+        popover.delegate = self
 
         // Default appearance
         if let button = statusItem.button {
@@ -45,12 +50,43 @@ class StatusBarController {
     func updateStatusBar(icon: NibMessage.MenuIconConfig?, title: String?) {
         guard let button = statusItem.button else { return }
 
+        // Remove existing hosting view if any
+        iconHostingView?.removeFromSuperview()
+        iconHostingView = nil
+
         if let iconConfig = icon {
-            button.image = createMenuImage(from: iconConfig)
-            if title != nil {
-                button.imagePosition = .imageLeading
+            switch iconConfig {
+            case .view(let viewNode):
+                // Embed live SwiftUI view
+                button.image = nil
+                let swiftUIView = DynamicView(node: viewNode, onEvent: { [weak self] nodeId, event in
+                    self?.emitEvent(nodeId: nodeId, event: event)
+                })
+                let hostingView = NSHostingView(rootView: AnyView(swiftUIView))
+
+                // Let the view determine its own size
+                let fittingSize = hostingView.fittingSize
+                let height: CGFloat = 22  // Menu bar height
+                let width = max(fittingSize.width, 22)  // Minimum width
+
+                // Update status item length to fit content
+                statusItem.length = width
+
+                hostingView.frame = NSRect(x: 0, y: 0, width: width, height: height)
+                button.addSubview(hostingView)
+                button.frame = hostingView.frame
+                iconHostingView = hostingView
+
+            default:
+                // SF Symbol or config - use image
+                statusItem.length = NSStatusItem.variableLength  // Reset to variable
+                button.image = createMenuImage(from: iconConfig)
+                if title != nil {
+                    button.imagePosition = .imageLeading
+                }
             }
         } else {
+            statusItem.length = NSStatusItem.variableLength  // Reset to variable
             button.image = nil
         }
 
@@ -310,6 +346,13 @@ class StatusBarController {
         }
     }
 
+    // MARK: - NSPopoverDelegate
+
+    func popoverDidClose(_ notification: Notification) {
+        // Notify Python that the popover disappeared
+        emitEvent(nodeId: "_app", event: "disappear")
+    }
+
     // MARK: - Right-Click Menu
 
     func updateMenu(_ items: [NibMessage.MenuItemConfig]) {
@@ -419,6 +462,10 @@ class StatusBarController {
         case .name(let name):
             return NSImage(systemSymbolName: name, accessibilityDescription: name)
 
+        case .view:
+            // View icons are handled separately in updateStatusBar via NSHostingView
+            return nil
+
         case .config(let config):
             // Create base image
             guard var image = NSImage(systemSymbolName: config.name, accessibilityDescription: config.name) else {
@@ -509,6 +556,11 @@ class StatusBarController {
         if let itemId = sender.representedObject as? String {
             emitEvent(nodeId: itemId, event: "menu:tap")
         }
+    }
+
+    func handleAction(nodeId: String, action: String, params: [String: AnyCodable]?) {
+        debugPrint("StatusBarController.handleAction - nodeId:", nodeId, "action:", action)
+        ViewActionRegistry.shared.performAction(nodeId: nodeId, action: action, params: params)
     }
 }
 

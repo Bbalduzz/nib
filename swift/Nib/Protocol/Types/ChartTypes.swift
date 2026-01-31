@@ -43,5 +43,19 @@ extension ViewNode {
         var field: String?      // Column name reference
         var type: String?       // "quantitative", "nominal", "temporal"
         var label: String?      // Display label
+        var color: String?      // Direct color value (hex, rgba, named)
+
+        // Gradient support
+        var gradientType: String?  // "LinearGradient", "RadialGradient", etc.
+        var colors: [String]?
+        var startPoint: [Double]?
+        var endPoint: [Double]?
+        var center: [Double]?
+        var startRadius: Double?
+        var endRadius: Double?
+        var startAngle: Double?
+        var endAngle: Double?
+        var startRadiusFraction: Double?
+        var endRadiusFraction: Double?
     }
 }

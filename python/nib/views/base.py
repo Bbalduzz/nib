@@ -47,6 +47,7 @@ from ..types import (
     Font,
     FontWeight,
     FontWeightLike,
+    Offset,
     Transition,
     resolve_color,
     _resolve_weight,
@@ -127,6 +128,7 @@ class View:
             - clip_shape: Clip view to shape ("circle", "capsule", or View)
             - blend_mode: Layer blending mode
             - scale: Scale transform
+            - offset: Position offset (Offset with x, y)
 
         Animation:
             - animation: Animation configuration
@@ -201,6 +203,8 @@ class View:
         blend_mode: Optional[Union[BlendMode, str]] = None,
         # Transform
         scale: Optional[float] = None,
+        # Offset (for positioning in ZStack, etc.)
+        offset: Optional[Offset] = None,
         # Overlay (View, like background)
         overlay: Optional["View"] = None,
         # Drag and drop
@@ -243,6 +247,7 @@ class View:
             transition: Animation for view appearance/disappearance.
             blend_mode: Layer blending mode.
             scale: Scale transform factor.
+            offset: Position offset (Offset instance with x, y values).
             overlay: View to render on top of this view.
             on_drop: Callback for drag-and-drop file handling.
             visible: Whether the view is included in the tree. If False,
@@ -255,6 +260,9 @@ class View:
         self._on_drop = on_drop
         self._visible = visible
 
+        # Sticky animation - persists across property changes and applies to all mutations
+        self._sticky_animation: Optional[Animation] = animation
+
         # Handle special cases: background/overlay views
         if background is not None and hasattr(background, "_type"):
             self._background_view = background
@@ -266,8 +274,8 @@ class View:
         else:
             self._overlay_view = None
 
-        # Build kwargs for modifier registry
-        kwargs = {
+        # Build kwargs for modifier registry - store for later mutation
+        self._modifier_kwargs = {
             "width": width,
             "height": height,
             "min_width": min_width,
@@ -297,15 +305,68 @@ class View:
             "transition": transition,
             "blend_mode": blend_mode,
             "scale": scale,
+            "offset": offset,
         }
 
         # Apply all modifiers via registry
-        self._modifiers: List[dict] = ModifierRegistry.apply_all(kwargs)
+        self._modifiers: List[dict] = ModifierRegistry.apply_all(self._modifier_kwargs)
+
+    # Modifier parameter names that can be mutated after construction
+    _MODIFIER_PARAMS = {
+        "width", "height", "min_width", "min_height", "max_width", "max_height",
+        "padding", "margin", "background", "foreground_color", "fill", "stroke",
+        "stroke_width", "opacity", "corner_radius", "font", "font_weight",
+        "clip_shape", "shadow_color", "shadow_radius", "shadow_x", "shadow_y",
+        "border_color", "border_width", "animation", "content_transition",
+        "transition", "blend_mode", "scale", "offset",
+    }
 
     def __setattr__(self, name: str, value) -> None:
-        """Override setattr to trigger re-render on any property change."""
+        """Override setattr to trigger re-render on any property change.
+
+        For modifier parameters (like fill, padding, opacity), this also
+        updates the internal modifier list so the change is reflected in
+        the rendered UI.
+
+        Animation is handled specially - when set, it becomes "sticky" and
+        applies to all future property changes on this view.
+        """
         # Always set the attribute
         object.__setattr__(self, name, value)
+
+        # Check if this is a modifier parameter change
+        modifier_kwargs = getattr(self, "_modifier_kwargs", None)
+        if modifier_kwargs is not None and name in self._MODIFIER_PARAMS:
+            # Update the stored kwargs and re-compute modifiers
+            modifier_kwargs[name] = value
+
+            # Handle animation specially - make it sticky
+            if name == "animation" and value is not None:
+                object.__setattr__(self, "_sticky_animation", value)
+
+            # Handle background/overlay views specially
+            if name == "background":
+                if hasattr(value, "_type"):
+                    object.__setattr__(self, "_background_view", value)
+                    # Set app reference on new background view
+                    app = getattr(self, "_app", None)
+                    if app is not None:
+                        value._set_app(app)
+                else:
+                    object.__setattr__(self, "_background_view", None)
+            # Re-apply all modifiers
+            new_modifiers = ModifierRegistry.apply_all(modifier_kwargs)
+            object.__setattr__(self, "_modifiers", new_modifiers)
+
+        # Handle overlay separately (it's not in _modifier_kwargs but should trigger updates)
+        if name == "overlay":
+            if hasattr(value, "_type"):
+                object.__setattr__(self, "_overlay_view", value)
+                app = getattr(self, "_app", None)
+                if app is not None:
+                    value._set_app(app)
+            else:
+                object.__setattr__(self, "_overlay_view", None)
 
         # Only trigger re-render if connected to an app
         app = getattr(self, "_app", None)
@@ -313,7 +374,7 @@ class View:
             return
 
         # Skip internal bookkeeping attributes
-        if name in ("_id", "_app", "_action", "_modifiers"):
+        if name in ("_id", "_app", "_action", "_modifiers", "_modifier_kwargs"):
             return
 
         # Trigger re-render
@@ -333,6 +394,24 @@ class View:
         if filtered_args:
             self._modifiers.append({"type": type, "args": filtered_args})
 
+    def _serialize_animation_context(self) -> Optional[dict]:
+        """Serialize the sticky animation context for this view.
+
+        Returns the animation configuration that should apply to all property
+        changes on this view. This is sent separately from modifiers so Swift
+        can apply per-view animations.
+
+        Returns:
+            Dictionary with animation config, or None if no animation.
+        """
+        anim = getattr(self, "_sticky_animation", None)
+        if anim is None:
+            # Fall back to animation in modifier_kwargs if sticky not set
+            anim = self._modifier_kwargs.get("animation")
+        if anim is None:
+            return None
+        return anim.to_dict()
+
     def to_dict(self, path: str = "0") -> dict:
         """Convert the view to a dictionary for serialization.
 
@@ -345,7 +424,7 @@ class View:
 
         Returns:
             Dictionary containing id, type, props, children, modifiers,
-            and optional backgroundView/overlayView.
+            animationContext, and optional backgroundView/overlayView.
         """
         # Use pre-assigned _id if available (from _collect_actions), otherwise use path
         view_id = self._id if self._id is not None else path
@@ -360,6 +439,10 @@ class View:
             "children": self._get_children(path),
             "modifiers": self._modifiers if self._modifiers else None,
         }
+        # Add animation context for per-view reactive animations
+        anim_context = self._serialize_animation_context()
+        if anim_context is not None:
+            result["animationContext"] = anim_context
         # Add background view if present
         if hasattr(self, "_background_view") and self._background_view is not None:
             result["backgroundView"] = self._background_view.to_dict(f"{path}.bg")
@@ -401,6 +484,19 @@ class View:
         """
         if self._app is not None:
             self._app._trigger_rerender()
+
+    def update(self) -> None:
+        """Manually trigger a UI re-render for this view.
+
+        Use this to force an update when you've made changes that the
+        automatic reactivity system might not detect.
+
+        Example:
+            # Force update after modifying nested data
+            view.some_list.append("new item")
+            view.update()
+        """
+        self._trigger_update()
 
     def _update_modifier(self, modifier_type: str, **args) -> None:
         """Update or add a modifier and trigger re-render.

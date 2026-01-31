@@ -33,11 +33,21 @@ Example:
             line_limit=2,
             truncation_mode=nib.TruncationMode.TAIL,
         )
+
+    Rich text with AttributedString::
+
+        nib.Text(
+            strings=[
+                nib.AttributedString("Hello ", style=nib.TextStyle(color="red")),
+                nib.AttributedString("World", style=nib.TextStyle(bold=True)),
+            ],
+        )
 """
 
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 from ..base import View, _float
 from ...types import (
+    AttributedString,
     Font,
     FontWeightLike,
     TextStyle,
@@ -61,8 +71,12 @@ class Text(View):
 
     The content property is reactive - changing it triggers a UI update.
 
+    For rich text with multiple styles, use the `strings` parameter with
+    a list of AttributedString objects.
+
     Attributes:
-        content: The text string to display.
+        content: The text string to display (for simple text).
+        strings: List of AttributedString objects (for rich text).
 
     Example:
         Basic text display::
@@ -92,13 +106,25 @@ class Text(View):
                     underline=True,
                 ),
             )
+
+        Rich text with AttributedString::
+
+            nib.Text(
+                strings=[
+                    nib.AttributedString("Error: ", style=nib.TextStyle(
+                        color="red", bold=True)),
+                    nib.AttributedString("File not found", style=nib.TextStyle.BODY),
+                ],
+            )
     """
 
     _type = "Text"
 
     def __init__(
         self,
-        content: str,
+        content: Optional[str] = None,
+        # Rich text support
+        strings: Optional[List[AttributedString]] = None,
         # TextStyle (includes font, decorations, spacing)
         style: Optional[TextStyle] = None,
         # Text layout
@@ -114,9 +140,12 @@ class Text(View):
         """Initialize a Text view.
 
         Args:
-            content: The text string to display.
+            content: The text string to display. Use this OR strings, not both.
+            strings: List of AttributedString objects for rich text. Use this
+                OR content, not both.
             style: A TextStyle that configures font, decorations, and spacing.
                 Can be a preset (TextStyle.TITLE) or custom TextStyle instance.
+                Applied to simple text or as defaults for attributed strings.
             line_limit: Maximum number of lines to display.
             truncation_mode: How to truncate text that exceeds line_limit.
                 Options: TruncationMode.HEAD, TruncationMode.MIDDLE, TruncationMode.TAIL.
@@ -152,7 +181,22 @@ class Text(View):
                     line_limit=2,
                     truncation_mode=nib.TruncationMode.TAIL,
                 )
+
+            Rich text with AttributedString::
+
+                nib.Text(
+                    strings=[
+                        nib.AttributedString("Hello ", color="red"),
+                        nib.AttributedString("World!", style=nib.TextStyle(bold=True)),
+                    ],
+                )
         """
+        # Validate: either content or strings, not both
+        if content is not None and strings is not None:
+            raise ValueError("Specify either 'content' or 'strings', not both")
+        if content is None and strings is None:
+            raise ValueError("Must specify either 'content' or 'strings'")
+
         # Apply style settings to kwargs (style.font -> kwargs["font"], etc.)
         if style is not None:
             if style.font and "font" not in kwargs:
@@ -166,6 +210,7 @@ class Text(View):
         super().__init__(**kwargs)
 
         self._content = content
+        self._strings = strings
 
         # Build text-specific styles from TextStyle
         self._text_styles: dict = {}
@@ -193,11 +238,11 @@ class Text(View):
             self._text_styles["textCase"] = resolve_enum(text_case)
 
     @property
-    def content(self) -> str:
+    def content(self) -> Optional[str]:
         """Get the text content.
 
         Returns:
-            The current text string being displayed.
+            The current text string being displayed, or None if using strings.
         """
         return self._content
 
@@ -210,13 +255,45 @@ class Text(View):
 
         Note:
             Only triggers a UI update if the content actually changed.
+            This clears any strings that were previously set.
         """
         if self._content != new_content:
             self._content = new_content
+            self._strings = None  # Clear strings when setting content
             self._trigger_update()
 
+    @property
+    def strings(self) -> Optional[List[AttributedString]]:
+        """Get the attributed strings.
+
+        Returns:
+            The list of AttributedString objects, or None if using content.
+        """
+        return self._strings
+
+    @strings.setter
+    def strings(self, new_strings: List[AttributedString]) -> None:
+        """Set the attributed strings and trigger UI update.
+
+        Args:
+            new_strings: The new list of AttributedString objects.
+
+        Note:
+            This clears any content that was previously set.
+        """
+        self._strings = new_strings
+        self._content = None  # Clear content when setting strings
+        self._trigger_update()
+
     def _get_props(self) -> dict:
-        props = {"content": str(self._content)}
+        props: dict = {}
+
+        if self._content is not None:
+            props["content"] = str(self._content)
+        elif self._strings is not None:
+            props["attributedStrings"] = [s.to_dict() for s in self._strings]
+
         if self._text_styles:
             props["textStyles"] = self._text_styles
+
         return props

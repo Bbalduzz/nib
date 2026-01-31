@@ -8,6 +8,7 @@ enum NibMessage {
     case fileDialog(FileDialogPayload)
     case userDefaults(UserDefaultsPayload)
     case service(ServicePayload)
+    case action(ActionPayload)
     case quit
 
     struct WindowConfig: Codable {
@@ -87,6 +88,12 @@ enum NibMessage {
         let params: [String: AnyCodable]?
     }
 
+    struct ActionPayload: Codable {
+        let nodeId: String   // Target view node ID
+        let action: String   // Action to perform (e.g., "reload", "goBack", "goForward")
+        let params: [String: AnyCodable]?
+    }
+
     struct MenuItemConfig: Codable {
         let id: String
         let title: String?
@@ -105,6 +112,7 @@ enum NibMessage {
     enum MenuIconConfig: Codable, Equatable {
         case name(String)
         case config(MenuIconFullConfig)
+        case view(ViewNode)  // Any SwiftUI view
 
         struct MenuIconFullConfig: Codable, Equatable {
             let name: String
@@ -114,11 +122,20 @@ enum NibMessage {
             let color: String?
         }
 
+        private struct ViewWrapper: Codable {
+            let view: ViewNode
+        }
+
         init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             // Try string first
             if let name = try? container.decode(String.self) {
                 self = .name(name)
+                return
+            }
+            // Try view wrapper (dict with "view" key)
+            if let wrapper = try? container.decode(ViewWrapper.self) {
+                self = .view(wrapper.view)
                 return
             }
             // Try full config
@@ -128,7 +145,7 @@ enum NibMessage {
             }
             throw DecodingError.typeMismatch(
                 MenuIconConfig.self,
-                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expected String or MenuIconFullConfig")
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expected String, MenuIconFullConfig, or ViewWrapper")
             )
         }
 
@@ -139,13 +156,16 @@ enum NibMessage {
                 try container.encode(name)
             case .config(let config):
                 try container.encode(config)
+            case .view(let viewNode):
+                try container.encode(ViewWrapper(view: viewNode))
             }
         }
 
-        var symbolName: String {
+        var symbolName: String? {
             switch self {
             case .name(let name): return name
             case .config(let config): return config.name
+            case .view: return nil
             }
         }
     }
@@ -177,13 +197,55 @@ struct NibServiceResponse: Codable {
     }
 
     struct ServiceResponseData: Codable {
-        // Battery
+        // Battery - basic
         var level: Double?
         var isCharging: Bool?
         var state: String?
         var hasBattery: Bool?
         var isLowPowerMode: Bool?
         var timeRemaining: Int?
+
+        // Battery - extended status
+        var currentCapacity: Int?
+        var maxCapacity: Int?
+        var isPluggedIn: Bool?
+        var timeToEmpty: Int?
+        var timeToEmptyFormatted: String?
+        var timeToFullCharge: Int?
+        var timeToFullChargeFormatted: String?
+        var powerSource: String?
+        var batteryType: String?
+        var serialNumber: String?
+        var isCharged: Bool?
+        var isFinishingCharge: Bool?
+        var thermalState: String?
+        var amperage: Int?
+        var voltage: Double?
+        var wattage: Double?
+
+        // Battery - health
+        var cycleCount: Int?
+        var designCapacity: Int?
+        var healthPercent: Double?
+        var temperatureCelsius: Double?
+        var temperatureFahrenheit: Double?
+        var manufactureDate: String?
+        var manufacturer: String?
+        var deviceName: String?
+        var condition: String?
+        var optimizedChargingEngaged: Bool?
+
+        // Battery - thermal
+        var thermalStateRaw: Int?
+        var recommendation: String?
+
+        // Battery - sleep
+        var assertionID: Int?
+
+        // Battery - history
+        var note: String?
+        var systemUptime: Double?
+        var systemUptimeFormatted: String?
 
         // Connectivity
         var isConnected: Bool?
@@ -193,15 +255,39 @@ struct NibServiceResponse: Codable {
         var ssid: String?
         var interfaceName: String?
 
-        // Screen
+        // Screen - basic
         var brightness: Double?
         var isBuiltin: Bool?
         var width: Double?
         var height: Double?
         var scale: Double?
 
-        // Generic success
+        // Screen - extended
+        var visibleWidth: Double?
+        var visibleHeight: Double?
+        var displayID: Int?
+        var name: String?
+        var refreshRate: Double?
+        var nativeWidth: Int?
+        var nativeHeight: Int?
+        var colorSpace: String?
+        var colorDepth: Int?
+        var availableResolutionsJson: String?  // JSON-encoded array
+        var displaysJson: String?              // JSON-encoded array
+        var count: Int?
+
+        // Screen - dark mode
+        var isDarkMode: Bool?
+        var appearanceName: String?
+
+        // Screen - color profile
+        var colorSpaceName: String?
+        var colorComponentCount: Int?
+        var iccProfileSize: Int?
+
+        // Generic
         var success: Bool?
+        var errorMessage: String?
 
         // Keychain
         var password: String?
@@ -220,10 +306,26 @@ struct NibServiceResponse: Codable {
         var isStreamFrame: Bool?
 
         private enum CodingKeys: String, CodingKey {
+            // Battery
             case level, isCharging, state, hasBattery, isLowPowerMode, timeRemaining
+            case currentCapacity, maxCapacity, isPluggedIn
+            case timeToEmpty, timeToEmptyFormatted, timeToFullCharge, timeToFullChargeFormatted
+            case powerSource, batteryType, serialNumber, isCharged, isFinishingCharge
+            case thermalState, amperage, voltage, wattage
+            case cycleCount, designCapacity, healthPercent
+            case temperatureCelsius, temperatureFahrenheit, manufactureDate
+            case manufacturer, deviceName, condition, optimizedChargingEngaged
+            case thermalStateRaw, recommendation, assertionID
+            case note, systemUptime, systemUptimeFormatted
+            // Connectivity
             case isConnected, connectionType = "type", isExpensive, isConstrained, ssid, interfaceName
             case brightness, isBuiltin, width, height, scale
-            case success
+            case visibleWidth, visibleHeight, displayID, name, refreshRate
+            case nativeWidth, nativeHeight, colorSpace, colorDepth
+            case availableResolutionsJson, displaysJson, count
+            case isDarkMode, appearanceName
+            case colorSpaceName, colorComponentCount, iccProfileSize
+            case success, errorMessage
             case password, exists
             case enabled
             case devices, imageData, imageWidth, imageHeight, imageFormat, isStreaming, isStreamFrame
@@ -266,6 +368,8 @@ struct RawMessage: Codable {
         // For service
         let service: String?
         let params: [String: AnyCodable]?
+        // For action
+        let nodeId: String?
         // Shared
         let statusBar: StatusBarConfig?
         let window: WindowConfig?

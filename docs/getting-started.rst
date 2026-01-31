@@ -231,7 +231,6 @@ Read and write to the system clipboard:
 Next Steps
 ----------
 
-- Explore the :doc:`API Reference <api/modules>` for detailed documentation
+- Explore the :doc:`views documentation <views/layout>` for UI components
 - Check out the example apps in the ``examples/`` directory
-- Learn about available :class:`views <nib.View>`, :class:`controls <nib.Button>`,
-  and :class:`shapes <nib.Circle>`
+- Learn about :doc:`Canvas drawing <views/canvas>` and :doc:`Charts <views/charts>`

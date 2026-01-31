@@ -368,6 +368,9 @@ class HotReloadRunner:
         app._runtime_process = self._runtime_process
         app._running = True
 
+        # Start the render loop for reactive updates
+        app._start_render_loop()
+
         # Set event handler for this app
         self._connection.set_event_handler(app._handle_event)
 
@@ -396,6 +399,9 @@ class HotReloadRunner:
         app._socket_path = self._socket_path
         app._runtime_process = self._runtime_process
         app._running = True
+
+        # Start the render loop for reactive updates
+        app._start_render_loop()
 
         # Set event handler for this app
         self._connection.set_event_handler(app._handle_event)

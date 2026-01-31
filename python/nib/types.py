@@ -60,7 +60,7 @@ Note:
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 if TYPE_CHECKING:
     from .views.base import View
@@ -516,6 +516,68 @@ class ContentTransition(str, Enum):
     opacity = "opacity"
 
 
+@dataclass
+class TransitionConfig:
+    """Enhanced transition configuration supporting asymmetric and combined transitions.
+
+    This class allows defining complex transitions that can't be expressed with
+    a simple enum value.
+
+    Attributes:
+        config_type: Type of transition ("simple", "asymmetric", "combined", "custom")
+        value: Transition value for simple transitions
+        insertion: Transition for view insertion (asymmetric)
+        removal: Transition for view removal (asymmetric)
+        transitions: List of transitions to combine (combined)
+        keyframes: Keyframe data for custom transitions
+
+    Example:
+        Asymmetric transition::
+
+            TransitionConfig.asymmetric("scale", "opacity")
+
+        Combined transition::
+
+            TransitionConfig.combined("opacity", "scale")
+    """
+
+    config_type: str  # "simple", "asymmetric", "combined", "custom"
+    value: Optional[str] = None
+    insertion: Optional[str] = None
+    removal: Optional[str] = None
+    transitions: Optional[List[str]] = None
+    keyframes: Optional[List[dict]] = None
+
+    @classmethod
+    def simple(cls, transition_type: str) -> "TransitionConfig":
+        """Create a simple transition config."""
+        return cls(config_type="simple", value=transition_type)
+
+    @classmethod
+    def asymmetric(cls, insertion: str, removal: str) -> "TransitionConfig":
+        """Create an asymmetric transition with different insertion/removal animations."""
+        return cls(config_type="asymmetric", insertion=insertion, removal=removal)
+
+    @classmethod
+    def combined(cls, *transitions: str) -> "TransitionConfig":
+        """Create a combined transition from multiple transition types."""
+        return cls(config_type="combined", transitions=list(transitions))
+
+    def to_dict(self) -> dict:
+        """Serialize to dictionary for Swift."""
+        result: dict = {"transitionConfigType": self.config_type}
+        if self.config_type == "simple":
+            result["transitionValue"] = self.value
+        elif self.config_type == "asymmetric":
+            result["transitionInsertion"] = self.insertion
+            result["transitionRemoval"] = self.removal
+        elif self.config_type == "combined":
+            result["transitionList"] = self.transitions
+        elif self.config_type == "custom":
+            result["customKeyframes"] = self.keyframes
+        return result
+
+
 class Transition(str, Enum):
     """
     View transition types for appearance/disappearance animations.
@@ -523,8 +585,22 @@ class Transition(str, Enum):
     Used to animate how views enter and exit the view hierarchy.
 
     Example:
-        Text("Hello", transition=Transition.OPACITY)
-        VStack([...], transition=Transition.SLIDE)
+        Simple transition::
+
+            Text("Hello", transition=Transition.OPACITY)
+
+        Asymmetric transition (different animations for in/out)::
+
+            Text("Hello", transition=Transition.asymmetric(
+                insertion=Transition.SCALE,
+                removal=Transition.OPACITY
+            ))
+
+        Combined transition (multiple effects together)::
+
+            Text("Hello", transition=Transition.combined(
+                Transition.OPACITY, Transition.SCALE
+            ))
     """
 
     # CAPS names (preferred)
@@ -548,6 +624,187 @@ class Transition(str, Enum):
     moveTop = "moveTop"
     moveBottom = "moveBottom"
     push = "push"
+
+    @staticmethod
+    def asymmetric(
+        insertion: Union["Transition", str],
+        removal: Union["Transition", str]
+    ) -> TransitionConfig:
+        """Create an asymmetric transition with different animations for in/out.
+
+        Args:
+            insertion: Transition to use when view appears
+            removal: Transition to use when view disappears
+
+        Returns:
+            TransitionConfig with asymmetric configuration
+
+        Example:
+            Slide in, fade out::
+
+                Transition.asymmetric(
+                    insertion=Transition.SLIDE,
+                    removal=Transition.OPACITY
+                )
+        """
+        ins = insertion.value if isinstance(insertion, Transition) else insertion
+        rem = removal.value if isinstance(removal, Transition) else removal
+        return TransitionConfig.asymmetric(ins, rem)
+
+    @staticmethod
+    def combined(*transitions: Union["Transition", str]) -> TransitionConfig:
+        """Create a combined transition from multiple transition types.
+
+        Args:
+            *transitions: Transition types to combine
+
+        Returns:
+            TransitionConfig with combined configuration
+
+        Example:
+            Fade and scale together::
+
+                Transition.combined(Transition.OPACITY, Transition.SCALE)
+        """
+        values = [t.value if isinstance(t, Transition) else t for t in transitions]
+        return TransitionConfig.combined(*values)
+
+    @staticmethod
+    def custom(name: str) -> "CustomTransitionBuilder":
+        """Start building a custom transition with keyframe interpolation.
+
+        Args:
+            name: Name for this custom transition
+
+        Returns:
+            A CustomTransitionBuilder to define keyframes
+
+        Example:
+            Create a swoosh transition::
+
+                Transition.custom("swoosh")
+                    .at(0.0, opacity=0, scale=0.5, offset_x=-50)
+                    .at(0.5, opacity=1, scale=1.1, offset_x=10)
+                    .at(1.0, opacity=1, scale=1, offset_x=0)
+                    .build()
+        """
+        return CustomTransitionBuilder(name)
+
+    @staticmethod
+    def pop_fade() -> TransitionConfig:
+        """Pre-built pop-fade transition: scales up slightly while fading in."""
+        return (
+            CustomTransitionBuilder("popFade")
+            .at(0.0, opacity=0, scale=0.92, blur=6)
+            .at(1.0, opacity=1, scale=1, blur=0)
+            .build()
+        )
+
+    @staticmethod
+    def bounce_in() -> TransitionConfig:
+        """Pre-built bounce-in transition: overshoots then settles."""
+        return (
+            CustomTransitionBuilder("bounceIn")
+            .at(0.0, opacity=0, scale=0.3)
+            .at(0.6, opacity=1, scale=1.05)
+            .at(0.8, opacity=1, scale=0.95)
+            .at(1.0, opacity=1, scale=1)
+            .build()
+        )
+
+
+class CustomTransitionBuilder:
+    """Builder for creating custom keyframe-based transitions.
+
+    Custom transitions interpolate modifier values (opacity, scale, blur, offset)
+    between keyframes during the transition.
+
+    Example:
+        Create a slide-and-fade transition::
+
+            transition = (Transition.custom("slideFade")
+                .at(0.0, opacity=0, offset_x=-100)
+                .at(1.0, opacity=1, offset_x=0)
+                .build())
+
+            nib.Text("Hello", transition=transition)
+    """
+
+    def __init__(self, name: str):
+        """Initialize the builder with a transition name.
+
+        Args:
+            name: Name for this custom transition (for debugging)
+        """
+        self.name = name
+        self.keyframes: List[dict] = []
+
+    def at(
+        self,
+        progress: float,
+        *,
+        opacity: Optional[float] = None,
+        scale: Optional[float] = None,
+        blur: Optional[float] = None,
+        offset_x: Optional[float] = None,
+        offset_y: Optional[float] = None,
+    ) -> "CustomTransitionBuilder":
+        """Add a keyframe at the given progress point.
+
+        Args:
+            progress: Progress value from 0.0 (start) to 1.0 (end)
+            opacity: Opacity at this keyframe (0.0 to 1.0)
+            scale: Scale at this keyframe (1.0 = normal size)
+            blur: Blur radius at this keyframe
+            offset_x: Horizontal offset at this keyframe
+            offset_y: Vertical offset at this keyframe
+
+        Returns:
+            Self for method chaining
+
+        Example:
+            Define a fade-in with movement::
+
+                builder.at(0.0, opacity=0, offset_y=20)
+                       .at(1.0, opacity=1, offset_y=0)
+        """
+        modifiers: dict = {}
+        if opacity is not None:
+            modifiers["opacity"] = float(opacity)
+        if scale is not None:
+            modifiers["scale"] = float(scale)
+        if blur is not None:
+            modifiers["blur"] = float(blur)
+        if offset_x is not None:
+            modifiers["offsetX"] = float(offset_x)
+        if offset_y is not None:
+            modifiers["offsetY"] = float(offset_y)
+
+        self.keyframes.append({
+            "progress": float(progress),
+            "modifiers": modifiers,
+        })
+        return self
+
+    def build(self) -> TransitionConfig:
+        """Build the final TransitionConfig from the keyframes.
+
+        Returns:
+            TransitionConfig with custom keyframes
+
+        Raises:
+            ValueError: If no keyframes have been defined
+        """
+        if not self.keyframes:
+            raise ValueError("Custom transition must have at least one keyframe")
+
+        # Sort by progress
+        sorted_keyframes = sorted(self.keyframes, key=lambda k: k["progress"])
+
+        return TransitionConfig(
+            config_type="custom",
+            keyframes=sorted_keyframes,
+        )
 
 
 class BlendMode(str, Enum):
@@ -1051,6 +1308,116 @@ TextStyle.CALLOUT = TextStyle(font=Font.CALLOUT)
 TextStyle.CAPTION = TextStyle(font=Font.CAPTION)
 TextStyle.CAPTION2 = TextStyle(font=Font.CAPTION2)
 TextStyle.FOOTNOTE = TextStyle(font=Font.FOOTNOTE)
+
+
+@dataclass
+class AttributedString:
+    """A styled text segment for rich text rendering.
+
+    AttributedString allows creating rich text with different styles for
+    different parts of the text. Use with nib.Text's `strings` parameter.
+
+    Attributes:
+        content: The text content for this segment.
+        style: Optional TextStyle for comprehensive styling.
+        color: Optional color override (hex string or nib.Color).
+        font: Optional font override (nib.Font).
+
+    Example:
+        Creating rich text with multiple styles::
+
+            nib.Text(
+                strings=[
+                    nib.AttributedString("Hello ", style=nib.TextStyle(color="red")),
+                    nib.AttributedString("World", style=nib.TextStyle(bold=True)),
+                    nib.AttributedString("!", font=nib.Font.TITLE),
+                ],
+            )
+
+        Mixing styles::
+
+            nib.Text(
+                strings=[
+                    nib.AttributedString(
+                        "Important: ",
+                        style=nib.TextStyle(bold=True, color="red"),
+                    ),
+                    nib.AttributedString(
+                        "This is normal text",
+                        style=nib.TextStyle.BODY,
+                    ),
+                ],
+                line_limit=2,
+            )
+    """
+
+    content: str
+    style: Optional[TextStyle] = None
+    color: Optional[ColorLike] = None
+    font: Optional[Font] = None
+
+    def to_dict(self) -> dict:
+        """Serialize the attributed string for transmission to Swift."""
+        result: dict = {"content": self.content}
+
+        # Build styles dict from TextStyle and overrides
+        styles: dict = {}
+
+        # Apply TextStyle if provided
+        if self.style is not None:
+            styles.update(self.style.to_dict())
+
+        # Apply direct overrides (they take precedence)
+        if self.color is not None:
+            if isinstance(self.color, Color):
+                styles["color"] = self.color.to_dict()
+            else:
+                styles["color"] = self.color
+
+        if self.font is not None:
+            styles["font"] = self.font.to_dict()
+
+        if styles:
+            result["styles"] = styles
+
+        return result
+
+
+@dataclass
+class Offset:
+    """Position offset for views.
+
+    Used to shift a view from its natural position within a layout.
+    Useful for positioning children in a ZStack or creating overlapping elements.
+
+    Attributes:
+        x: Horizontal offset in points (positive = right).
+        y: Vertical offset in points (positive = down).
+
+    Example:
+        Offsetting circles in a ZStack::
+
+            nib.ZStack(
+                controls=[
+                    nib.Circle(fill=nib.Color.RED, width=50, height=50),
+                    nib.Circle(fill=nib.Color.BLUE, width=50, height=50,
+                               offset=nib.Offset(20, 20)),
+                ],
+            )
+    """
+
+    x: float = 0
+    y: float = 0
+
+    def __init__(self, x: float = 0, y: float = 0):
+        """Create an offset.
+
+        Args:
+            x: Horizontal offset in points (positive = right).
+            y: Vertical offset in points (positive = down).
+        """
+        self.x = float(x)
+        self.y = float(y)
 
 
 @dataclass
