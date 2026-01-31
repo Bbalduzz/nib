@@ -82,7 +82,7 @@ Core Concepts
 Views
 ~~~~~
 
-All UI elements in Nib inherit from :class:`~nib.View`. Views are styled through
+All UI elements in Nib inherit from ``View``. Views are styled through
 constructor parameters:
 
 .. code-block:: python
@@ -99,9 +99,9 @@ Layout Containers
 
 Use layout containers to organize views:
 
-- :class:`~nib.VStack` - Vertical stack
-- :class:`~nib.HStack` - Horizontal stack
-- :class:`~nib.ZStack` - Overlay stack
+- ``VStack`` - Vertical stack
+- ``HStack`` - Horizontal stack
+- ``ZStack`` - Overlay stack
 
 .. code-block:: python
 

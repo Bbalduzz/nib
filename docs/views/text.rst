@@ -139,16 +139,7 @@ Render Markdown content.
 .. code-block:: python
 
     nib.Markdown(
-        content="""
-# Heading
-
-This is **bold** and *italic*.
-
-- List item 1
-- List item 2
-
-[Link](https://example.com)
-        """,
+        content="# Heading\n\nThis is **bold** and *italic*.\n\n- List item 1\n- List item 2",
     )
 
 **Parameters:**

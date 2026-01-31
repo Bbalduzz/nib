@@ -28,7 +28,7 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 
-templates_path = ["_templates"]
+templates_path = []
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The master toctree document
@@ -88,7 +88,7 @@ html_theme_options = {
     "logo_mobile": "",
 }
 
-html_static_path = ["_static"]
+html_static_path = []
 html_css_files = []
 
 # -- Options for viewcode extension ------------------------------------------
