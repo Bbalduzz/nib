@@ -66,11 +66,11 @@ def main(app: nib.App):
     result_media = nib.VStack(
         controls=[],
         visible=False,
-        background=nib.RoundedRectangle(
+        background=nib.Rectangle(
+            corner_radius=nib.CornerRadius.all(8),
             fill=nib.Color.SECONDARY.with_opacity(0.1),
             stroke_color=nib.Color.GRAY.with_opacity(0.3),
             stroke_width=1,
-            corner_radius=8,
         ),
         width=225,
         padding=8,
@@ -191,7 +191,7 @@ def main(app: nib.App):
                 # offset=nib.Offset(50, 50),
             )
 
-        app.height += 100
+        app.height += 150
         result_media.visible = True
         result_media.controls = [
             nib.HStack(

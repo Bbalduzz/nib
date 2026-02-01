@@ -85,9 +85,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     private func isBundledApp() -> Bool {
         // Check if we're running inside a .app bundle with embedded Python
+        // Python is in Resources (not MacOS) to avoid code signing issues
         let bundlePath = Bundle.main.bundlePath
         let pythonPath = (bundlePath as NSString)
-            .appendingPathComponent("Contents/MacOS/python/bin/python3")
+            .appendingPathComponent("Contents/Resources/python/bin/python3")
         return FileManager.default.fileExists(atPath: pythonPath)
     }
 
@@ -118,7 +119,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let bundlePath = bundle.bundlePath
 
         // Paths within bundle
-        let pythonDir = "\(bundlePath)/Contents/MacOS/python"
+        // Python is in Resources (not MacOS) to avoid code signing issues
+        let pythonDir = "\(bundlePath)/Contents/Resources/python"
         let pythonBin = "\(pythonDir)/bin/python3"
         let appDir = "\(bundlePath)/Contents/Resources/app"
         let vendorDir = "\(appDir)/vendor"
@@ -341,13 +343,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     // MARK: - Notifications
 
-    /// Whether we're running from a proper .app bundle
+    /// Whether we're running as the main executable of a proper .app bundle
     /// UserNotifications framework crashes without a proper app bundle
     private lazy var isRunningFromAppBundle: Bool = {
-        // Check if we're inside a .app bundle - this is the only reliable way
-        // Bundle.main.bundleIdentifier can be non-nil even for raw executables
+        // We need to check that:
+        // 1. Bundle path ends with .app (we are the main app, not something inside it)
+        // 2. The executable is in Contents/MacOS/ (standard app bundle structure)
         let bundlePath = Bundle.main.bundlePath
-        return bundlePath.hasSuffix(".app") || bundlePath.contains(".app/")
+        let executablePath = Bundle.main.executablePath ?? ""
+
+        // Must be .app bundle AND executable must be in Contents/MacOS/
+        let isAppBundle = bundlePath.hasSuffix(".app")
+        let isMainExecutable = executablePath.contains("/Contents/MacOS/")
+
+        return isAppBundle && isMainExecutable
     }()
 
     private func setupNotifications() {
@@ -467,6 +476,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             KeychainService.handle(payload, sendResponse: sendResponse)
         case "camera":
             CameraService.shared.handle(payload, sendResponse: sendResponse)
+        case "launchAtLogin":
+            log.info("Routing to LaunchAtLoginService: \(payload.action)")
+            LaunchAtLoginService.handle(payload, sendResponse: sendResponse)
         default:
             debugPrint("Unknown service:", payload.service)
         }

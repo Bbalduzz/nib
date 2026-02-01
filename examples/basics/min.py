@@ -81,8 +81,8 @@ def main(app):
                             ),
                             tooltip=nib.Text("Check this tooltip"),
                         ),
-                        nib.RoundedRectangle(
-                            corner_radius=8,
+                        nib.Rectangle(
+                            corner_radius=nib.CornerRadius.all(5),
                             stroke_color=nib.Color.SECONDARY,
                             stroke_width=2,
                             height=40,
@@ -111,11 +111,11 @@ def main(app):
                                         font=nib.Font.custom("SF Pro Rounded", size=11),
                                     ),
                                 ),
-                                nib.RoundedRectangle(
+                                nib.Rectangle(
                                     fill=nib.Color.SECONDARY.with_opacity(0.2),
                                     stroke_color=nib.Color.GRAY,
                                     stroke_width=1,
-                                    corner_radius=6,
+                                    corner_radius=nib.CornerRadius.all(5),
                                     width=20,
                                     height=20,
                                 ),

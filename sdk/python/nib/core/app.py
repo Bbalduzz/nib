@@ -497,6 +497,29 @@ class App:
         return self._camera
 
     @property
+    def launch_at_login(self) -> "LaunchAtLogin":
+        """Access the launch at login service.
+
+        Per Mac App Store guidelines, launch at login should only be
+        enabled in response to a user action.
+
+        Example:
+            # Check if enabled
+            if app.launch_at_login.is_enabled:
+                print("App launches at login")
+
+            # Toggle in response to user action
+            def toggle_login():
+                app.launch_at_login.set(not app.launch_at_login.is_enabled)
+
+            nib.Button("Toggle Login", action=toggle_login)
+        """
+        if not hasattr(self, "_launch_at_login"):
+            from ..services.launch_at_login import LaunchAtLogin
+            self._launch_at_login = LaunchAtLogin(self)
+        return self._launch_at_login
+
+    @property
     def title(self) -> Optional[str]:
         """Get the app title."""
         return self._title

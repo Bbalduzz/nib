@@ -397,6 +397,8 @@ struct AnyCodable: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
+        // Order matters: try more specific types first
+        // Note: Int before Bool because MessagePack may decode small ints as bools
         if let intVal = try? container.decode(Int.self) {
             value = intVal
         } else if let doubleVal = try? container.decode(Double.self) {

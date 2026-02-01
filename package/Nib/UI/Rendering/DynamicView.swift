@@ -86,6 +86,9 @@ extension DynamicView {
             buildMarkdown()
 
         // Shapes (transparent by default unless fill specified)
+        case .shape:
+            // TODO: Enable when Shape primitive is fully implemented
+            EmptyView()
         case .rectangle:
             buildRectangle()
         case .roundedRectangle:

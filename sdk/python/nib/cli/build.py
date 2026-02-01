@@ -257,6 +257,54 @@ def cleanup_python_distribution(python_dir: Path) -> None:
                 except Exception:
                     pass  # Ignore errors during cleanup
 
+    # Remove Tcl/Tk directories - they have versioned names that confuse codesign
+    # (codesign treats *.*.* directories as bundles)
+    lib_dir = python_dir / "lib"
+    if lib_dir.exists():
+        tcl_tk_patterns = [
+            "tk*",
+            "tcl*",
+            "thread*",
+            "itcl*",
+            "tdbc*",
+            "sqlite*",
+        ]
+        for pattern in tcl_tk_patterns:
+            for path in lib_dir.glob(pattern):
+                if path.is_dir():
+                    try:
+                        shutil.rmtree(path)
+                    except Exception:
+                        pass
+
+        # Also remove tkinter from lib-dynload
+        for tk_so in lib_dir.glob("python*/lib-dynload/_tkinter*.so"):
+            try:
+                tk_so.unlink()
+            except Exception:
+                pass
+
+    # Remove unnecessary executables from bin directory
+    # We only need python3/python3.12 for runtime
+    bin_dir = python_dir / "bin"
+    if bin_dir.exists():
+        keep_patterns = {"python3", "python3.12"}
+        for item in bin_dir.iterdir():
+            if item.is_file() and item.name not in keep_patterns:
+                try:
+                    item.unlink()
+                except Exception:
+                    pass
+
+    # Remove pkgconfig directory (not needed at runtime, causes signing issues)
+    pkgconfig_dir = lib_dir / "pkgconfig"
+    if pkgconfig_dir.exists():
+        try:
+            shutil.rmtree(pkgconfig_dir)
+        except Exception:
+            pass
+
+
 
 def obfuscate_python_code(app_dir: Path) -> None:
     """Compile Python files to bytecode and remove source files.
@@ -303,12 +351,14 @@ def create_bundle_structure(output_dir: Path, name: str) -> dict[str, Path]:
         shutil.rmtree(app_path)
 
     # Create structure
+    # Note: Python is placed in Resources (not MacOS) to avoid code signing issues
+    # with versioned directories like python3.12 that codesign treats as bundles
     contents = app_path / "Contents"
     macos = contents / "MacOS"
     resources = contents / "Resources"
     app_dir = resources / "app"
     vendor_dir = app_dir / "vendor"
-    python_dir = macos / "python"
+    python_dir = resources / "python"  # Changed from macos to resources
 
     for d in [macos, resources, app_dir, vendor_dir, python_dir]:
         d.mkdir(parents=True, exist_ok=True)
@@ -562,6 +612,85 @@ def convert_icon_to_icns(icon_path: Path, output_dir: Path) -> Optional[Path]:
     except subprocess.CalledProcessError as e:
         print(f"Warning: Failed to convert icon: {e}")
         return None
+
+
+def codesign_app(app_path: Path) -> bool:
+    """Sign the app bundle with ad-hoc signature.
+
+    This is required for features like SMAppService (launch at login) to work.
+    The app is signed with ad-hoc signature (no Developer ID required).
+
+    Note: Due to versioned directories in the Python distribution (e.g., python3.12),
+    full bundle signing may fail. We sign the main executable which is what matters
+    for most features.
+
+    Args:
+        app_path: Path to the .app bundle.
+
+    Returns:
+        bool: True if signing succeeded.
+    """
+    try:
+        # Sign all .dylib files first
+        for dylib in app_path.rglob("*.dylib"):
+            subprocess.run(
+                ["codesign", "--force", "--sign", "-", str(dylib)],
+                capture_output=True,
+                check=False,
+            )
+
+        # Sign all .so files
+        for so_file in app_path.rglob("*.so"):
+            subprocess.run(
+                ["codesign", "--force", "--sign", "-", str(so_file)],
+                capture_output=True,
+                check=False,
+            )
+
+        # Sign all executables in Python bin directory (Python is in Resources)
+        python_bin_dir = app_path / "Contents" / "Resources" / "python" / "bin"
+        if python_bin_dir.exists():
+            for item in python_bin_dir.iterdir():
+                if item.is_file():
+                    # Check if it's a Mach-O executable
+                    result = subprocess.run(
+                        ["file", str(item)],
+                        capture_output=True,
+                        text=True,
+                    )
+                    if "Mach-O" in result.stdout:
+                        subprocess.run(
+                            ["codesign", "--force", "--sign", "-", str(item)],
+                            capture_output=True,
+                            check=False,
+                        )
+
+        # Get the app name from the bundle
+        app_name = app_path.stem  # "My App" from "My App.app"
+        main_executable = app_path / "Contents" / "MacOS" / app_name
+
+        # Sign the main executable with runtime option for notarization compatibility
+        main_signed = False
+        if main_executable.exists():
+            result = subprocess.run(
+                ["codesign", "--force", "--options", "runtime", "--sign", "-", str(main_executable)],
+                capture_output=True,
+                check=False,
+            )
+            main_signed = result.returncode == 0
+
+        # Try to sign the app bundle (may fail due to versioned directories)
+        # This isn't strictly required if the main executable is signed
+        subprocess.run(
+            ["codesign", "--force", "--sign", "-", str(app_path)],
+            capture_output=True,
+            check=False,
+        )
+
+        # Return success if at least the main executable is signed
+        return main_signed
+    except Exception:
+        return False
 
 
 def get_dir_size(path: Path) -> float:
@@ -827,6 +956,13 @@ def build_app(
     for pycache in paths["vendor_dir"].rglob("__pycache__"):
         if pycache.is_dir():
             shutil.rmtree(pycache)
+
+    # Code sign the app bundle (required for SMAppService/launch at login)
+    print("Signing app bundle...")
+    if codesign_app(paths["app"]):
+        print("  App signed with ad-hoc signature")
+    else:
+        print("  Warning: Code signing failed (some features may not work)")
 
     print(f"\nSuccess! App bundle created at: {paths['app']}")
     print(f"Bundle size: {get_dir_size(paths['app']):.1f} MB")

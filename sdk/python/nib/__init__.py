@@ -65,8 +65,8 @@ For more information, see the full documentation at:
 https://nib.readthedocs.io/
 """
 
-from .core import App, MenuDivider, MenuItem, SFSymbol, State, UserDefaults, run
 from . import draw
+from .core import App, MenuDivider, MenuItem, SFSymbol, State, UserDefaults, run
 from .services import (
     Battery,
     BatteryInfo,
@@ -75,9 +75,9 @@ from .services import (
     CameraDevice,
     CameraFrame,
     CameraPosition,
+    ConnectionType,
     Connectivity,
     ConnectivityInfo,
-    ConnectionType,
     Keychain,
     Screen,
     ScreenInfo,
@@ -97,6 +97,8 @@ from .types import (
     # Transition enums
     ContentTransition,
     ControlSize,
+    # Corner radius
+    CornerRadius,
     # Custom transitions
     CustomTransitionBuilder,
     Font,
@@ -129,9 +131,10 @@ from .views import (
     BarMark,
     BlurStyle,
     Button,
+    # Camera
+    CameraPreview,
     # Canvas (Core Graphics drawing)
     Canvas,
-    PanEvent,
     Capsule,
     # Charts
     Chart,
@@ -154,7 +157,6 @@ from .views import (
     HStack,
     Image,
     InterpolationMethod,
-    PlottableField,
     Label,
     LazyHGrid,
     LazyVGrid,
@@ -174,19 +176,23 @@ from .views import (
     Markdown,
     NavigationLink,
     NavigationStack,
+    PanEvent,
+    # Shapes
+    Path,
     Picker,
+    PlottableField,
     PointMark,
     ProgressView,
     RadialGradient,
+    # Shapes
     Rectangle,
     RectMark,
-    # Shapes
-    RoundedRectangle,
     RuleMark,
     ScrollView,
     Section,
     SectorMark,
     SecureField,
+    Shape,
     ShareLink,
     Slider,
     Spacer,
@@ -207,11 +213,9 @@ from .views import (
     VisualEffectBlur,
     # Layout
     VStack,
-    ZStack,
-    # Camera
-    CameraPreview,
     # WebView
     WebView,
+    ZStack,
 )
 
 __version__ = "0.1.0"
@@ -277,7 +281,7 @@ __all__ = [
     "TableColumn",
     "ShareLink",
     # Shapes
-    "RoundedRectangle",
+    "Rectangle",
     "Circle",
     "Rectangle",
     "Ellipse",
@@ -294,6 +298,9 @@ __all__ = [
     "Canvas",
     "PanEvent",
     "draw",
+    # Custom Shapes
+    "Path",
+    "Shape",
     # Charts
     "Chart",
     "LineMark",
@@ -313,6 +320,7 @@ __all__ = [
     "Animation",
     "AttributedString",
     "Color",
+    "CornerRadius",
     "Font",
     "FontWeight",
     "Offset",

@@ -1,16 +1,23 @@
 """Shape views."""
 
-from .rounded_rectangle import RoundedRectangle
-from .circle import Circle
-from .rectangle import Rectangle
-from .ellipse import Ellipse
 from .capsule import Capsule
-from .gradients import LinearGradient, RadialGradient, AngularGradient, EllipticalGradient
+from .circle import Circle
+from .ellipse import Ellipse
+from .gradients import (
+    AngularGradient,
+    EllipticalGradient,
+    LinearGradient,
+    RadialGradient,
+)
+from .path import Path
+from .rectangle import Rectangle
+from .shape import Shape
 
 __all__ = [
-    "RoundedRectangle",
-    "Circle",
+    "Path",
+    "Shape",
     "Rectangle",
+    "Circle",
     "Ellipse",
     "Capsule",
     "LinearGradient",

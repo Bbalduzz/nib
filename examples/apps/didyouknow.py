@@ -161,8 +161,8 @@ def main(app: nib.App):
                     controls=[
                         nib.ZStack(
                             controls=[
-                                nib.RoundedRectangle(
-                                    corner_radius=8,
+                                nib.Rectangle(
+                                    corner_radius=nib.CornerRadius(8),
                                     fill=track["source_color"],
                                     width=44,
                                     height=44,
@@ -215,8 +215,8 @@ def main(app: nib.App):
             ],
             max_width=float("inf"),
             padding=12,
-            background=nib.RoundedRectangle(
-                corner_radius=10,
+            background=nib.Rectangle(
+                corner_radius=nib.CornerRadius(10),
                 fill=CARD_BG,
                 stroke_color="#383837",
                 stroke_width=1,
@@ -331,8 +331,8 @@ def main(app: nib.App):
                         spacing=6,
                         max_width=float("inf"),
                         padding=12,
-                        background=nib.RoundedRectangle(
-                            corner_radius=10,
+                        background=nib.Rectangle(
+                            corner_radius=nib.CornerRadius(10),
                             fill=CARD_BG,
                             stroke_color="#383837",
                             stroke_width=1,
@@ -376,8 +376,8 @@ def main(app: nib.App):
             spacing=4,
             max_width=float("inf"),
             padding=14,
-            background=nib.RoundedRectangle(
-                corner_radius=10,
+            background=nib.Rectangle(
+                corner_radius=nib.CornerRadius(10),
                 fill=CARD_BG,
                 stroke_color="#383837",
                 stroke_width=1,
@@ -411,8 +411,8 @@ def main(app: nib.App):
             max_width=float("inf"),
             spacing=8,
             padding=10,
-            background=nib.RoundedRectangle(
-                corner_radius=10,
+            background=nib.Rectangle(
+                corner_radius=nib.CornerRadius(10),
                 fill=CARD_BG,
                 stroke_color="#383837",
                 stroke_width=1,

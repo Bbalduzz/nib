@@ -145,6 +145,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         case table = "Table"
 
         // Shapes
+        case shape = "Shape"
         case rectangle = "Rectangle"
         case roundedRectangle = "RoundedRectangle"
         case circle = "Circle"
@@ -258,9 +259,20 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
 
         // Shapes
         var cornerRadius: CGFloat?
+        var cornerRadii: CornerRadii?  // Per-corner radius for Rectangle
         var trimFrom: Double?
         var trimTo: Double?
         var rotation: Double?
+
+        // Shape stroke (for Rectangle, RoundedRectangle, etc.)
+        var stroke: String?
+        var strokeWidth: Double?
+
+        // Custom Shape (TODO: enable when Shape primitive is fully implemented)
+        // var pathOperations: [PathOperation]?
+        // var viewBox: ViewBox?
+        // var fill: String?
+        // var fillGradient: ShapeGradient?
 
         // Gradients
         var colors: [String]?              // Simple color array

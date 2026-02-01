@@ -1483,3 +1483,199 @@ Animation.default = Animation.easeInOut(0.3)
 Animation.fast = Animation.easeOut(0.15)
 Animation.slow = Animation.easeInOut(0.5)
 Animation.bouncy = Animation.spring(response=0.3, damping=0.5)
+
+
+@dataclass
+class CornerRadius:
+    """Corner radius configuration for Rectangle shapes.
+
+    CornerRadius allows configuring different radii for each corner of a
+    rectangle, enabling asymmetric rounded corners. Use the factory methods
+    for common patterns, or specify individual corners directly.
+
+    Attributes:
+        top_left: Radius of the top left corner in points.
+        top_right: Radius of the top right corner in points.
+        bottom_left: Radius of the bottom left corner in points.
+        bottom_right: Radius of the bottom right corner in points.
+
+    Example:
+        Uniform corners::
+
+            nib.Rectangle(corner_radius=nib.CornerRadius.all(10))
+
+        Per-corner control::
+
+            nib.Rectangle(corner_radius=nib.CornerRadius(
+                top_left=20,
+                top_right=20,
+                bottom_left=0,
+                bottom_right=0,
+            ))
+
+        Only some corners::
+
+            nib.Rectangle(corner_radius=nib.CornerRadius.only(top_left=15, top_right=15))
+
+        Horizontal symmetry::
+
+            nib.Rectangle(corner_radius=nib.CornerRadius.horizontal(left=10, right=20))
+
+        Vertical symmetry::
+
+            nib.Rectangle(corner_radius=nib.CornerRadius.vertical(top=15, bottom=5))
+    """
+
+    top_left: float = 0
+    top_right: float = 0
+    bottom_left: float = 0
+    bottom_right: float = 0
+
+    @classmethod
+    def all(cls, radius: float) -> "CornerRadius":
+        """Create a CornerRadius where all corners have the same radius.
+
+        Args:
+            radius: The radius to apply to all corners.
+
+        Returns:
+            A CornerRadius with uniform corners.
+
+        Example:
+            >>> nib.CornerRadius.all(10)
+        """
+        return cls(
+            top_left=radius,
+            top_right=radius,
+            bottom_left=radius,
+            bottom_right=radius,
+        )
+
+    @classmethod
+    def only(
+        cls,
+        top_left: float = 0,
+        top_right: float = 0,
+        bottom_left: float = 0,
+        bottom_right: float = 0,
+    ) -> "CornerRadius":
+        """Create a CornerRadius with only the specified corners rounded.
+
+        Args:
+            top_left: Radius for top left corner.
+            top_right: Radius for top right corner.
+            bottom_left: Radius for bottom left corner.
+            bottom_right: Radius for bottom right corner.
+
+        Returns:
+            A CornerRadius with the specified corners.
+
+        Example:
+            >>> nib.CornerRadius.only(top_left=20, top_right=20)
+        """
+        return cls(
+            top_left=top_left,
+            top_right=top_right,
+            bottom_left=bottom_left,
+            bottom_right=bottom_right,
+        )
+
+    @classmethod
+    def horizontal(cls, left: float = 0, right: float = 0) -> "CornerRadius":
+        """Create a horizontally symmetric CornerRadius.
+
+        The left side corners share one radius, and the right side corners
+        share another radius.
+
+        Args:
+            left: Radius for both left corners (top_left and bottom_left).
+            right: Radius for both right corners (top_right and bottom_right).
+
+        Returns:
+            A CornerRadius with horizontal symmetry.
+
+        Example:
+            >>> nib.CornerRadius.horizontal(left=10, right=0)
+        """
+        return cls(
+            top_left=left,
+            top_right=right,
+            bottom_left=left,
+            bottom_right=right,
+        )
+
+    @classmethod
+    def vertical(cls, top: float = 0, bottom: float = 0) -> "CornerRadius":
+        """Create a vertically symmetric CornerRadius.
+
+        The top corners share one radius, and the bottom corners share
+        another radius.
+
+        Args:
+            top: Radius for both top corners (top_left and top_right).
+            bottom: Radius for both bottom corners (bottom_left and bottom_right).
+
+        Returns:
+            A CornerRadius with vertical symmetry.
+
+        Example:
+            >>> nib.CornerRadius.vertical(top=15, bottom=0)
+        """
+        return cls(
+            top_left=top,
+            top_right=top,
+            bottom_left=bottom,
+            bottom_right=bottom,
+        )
+
+    def copy(
+        self,
+        top_left: Optional[float] = None,
+        top_right: Optional[float] = None,
+        bottom_left: Optional[float] = None,
+        bottom_right: Optional[float] = None,
+    ) -> "CornerRadius":
+        """Return a copy with the specified properties overridden.
+
+        Args:
+            top_left: New top left radius, or None to keep current.
+            top_right: New top right radius, or None to keep current.
+            bottom_left: New bottom left radius, or None to keep current.
+            bottom_right: New bottom right radius, or None to keep current.
+
+        Returns:
+            A new CornerRadius with the specified overrides.
+
+        Example:
+            >>> base = nib.CornerRadius.all(10)
+            >>> modified = base.copy(bottom_left=0, bottom_right=0)
+        """
+        return CornerRadius(
+            top_left=top_left if top_left is not None else self.top_left,
+            top_right=top_right if top_right is not None else self.top_right,
+            bottom_left=bottom_left if bottom_left is not None else self.bottom_left,
+            bottom_right=bottom_right if bottom_right is not None else self.bottom_right,
+        )
+
+    def is_uniform(self) -> bool:
+        """Check if all corners have the same radius.
+
+        Returns:
+            True if all corners are equal, False otherwise.
+        """
+        return (
+            self.top_left == self.top_right == self.bottom_left == self.bottom_right
+        )
+
+    def to_dict(self) -> dict:
+        """Serialize the corner radius for transmission to Swift.
+
+        Returns:
+            Dictionary with corner radius values.
+        """
+        return {
+            "topLeading": float(self.top_left),
+            "topTrailing": float(self.top_right),
+            "bottomLeading": float(self.bottom_left),
+            "bottomTrailing": float(self.bottom_right),
+        }
