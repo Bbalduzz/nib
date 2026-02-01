@@ -295,6 +295,12 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         // Drag and Drop
         var onDrop: Bool?
 
+        // Hover
+        var onHover: Bool?
+
+        // Tooltip
+        var tooltip: String?
+
         // Charts
         var chartData: ChartData?
         var xAxis: ChartAxisConfig?

@@ -59,9 +59,11 @@ class StatusBarController: NSObject, NSPopoverDelegate {
             case .view(let viewNode):
                 // Embed live SwiftUI view
                 button.image = nil
-                let swiftUIView = DynamicView(node: viewNode, onEvent: { [weak self] nodeId, event in
-                    self?.emitEvent(nodeId: nodeId, event: event)
-                })
+                let swiftUIView = DynamicView(
+                    node: viewNode,
+                    onEvent: { [weak self] nodeId, event in
+                        self?.emitEvent(nodeId: nodeId, event: event)
+                    })
                 let hostingView = NSHostingView(rootView: AnyView(swiftUIView))
 
                 // Let the view determine its own size
@@ -201,7 +203,8 @@ class StatusBarController: NSObject, NSPopoverDelegate {
                 let targetParentId = String(patch.id.dropLast(2))  // Remove ".X" suffix
                 if targetParentId == node.id {
                     if let insertIndex = extractIndex(from: patch.id, parentId: node.id),
-                       insertIndex <= updatedChildren.count {
+                        insertIndex <= updatedChildren.count
+                    {
                         updatedChildren.insert(newNode, at: insertIndex)
                     } else {
                         updatedChildren.append(newNode)
@@ -346,13 +349,6 @@ class StatusBarController: NSObject, NSPopoverDelegate {
         }
     }
 
-    // MARK: - NSPopoverDelegate
-
-    func popoverDidClose(_ notification: Notification) {
-        // Notify Python that the popover disappeared
-        emitEvent(nodeId: "_app", event: "disappear")
-    }
-
     // MARK: - Right-Click Menu
 
     func updateMenu(_ items: [NibMessage.MenuItemConfig]) {
@@ -390,7 +386,7 @@ class StatusBarController: NSObject, NSPopoverDelegate {
                             self?.emitEvent(nodeId: item.id, event: "menu:tap")
                         }
                     )
-                    let height = item.height ?? 36
+                    let height = item.height ?? 22
                     hostingView.frame = NSRect(x: 0, y: 0, width: 200, height: height)
                     menuItem.view = hostingView
                 } else {
@@ -468,7 +464,10 @@ class StatusBarController: NSObject, NSPopoverDelegate {
 
         case .config(let config):
             // Create base image
-            guard var image = NSImage(systemSymbolName: config.name, accessibilityDescription: config.name) else {
+            guard
+                var image = NSImage(
+                    systemSymbolName: config.name, accessibilityDescription: config.name)
+            else {
                 return nil
             }
 
@@ -513,22 +512,26 @@ class StatusBarController: NSObject, NSPopoverDelegate {
                 case "hierarchical":
                     if let colorStr = config.color {
                         let color = NSColor.fromNibColor(colorStr)
-                        let hierarchicalConfig = NSImage.SymbolConfiguration(hierarchicalColor: color)
+                        let hierarchicalConfig = NSImage.SymbolConfiguration(
+                            hierarchicalColor: color)
                         image = image.withSymbolConfiguration(hierarchicalConfig) ?? image
                     } else {
-                        let hierarchicalConfig = NSImage.SymbolConfiguration(hierarchicalColor: .labelColor)
+                        let hierarchicalConfig = NSImage.SymbolConfiguration(
+                            hierarchicalColor: .labelColor)
                         image = image.withSymbolConfiguration(hierarchicalConfig) ?? image
                     }
                 case "palette":
                     if let colorStr = config.color {
                         let color = NSColor.fromNibColor(colorStr)
-                        let paletteConfig = NSImage.SymbolConfiguration(paletteColors: [color, color.withAlphaComponent(0.5)])
+                        let paletteConfig = NSImage.SymbolConfiguration(paletteColors: [
+                            color, color.withAlphaComponent(0.5),
+                        ])
                         image = image.withSymbolConfiguration(paletteConfig) ?? image
                     }
                 case "multicolor":
                     let multicolorConfig = NSImage.SymbolConfiguration.preferringMulticolor()
                     image = image.withSymbolConfiguration(multicolorConfig) ?? image
-                default: // "monochrome"
+                default:  // "monochrome"
                     if let colorStr = config.color {
                         let color = NSColor.fromNibColor(colorStr)
                         image = image.withTintColor(color)

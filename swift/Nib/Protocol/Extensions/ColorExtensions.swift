@@ -115,14 +115,14 @@ extension VerticalAlignment {
 extension Alignment {
     init(nibAlignment: String?) {
         switch nibAlignment?.lowercased() {
-        case "topLeading": self = .topLeading
+        case "topleading": self = .topLeading
         case "top": self = .top
-        case "topTrailing": self = .topTrailing
+        case "toptrailing": self = .topTrailing
         case "leading": self = .leading
         case "trailing": self = .trailing
-        case "bottomLeading": self = .bottomLeading
+        case "bottomleading": self = .bottomLeading
         case "bottom": self = .bottom
-        case "bottomTrailing": self = .bottomTrailing
+        case "bottomtrailing": self = .bottomTrailing
         case "center", .none: self = .center
         default: self = .center
         }

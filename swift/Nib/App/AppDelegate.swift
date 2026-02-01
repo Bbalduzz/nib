@@ -122,7 +122,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let pythonBin = "\(pythonDir)/bin/python3"
         let appDir = "\(bundlePath)/Contents/Resources/app"
         let vendorDir = "\(appDir)/vendor"
-        let mainScript = "\(appDir)/main.py"
+
+        // Check for compiled bytecode first (.pyc), fall back to source (.py)
+        let mainPyc = "\(appDir)/main.pyc"
+        let mainPy = "\(appDir)/main.py"
+        let mainScript = FileManager.default.fileExists(atPath: mainPyc) ? mainPyc : mainPy
 
         // Verify Python exists
         guard FileManager.default.fileExists(atPath: pythonBin) else {
@@ -132,7 +136,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Verify main script exists
         guard FileManager.default.fileExists(atPath: mainScript) else {
-            showLaunchError("Main script not found at: \(mainScript)")
+            showLaunchError("Main script not found at: \(mainPy) or \(mainPyc)")
             return
         }
 

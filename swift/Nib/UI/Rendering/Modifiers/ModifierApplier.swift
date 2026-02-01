@@ -221,6 +221,34 @@ extension View {
     }
 }
 
+// MARK: - Hover
+
+extension View {
+    @ViewBuilder
+    func applyHoverHandler(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
+        if enabled {
+            self.onHover { isHovering in
+                onEvent(nodeId, "hover:\(isHovering ? "true" : "false")")
+            }
+        } else {
+            self
+        }
+    }
+}
+
+// MARK: - Tooltip
+
+extension View {
+    @ViewBuilder
+    func applyTooltip(_ tooltip: String?) -> some View {
+        if let tooltip = tooltip {
+            self.help(tooltip)
+        } else {
+            self
+        }
+    }
+}
+
 private func handleDrop(providers: [NSItemProvider], nodeId: String, onEvent: @escaping (String, String) -> Void) {
     var paths: [String] = []
     let group = DispatchGroup()

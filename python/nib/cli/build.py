@@ -258,6 +258,34 @@ def cleanup_python_distribution(python_dir: Path) -> None:
                     pass  # Ignore errors during cleanup
 
 
+def obfuscate_python_code(app_dir: Path) -> None:
+    """Compile Python files to bytecode and remove source files.
+
+    This provides basic code protection by converting .py files to .pyc
+    (Python bytecode) and removing the original source files. Uses
+    optimization level 2 which removes docstrings and assert statements.
+
+    Args:
+        app_dir: Path to the app directory containing Python files.
+    """
+    import compileall
+
+    # Compile all .py files with optimization level 2
+    # legacy=True puts .pyc next to .py instead of __pycache__
+    compileall.compile_dir(
+        str(app_dir),
+        optimize=2,
+        quiet=1,
+        legacy=True,
+    )
+
+    # Remove all .py source files, keep .pyc
+    for py_file in app_dir.rglob("*.py"):
+        pyc_file = py_file.with_suffix(".pyc")
+        if pyc_file.exists():
+            py_file.unlink()
+
+
 def create_bundle_structure(output_dir: Path, name: str) -> dict[str, Path]:
     """Create the .app bundle directory structure.
 
@@ -560,6 +588,7 @@ def build_app(
     explicit_deps: Optional[list[str]] = None,
     arch: Optional[str] = None,
     launch_at_login: bool = False,
+    no_obfuscate: bool = False,
 ) -> int:
     """Build a standalone macOS .app bundle from a Nib script.
 
@@ -579,6 +608,8 @@ def build_app(
         plist_options: Additional Info.plist customizations.
         explicit_deps: Explicit dependency list (from pyproject.toml).
         arch: Target architecture ("arm64" or "x86_64", default: current).
+        launch_at_login: Enable launch at login (default: False).
+        no_obfuscate: Skip bytecode compilation, keep source files (default: False).
 
     Returns:
         int: Exit code (0 = success, 1 = failure).
@@ -739,6 +770,11 @@ def build_app(
                 fonts_plist_path = "assets"
 
             print(f"  Registered {len(fonts)} font(s) in {fonts_plist_path}")
+
+    # Obfuscate Python code (compile to bytecode, remove source)
+    if not no_obfuscate:
+        print("Compiling Python bytecode...")
+        obfuscate_python_code(paths["app_dir"])
 
     # Copy Swift runtime as main executable
     print("Installing Swift runtime...")

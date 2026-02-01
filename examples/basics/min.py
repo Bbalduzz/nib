@@ -79,6 +79,7 @@ def main(app):
                             style=nib.TextStyle(
                                 font=nib.Font.custom("SF Compact Rounded", size=16),
                             ),
+                            tooltip=nib.Text("Check this tooltip"),
                         ),
                         nib.RoundedRectangle(
                             corner_radius=8,
@@ -88,6 +89,7 @@ def main(app):
                         ),
                     ],
                     margin=20,
+                    on_hover=lambda hovering: print(f"Hovering: {hovering}"),
                 ),
                 nib.Spacer(),
                 nib.HStack(

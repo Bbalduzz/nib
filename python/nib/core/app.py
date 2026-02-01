@@ -1006,6 +1006,12 @@ class App:
         if not self._connection:
             return
 
+        # Use lock to prevent concurrent renders (race between main thread and render loop)
+        with self._render_lock:
+            self._render_internal()
+
+    def _render_internal(self) -> None:
+        """Internal render implementation (must be called with _render_lock held)."""
         # Clear action maps
         self._action_map.clear()
         self._change_map.clear()
@@ -1220,15 +1226,21 @@ class App:
         elif event.startswith("pan:"):
             self._handle_pan_event(node_id, event)
 
-        # Handle canvas hover events
+        # Handle hover events (both canvas x,y and general true/false)
         elif event.startswith("hover:") and node_id in self._hover_map:
-            coords = event[6:]  # Remove "hover:" prefix
+            value = event[6:]  # Remove "hover:" prefix
             try:
-                x, y = map(float, coords.split(","))
-                from ..views.canvas import PanEvent
-                self._hover_map[node_id](PanEvent(x=x, y=y))
+                # Check if it's a boolean (general hover) or coordinates (canvas hover)
+                if value in ("true", "false"):
+                    # General hover: callback receives bool
+                    self._hover_map[node_id](value == "true")
+                else:
+                    # Canvas hover: callback receives PanEvent with coordinates
+                    x, y = map(float, value.split(","))
+                    from ..views.canvas import PanEvent
+                    self._hover_map[node_id](PanEvent(x=x, y=y))
             except Exception as e:
-                logger.error("Error in drop handler", exc=e, node_id=node_id)
+                logger.error("Error in hover handler", exc=e, node_id=node_id)
 
         # Handle change events (change:value)
         elif event.startswith("change:") and node_id in self._change_map:

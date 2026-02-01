@@ -14,6 +14,8 @@ struct DynamicView: View {
             .applyBackgroundView(node.backgroundView, onEvent: onEvent)
             .applyOverlayView(node.overlayView, onEvent: onEvent)
             .applyDropZone(enabled: node.props.onDrop ?? false, nodeId: node.id, onEvent: onEvent)
+            .applyHoverHandler(enabled: node.props.onHover ?? false, nodeId: node.id, onEvent: onEvent)
+            .applyTooltip(node.props.tooltip)
     }
 
     /// Recursively build child views

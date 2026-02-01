@@ -137,6 +137,8 @@ class View:
 
         Interaction:
             - on_drop: Callback for drag-and-drop file handling
+            - on_hover: Callback when mouse enters/exits the view
+            - tooltip: Tooltip text shown on hover (string or Text view)
 
     Example:
         Basic text styling::
@@ -209,6 +211,10 @@ class View:
         overlay: Optional["View"] = None,
         # Drag and drop
         on_drop: Optional[Callable[[List[str]], None]] = None,
+        # Hover
+        on_hover: Optional[Callable[[bool], None]] = None,
+        # Tooltip
+        tooltip: Optional[Union[str, "View"]] = None,
         # Visibility (if False, view is removed from tree entirely)
         visible: bool = True,
     ) -> None:
@@ -250,6 +256,9 @@ class View:
             offset: Position offset (Offset instance with x, y values).
             overlay: View to render on top of this view.
             on_drop: Callback for drag-and-drop file handling.
+            on_hover: Callback when mouse enters/exits the view. Receives a bool
+                (True when mouse enters, False when mouse exits).
+            tooltip: Tooltip text shown on hover. Can be a string or a Text view.
             visible: Whether the view is included in the tree. If False,
                 the view is completely removed (doesn't take up space).
                 Unlike opacity=0, invisible views don't occupy layout space.
@@ -258,6 +267,8 @@ class View:
         self._action: Optional[Callable] = None
         self._app = None  # Reference to parent App for triggering rerenders
         self._on_drop = on_drop
+        self._on_hover = on_hover
+        self._tooltip = tooltip
         self._visible = visible
 
         # Sticky animation - persists across property changes and applies to all mutations
@@ -432,6 +443,18 @@ class View:
         # Add onDrop if handler is set
         if hasattr(self, "_on_drop") and self._on_drop is not None:
             props["onDrop"] = True
+        # Add onHover if handler is set
+        if hasattr(self, "_on_hover") and self._on_hover is not None:
+            props["onHover"] = True
+        # Add tooltip if set
+        if hasattr(self, "_tooltip") and self._tooltip is not None:
+            if isinstance(self._tooltip, str):
+                props["tooltip"] = self._tooltip
+            elif hasattr(self._tooltip, "_content"):
+                # Text view - extract content
+                props["tooltip"] = self._tooltip._content
+            elif hasattr(self._tooltip, "content"):
+                props["tooltip"] = self._tooltip.content
         result = {
             "id": view_id,
             "type": self._type,

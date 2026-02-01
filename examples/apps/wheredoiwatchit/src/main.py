@@ -14,9 +14,6 @@ def main(app: nib.App):
     )
     app.width = 280
     app.height = 350
-    app.menu = [
-        nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
-    ]
 
     """
     defaults = nib.UserDefaults()
@@ -48,6 +45,17 @@ def main(app: nib.App):
         animation=nib.Animation.easeOut(0.2),
     )
 
+    app.menu = [
+        nib.MenuItem(
+            content=nib.HStack(
+                [nib.Text("My services:"), nib.Spacer(), services_row],
+                margin={"leading": 15, "trailing": 15},
+            ),
+        ),
+        nib.MenuDivider(),
+        nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
+    ]
+
     # Custom slide-up transition for search results
     slide_up_transition = (
         nib.Transition.custom("slideUp")
@@ -65,11 +73,9 @@ def main(app: nib.App):
             stroke_width=1,
             corner_radius=8,
         ),
-        spacing=12,
+        width=225,
         padding=8,
         alignment=nib.HorizontalAlignment.LEADING,
-        width=225,
-        # Animate when results appear
         transition=slide_up_transition,
         animation=nib.Animation.spring(response=0.4, damping=0.8),
     )
@@ -107,13 +113,6 @@ def main(app: nib.App):
             line_limit=4,
             style=nib.TextStyle(font=nib.Font.custom("SF Pro Rounded", 9)),
         )
-        duration = nib.Text(
-            str(result.runtime_minutes),
-            style=nib.TextStyle(
-                font=nib.Font.custom("SF Pro Rounded", 10),
-                color=nib.Color.SECONDARY,
-            ),
-        )
 
         my_offers = [
             offer
@@ -145,7 +144,9 @@ def main(app: nib.App):
                 ],
                 spacing=-5,
                 # Animate offers appearing
-                transition=nib.Transition.combined(nib.Transition.OPACITY, nib.Transition.SCALE),
+                transition=nib.Transition.combined(
+                    nib.Transition.OPACITY, nib.Transition.SCALE
+                ),
             )
         else:
             # No matching services - show rent/buy options with prices
@@ -185,7 +186,10 @@ def main(app: nib.App):
                 ],
                 spacing=8,
                 # Animate rent/buy options appearing
-                transition=nib.Transition.combined(nib.Transition.OPACITY, nib.Transition.SCALE),
+                transition=nib.Transition.combined(
+                    nib.Transition.OPACITY, nib.Transition.SCALE
+                ),
+                # offset=nib.Offset(50, 50),
             )
 
         app.height += 100
@@ -205,9 +209,6 @@ def main(app: nib.App):
             ),
             offers_row,
         ]
-
-        #
-        # 2. build offers row:
 
     url_input = nib.TextField(
         placeholder="Search... ",

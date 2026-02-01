@@ -249,6 +249,11 @@ def main() -> int:
         choices=["arm64", "x86_64"],
         help="Target architecture (default: current machine)",
     )
+    build_parser.add_argument(
+        "--no-obfuscate",
+        action="store_true",
+        help="Keep Python source files (don't compile to bytecode)",
+    )
 
     # Run command
     run_parser = subparsers.add_parser(
@@ -325,6 +330,9 @@ def main() -> int:
         # Launch at login setting
         launch_at_login = build_config.get("launch_at_login", False)
 
+        # Obfuscation setting (default: True, can be disabled via CLI or config)
+        no_obfuscate = args.no_obfuscate or not build_config.get("obfuscate", True)
+
         return build_app(
             script=script,
             name=name,
@@ -339,6 +347,7 @@ def main() -> int:
             explicit_deps=project_deps if project_deps else None,
             arch=arch,
             launch_at_login=launch_at_login,
+            no_obfuscate=no_obfuscate,
         )
 
     elif args.command == "run":

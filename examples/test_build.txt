@@ -1,0 +1,202 @@
+/Users/edoardobalducci/Documents/work/nib/examples/dist/My App.app/Contents/Resources
+└── app
+    ├── main.pyc
+    ├── min.pyc
+    └── vendor
+        ├── msgpack
+        │   ├── __init__.py
+        │   ├── __init__.pyc
+        │   ├── _cmsgpack.cpython-312-darwin.so
+        │   ├── exceptions.py
+        │   ├── exceptions.pyc
+        │   ├── ext.py
+        │   ├── ext.pyc
+        │   ├── fallback.py
+        │   └── fallback.pyc
+        ├── msgpack-1.1.2.dist-info
+        │   ├── INSTALLER
+        │   ├── METADATA
+        │   ├── RECORD
+        │   ├── REQUESTED
+        │   ├── WHEEL
+        │   ├── licenses
+        │   │   └── COPYING
+        │   └── top_level.txt
+        └── nib
+            ├── __init__.py
+            ├── __init__.pyc
+            ├── cli
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── build.py
+            │   ├── build.pyc
+            │   ├── create.py
+            │   ├── create.pyc
+            │   ├── deps.py
+            │   ├── deps.pyc
+            │   ├── run.py
+            │   └── run.pyc
+            ├── core
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── app.py
+            │   ├── app.pyc
+            │   ├── connection.py
+            │   ├── connection.pyc
+            │   ├── diff.py
+            │   ├── diff.pyc
+            │   ├── logging.py
+            │   ├── logging.pyc
+            │   ├── state.py
+            │   ├── state.pyc
+            │   ├── user_defaults.py
+            │   └── user_defaults.pyc
+            ├── draw
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── image.py
+            │   ├── image.pyc
+            │   ├── paint.py
+            │   ├── paint.pyc
+            │   ├── path.py
+            │   ├── path.pyc
+            │   ├── primitives.py
+            │   ├── primitives.pyc
+            │   ├── text.py
+            │   └── text.pyc
+            ├── modifiers
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── appearance.py
+            │   ├── appearance.pyc
+            │   ├── effects.py
+            │   ├── effects.pyc
+            │   ├── layout.py
+            │   ├── layout.pyc
+            │   ├── registry.py
+            │   ├── registry.pyc
+            │   ├── typography.py
+            │   └── typography.pyc
+            ├── services
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── base.py
+            │   ├── base.pyc
+            │   ├── battery.py
+            │   ├── battery.pyc
+            │   ├── camera.py
+            │   ├── camera.pyc
+            │   ├── connectivity.py
+            │   ├── connectivity.pyc
+            │   ├── keychain.py
+            │   ├── keychain.pyc
+            │   ├── screen.py
+            │   └── screen.pyc
+            ├── types.py
+            ├── types.pyc
+            └── views
+                ├── __init__.py
+                ├── __init__.pyc
+                ├── base.py
+                ├── base.pyc
+                ├── canvas.py
+                ├── canvas.pyc
+                ├── charts
+                │   ├── __init__.py
+                │   ├── __init__.pyc
+                │   ├── axis.py
+                │   ├── axis.pyc
+                │   ├── chart.py
+                │   ├── chart.pyc
+                │   ├── marks.py
+                │   ├── marks.pyc
+                │   ├── types.py
+                │   └── types.pyc
+                ├── controls
+                │   ├── __init__.py
+                │   ├── __init__.pyc
+                │   ├── button.py
+                │   ├── button.pyc
+                │   ├── camera_preview.py
+                │   ├── camera_preview.pyc
+                │   ├── divider.py
+                │   ├── divider.pyc
+                │   ├── gauge.py
+                │   ├── gauge.pyc
+                │   ├── image.py
+                │   ├── image.pyc
+                │   ├── label.py
+                │   ├── label.pyc
+                │   ├── link.py
+                │   ├── link.pyc
+                │   ├── map_view.py
+                │   ├── map_view.pyc
+                │   ├── markdown.py
+                │   ├── markdown.pyc
+                │   ├── picker.py
+                │   ├── picker.pyc
+                │   ├── progress_view.py
+                │   ├── progress_view.pyc
+                │   ├── share_link.py
+                │   ├── share_link.pyc
+                │   ├── slider.py
+                │   ├── slider.pyc
+                │   ├── table.py
+                │   ├── table.pyc
+                │   ├── text.py
+                │   ├── text.pyc
+                │   ├── text_editor.py
+                │   ├── text_editor.pyc
+                │   ├── text_field.py
+                │   ├── text_field.pyc
+                │   ├── toggle.py
+                │   ├── toggle.pyc
+                │   ├── video.py
+                │   ├── video.pyc
+                │   ├── web_view.py
+                │   └── web_view.pyc
+                ├── effects
+                │   ├── __init__.py
+                │   ├── __init__.pyc
+                │   ├── blur.py
+                │   └── blur.pyc
+                ├── layout
+                │   ├── __init__.py
+                │   ├── __init__.pyc
+                │   ├── grid.py
+                │   ├── grid.pyc
+                │   ├── group.py
+                │   ├── group.pyc
+                │   ├── hstack.py
+                │   ├── hstack.pyc
+                │   ├── list_view.py
+                │   ├── list_view.pyc
+                │   ├── navigation.py
+                │   ├── navigation.pyc
+                │   ├── scroll_view.py
+                │   ├── scroll_view.pyc
+                │   ├── section.py
+                │   ├── section.pyc
+                │   ├── spacer.py
+                │   ├── spacer.pyc
+                │   ├── vstack.py
+                │   ├── vstack.pyc
+                │   ├── zstack.py
+                │   └── zstack.pyc
+                └── shapes
+                    ├── __init__.py
+                    ├── __init__.pyc
+                    ├── capsule.py
+                    ├── capsule.pyc
+                    ├── circle.py
+                    ├── circle.pyc
+                    ├── ellipse.py
+                    ├── ellipse.pyc
+                    ├── gradients.py
+                    ├── gradients.pyc
+                    ├── rectangle.py
+                    ├── rectangle.pyc
+                    ├── rounded_rectangle.py
+                    └── rounded_rectangle.pyc
+
+18 directories, 182 files
