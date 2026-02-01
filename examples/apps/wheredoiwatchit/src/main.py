@@ -40,8 +40,7 @@ def main(app: nib.App):
             nib.Image(src=service, width=15, height=15, corner_radius=5)
             for service in paid_services.values()
         ],
-        spacing=-5,  # Negative spacing creates overlap
-        # Gentle animation for the header icons
+        spacing=-5,
         animation=nib.Animation.easeOut(0.2),
     )
 
@@ -49,7 +48,7 @@ def main(app: nib.App):
         nib.MenuItem(
             content=nib.HStack(
                 [nib.Text("My services:"), nib.Spacer(), services_row],
-                margin={"leading": 15, "trailing": 15},
+                margin={"leading": 12, "trailing": 12},
             ),
         ),
         nib.MenuDivider(),

@@ -33,7 +33,7 @@ Nib lets you write macOS menu bar apps in Python with a declarative, SwiftUI-ins
 
 ```
 nib/
-├── python/nib/           # Python package
+├── sdk/python/nib/       # Python SDK
 │   ├── core/
 │   │   ├── app.py        # App class, SFSymbol, run()
 │   │   ├── connection.py # Unix socket client, MessagePack
@@ -45,7 +45,7 @@ nib/
 │   │   └── shapes/       # Rectangle, Circle, Capsule, etc.
 │   └── types.py          # Color, Font, Animation, etc.
 │
-├── swift/Nib/            # Swift runtime (nib-runtime)
+├── package/Nib/          # Swift runtime (nib-runtime)
 │   ├── App/
 │   │   └── AppDelegate.swift    # Entry point, message routing
 │   ├── Network/
@@ -72,13 +72,20 @@ nib/
 ### Swift Runtime
 
 ```bash
-cd swift
+cd package
 swift build -c release
 ```
 
-The binary is at `swift/.build/release/nib-runtime`.
+The binary is at `package/.build/release/nib-runtime`.
 
-### Python Package
+### Using Makefile
+
+```bash
+make build-runtime  # Build and copy runtime to SDK
+make install        # Build and install in dev mode
+```
+
+### Python SDK
 
 No build step required. Just ensure the Swift runtime is built.
 
@@ -311,7 +318,7 @@ Views get position-based IDs during render (e.g., "0", "0.1", "0.1.2"). These ar
 
 ### New View Type
 
-1. **Python**: Create class in `python/nib/views/` inheriting from `View`
+1. **Python**: Create class in `sdk/python/nib/views/` inheriting from `View`
 2. **Swift**: Add case to `ViewNode.ViewType` enum
 3. **Swift**: Add builder in `DynamicView` or `Builders/`
 

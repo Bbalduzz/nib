@@ -45,10 +45,11 @@ Homepage = "https://github.com/Bbalduzz/nib"
 Repository = "https://github.com/Bbalduzz/nib"
 
 [tool.hatch.build.targets.wheel]
-packages = ["python/nib"]
+packages = ["sdk/python/nib"]
+artifacts = ["sdk/python/nib/bin/nib-runtime"]
 
 [tool.hatch.build.targets.editable]
-packages = ["python/nib"]
+packages = ["sdk/python/nib"]
 
 [tool.ruff]
 line-length = 88

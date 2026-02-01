@@ -1,5 +1,7 @@
-swift/.build/
+package/.build/
 
+# Built runtime binary (built via `make build-runtime`)
+sdk/python/nib/bin/nib-runtime
 
 examples/tests/*/dist/
 *.app/
