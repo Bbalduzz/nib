@@ -14,31 +14,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         clearLog()
         debugPrint("Nib runtime starting...")
 
-        // Add Edit menu for standard commands (Cmd+V paste, etc.)
-        setupEditMenu()
-
-        // Handle launch at login registration (for bundled apps)
-        registerLaunchAtLoginIfNeeded()
-
-        // Set up notification center delegate and request authorization
-        setupNotifications()
-
-        // Initialize status bar
-        statusBarController = StatusBarController()
-
-        // Set up hotkey handler
-        hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
-            self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
-        }
-
         // Check if we're running as a bundled app with embedded Python
         if isBundledApp() {
             debugPrint("Running in bundled mode - launching embedded Python")
+            // Full initialization for bundled mode
+            setupEditMenu()
+            registerLaunchAtLoginIfNeeded()
+            setupNotifications()
+            statusBarController = StatusBarController()
+            hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
+                self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
+            }
             launchEmbeddedPython()
         } else {
-            // Development mode: Python launches us, we just start the socket server
-            debugPrint("Running in development mode - waiting for Python connection")
+            // Development mode: Start socket server FIRST so Python can connect quickly
+            debugPrint("Running in development mode - starting socket server immediately")
             startSocketServer()
+
+            // Then do the rest of initialization (Python can start connecting now)
+            setupEditMenu()
+            registerLaunchAtLoginIfNeeded()
+            setupNotifications()
+            statusBarController = StatusBarController()
+            hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
+                self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
+            }
         }
     }
 
@@ -164,9 +164,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         var env = ProcessInfo.processInfo.environment
         env["NIB_SOCKET"] = socketPath
         env["PYTHONPATH"] = vendorDir
-        env["PYTHONDONTWRITEBYTECODE"] = "1"  // Don't create .pyc files in bundle
+        env["PYTHONDONTWRITEBYTECODE"] = "1"  // dont create .pyc files in bundle
         env["PYTHONHOME"] = pythonDir
-        // Set LC_ALL for proper encoding
         env["LC_ALL"] = "en_US.UTF-8"
         env["LANG"] = "en_US.UTF-8"
 

@@ -9,6 +9,7 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     private var rightClickMenu: NSMenu?
     private var menuItems: [NibMessage.MenuItemConfig] = []
     private var iconHostingView: NSHostingView<AnyView>?
+    private var hasPrewarmed = false
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -35,16 +36,23 @@ class StatusBarController: NSObject, NSPopoverDelegate {
         // Default size - will be updated by updateWindowSize if specified
         popover.contentSize = NSSize(width: 300, height: 400)
 
-        // Pre-warm SwiftUI by forcing initial layout
-        // This moves the 2s initialization cost from first click to app startup
-        DispatchQueue.main.async { [weak self] in
-            self?.prewarmPopover()
-        }
+        // NOTE: Prewarm is now deferred until after first content arrives
+        // This allows the app to start quickly - prewarm happens in background
     }
 
     /// Pre-warm SwiftUI rendering to eliminate first-click delay
-    /// NOTE: Not really sure if this is better than having delay on fist click.
-    private func prewarmPopover() {
+    /// Called after first content arrives, with a small delay to not block
+    private func prewarmPopoverIfNeeded() {
+        guard !hasPrewarmed else { return }
+        hasPrewarmed = true
+
+        // Delay slightly so the main thread can finish other work first
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.doPrewarm()
+        }
+    }
+
+    private func doPrewarm() {
         guard let button = statusItem.button else { return }
 
         // Briefly show popover off-screen to trigger SwiftUI initialization
@@ -52,6 +60,7 @@ class StatusBarController: NSObject, NSPopoverDelegate {
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         popover.performClose(nil)
         popover.animates = true
+        debugPrint("Popover prewarmed")
     }
 
     func updateWindowSize(width: CGFloat?, height: CGFloat?) {
@@ -124,6 +133,11 @@ class StatusBarController: NSObject, NSPopoverDelegate {
             viewStore.node = node
         }
         debugPrint("ViewStore updated")
+
+        // Prewarm popover after first content arrives (deferred, non-blocking)
+        if node != nil {
+            prewarmPopoverIfNeeded()
+        }
     }
 
     /// Recursively extract animation configuration from a node tree

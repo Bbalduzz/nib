@@ -62,20 +62,23 @@ class Connection:
         self._on_event: Optional[Callable[[str, str], None]] = None
         self._send_lock = threading.Lock()
 
-    def connect(self, retries: int = 10, delay: float = 0.2) -> bool:
+    def connect(self, retries: int = 50, initial_delay: float = 0.05) -> bool:
         """Connect to the Swift runtime socket.
 
-        Attempts to connect to the Unix socket with retries, as the Swift
-        runtime may take time to start and create the socket.
+        Attempts to connect to the Unix socket with retries using exponential
+        backoff. Starts with fast retries and gradually slows down.
 
         Args:
             retries: Maximum number of connection attempts.
-            delay: Seconds to wait between retry attempts.
+            initial_delay: Initial delay between attempts (grows exponentially).
 
         Returns:
             True if connection succeeded, False otherwise.
         """
         import time
+
+        delay = initial_delay
+        max_delay = 0.5  # Cap at 500ms between retries
 
         for attempt in range(retries):
             try:
@@ -87,6 +90,8 @@ class Connection:
             except (FileNotFoundError, ConnectionRefusedError):
                 if attempt < retries - 1:
                     time.sleep(delay)
+                    # Exponential backoff: 0.05, 0.075, 0.11, 0.17, 0.25, 0.38, 0.5, 0.5...
+                    delay = min(delay * 1.5, max_delay)
                 else:
                     return False
         return False

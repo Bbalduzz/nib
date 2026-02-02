@@ -37,152 +37,151 @@ struct DynamicView: View {
 // MARK: - View Building
 
 extension DynamicView {
-    @ViewBuilder
-    func buildView(for node: ViewNode) -> some View {
+    /// Build view with type erasure to avoid massive union type signature.
+    /// AnyView is the right choice for dynamic views - faster init, simpler types.
+    func buildView(for node: ViewNode) -> AnyView {
         switch node.type {
         // Layout
         case .vstack:
-            buildVStack()
+            return AnyView(buildVStack())
         case .hstack:
-            buildHStack()
+            return AnyView(buildHStack())
         case .zstack:
-            buildZStack()
+            return AnyView(buildZStack())
         case .spacer:
-            buildSpacer()
+            return AnyView(buildSpacer())
         case .divider:
-            Divider()
+            return AnyView(Divider())
 
         // Text & Input
         case .text:
-            buildText()
+            return AnyView(buildText())
         case .textField:
-            buildTextField()
+            return AnyView(buildTextField())
         case .secureField:
-            buildSecureField()
+            return AnyView(buildSecureField())
 
         // Controls
         case .button:
-            buildButton()
+            return AnyView(buildButton())
         case .toggle:
-            buildToggle()
+            return AnyView(buildToggle())
         case .slider:
-            buildSlider()
+            return AnyView(buildSlider())
         case .picker:
-            buildPicker()
+            return AnyView(buildPicker())
         case .datePicker:
-            buildDatePicker()
+            return AnyView(buildDatePicker())
         case .stepper:
-            buildStepper()
+            return AnyView(buildStepper())
         case .colorPicker:
-            buildColorPicker()
+            return AnyView(buildColorPicker())
 
         // Indicators
         case .progressView:
-            buildProgressView()
+            return AnyView(buildProgressView())
         case .label:
-            buildLabel()
+            return AnyView(buildLabel())
         case .link:
-            buildLink()
+            return AnyView(buildLink())
         case .image:
-            buildImage()
+            return AnyView(buildImage())
         case .video:
-            buildVideo()
+            return AnyView(buildVideo())
         case .markdown:
-            buildMarkdown()
+            return AnyView(buildMarkdown())
 
         // Shapes (transparent by default unless fill specified)
         case .shape:
-            // TODO: Enable when Shape primitive is fully implemented
-            EmptyView()
+            return AnyView(EmptyView())
         case .rectangle:
-            buildRectangle()
+            return AnyView(buildRectangle())
         case .roundedRectangle:
-            buildRoundedRectangle()
+            return AnyView(buildRoundedRectangle())
         case .circle:
-            buildCircle()
+            return AnyView(buildCircle())
         case .ellipse:
-            buildEllipse()
+            return AnyView(buildEllipse())
         case .capsule:
-            buildCapsule()
+            return AnyView(buildCapsule())
 
         // Gradients
         case .linearGradient:
-            buildLinearGradient()
+            return AnyView(buildLinearGradient())
         case .radialGradient:
-            buildRadialGradient()
+            return AnyView(buildRadialGradient())
         case .angularGradient:
-            buildAngularGradient()
+            return AnyView(buildAngularGradient())
         case .ellipticalGradient:
-            buildEllipticalGradient()
+            return AnyView(buildEllipticalGradient())
 
         // Lists & Collections
         case .list:
-            buildList()
+            return AnyView(buildList())
         case .scrollView:
-            buildScrollView()
+            return AnyView(buildScrollView())
         case .forEach:
-            buildForEach()
+            return AnyView(buildForEach())
         case .section:
-            buildSection()
+            return AnyView(buildSection())
         case .group:
-            buildGroup()
+            return AnyView(buildGroup())
         case .form:
-            buildForm()
+            return AnyView(buildForm())
 
         // Navigation
         case .navigationStack:
-            buildNavigationStack()
+            return AnyView(buildNavigationStack())
         case .navigationLink:
-            buildNavigationLink()
+            return AnyView(buildNavigationLink())
         case .disclosureGroup:
-            buildDisclosureGroup()
+            return AnyView(buildDisclosureGroup())
 
         // Charts
         case .chart:
-            buildChart()
+            return AnyView(buildChart())
         case .lineMark, .barMark, .areaMark, .pointMark, .ruleMark, .rectMark, .sectorMark:
-            // Marks are rendered by the parent Chart view, not directly
-            EmptyView()
+            return AnyView(EmptyView())
 
         // Map
         case .map:
-            buildMap()
+            return AnyView(buildMap())
 
         // Grid layouts
         case .grid:
-            buildGrid()
+            return AnyView(buildGrid())
         case .gridRow:
-            buildGridRow()
+            return AnyView(buildGridRow())
         case .lazyVGrid:
-            buildLazyVGrid()
+            return AnyView(buildLazyVGrid())
         case .lazyHGrid:
-            buildLazyHGrid()
+            return AnyView(buildLazyHGrid())
 
         // New controls
         case .gauge:
-            buildGauge()
+            return AnyView(buildGauge())
         case .textEditor:
-            buildTextEditor()
+            return AnyView(buildTextEditor())
         case .table:
-            buildTable()
+            return AnyView(buildTable())
         case .shareLink:
-            buildShareLink()
+            return AnyView(buildShareLink())
 
         // Effects
         case .visualEffectBlur:
-            buildVisualEffectBlur()
+            return AnyView(buildVisualEffectBlur())
 
         // Camera
         case .cameraPreview:
-            buildCameraPreview()
+            return AnyView(buildCameraPreview())
 
         // Canvas (Core Graphics drawing)
         case .canvas:
-            buildCanvas()
+            return AnyView(buildCanvas())
 
         // WebView
         case .webView:
-            buildWebView()
+            return AnyView(buildWebView())
         }
     }
 }
