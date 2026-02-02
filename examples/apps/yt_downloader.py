@@ -42,7 +42,7 @@ RADIUS = {"sm": 6, "md": 10, "lg": 14}
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-class State:
+class AppState:
     READY = "ready"
     LOADING = "loading"
     PREVIEW = "preview"
@@ -90,7 +90,7 @@ def main(app: nib.App):
     app.title = "TubeGrab"
     app.icon = nib.SFSymbol("arrow.down.circle.fill")
 
-    state = State()
+    state = AppState()
 
     # ─────────────────────────────────────────────────────────────────────────
     # Build UI based on state
@@ -134,15 +134,15 @@ def main(app: nib.App):
 
     def content():
         match state.current:
-            case State.READY:
+            case AppState.READY:
                 return ready_view()
-            case State.LOADING:
+            case AppState.LOADING:
                 return loading_view()
-            case State.PREVIEW:
+            case AppState.PREVIEW:
                 return preview_view()
-            case State.DOWNLOADING:
+            case AppState.DOWNLOADING:
                 return downloading_view()
-            case State.DONE:
+            case AppState.DONE:
                 return done_view()
         return ready_view()
 
@@ -157,8 +157,8 @@ def main(app: nib.App):
                 nib.TextField(
                     placeholder="Paste YouTube link...",
                     value=state.url,
-                    on_change=on_url_change,
-                    style=nib.TextFieldStyle.plain,
+                    on_submit=on_url_change,
+                    style=nib.TextFieldStyle.PLAIN,
                 ),
             ],
             spacing=SP["sm"],
@@ -205,11 +205,11 @@ def main(app: nib.App):
                     scaled_to_fill=True,
                     width=80.0,
                     height=45.0,
-                    clip_shape=nib.RoundedRectangle(corner_radius=RADIUS["sm"]),
+                    clip_shape=nib.Rectangle(corner_radius=RADIUS["sm"]),
                 )
             return nib.ZStack(
                 controls=[
-                    nib.RoundedRectangle(
+                    nib.Rectangle(
                         corner_radius=RADIUS["sm"],
                         fill=SURFACE_ELEVATED,
                         width=80.0,
@@ -306,7 +306,7 @@ def main(app: nib.App):
                     ),
                     nib.ZStack(
                         controls=[
-                            nib.RoundedRectangle(
+                            nib.Rectangle(
                                 corner_radius=2,
                                 fill=SURFACE_ELEVATED,
                                 width=bar_width,
@@ -314,7 +314,7 @@ def main(app: nib.App):
                             ),
                             nib.HStack(
                                 controls=[
-                                    nib.RoundedRectangle(
+                                    nib.Rectangle(
                                         corner_radius=2,
                                         fill=ACCENT,
                                         width=bar_width * progress,
@@ -414,9 +414,9 @@ def main(app: nib.App):
         )
 
     def on_url_change(value: str):
-        print(value)
         state.url = value.strip()
-        if is_youtube_url(state.url) and state.current == State.READY:
+        print(state.url)
+        if is_youtube_url(state.url) and state.current == AppState.READY:
             fetch()
 
     def fetch():

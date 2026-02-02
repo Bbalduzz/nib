@@ -119,6 +119,8 @@ from .effects import (
 )
 from .layout import (
     DisclosureGroup,
+    # Form
+    Form,
     # Grid layouts
     Grid,
     GridItem,
@@ -162,6 +164,7 @@ __all__ = [
     "List",
     "Section",
     "Group",
+    "Form",
     "NavigationStack",
     "NavigationLink",
     "DisclosureGroup",

@@ -28,7 +28,7 @@ def main(app: nib.App):
     # When you set animation on a view, ALL property changes animate
 
     progress_value = 0.0
-    progress_bar = nib.RoundedRectangle(
+    progress_bar = nib.Rectangle(
         corner_radius=4,
         fill=accent,
         width=progress_value,
@@ -68,7 +68,7 @@ def main(app: nib.App):
                 controls=[
                     nib.ZStack(
                         controls=[
-                            nib.RoundedRectangle(
+                            nib.Rectangle(
                                 corner_radius=4, fill="#333", width=200, height=8
                             ),
                             progress_bar,
@@ -89,7 +89,7 @@ def main(app: nib.App):
         spacing=8,
         padding=12,
         margin=16,
-        background=nib.RoundedRectangle(corner_radius=10, fill=bg_color),
+        background=nib.Rectangle(corner_radius=10, fill=bg_color),
     )
 
     # =========================================================================
@@ -98,7 +98,7 @@ def main(app: nib.App):
     # Different animations for appearing vs disappearing
 
     asymmetric_visible = True
-    asymmetric_box = nib.RoundedRectangle(
+    asymmetric_box = nib.Rectangle(
         corner_radius=8,
         fill="#30D158",
         width=60,
@@ -141,7 +141,7 @@ def main(app: nib.App):
         alignment=nib.HorizontalAlignment.LEADING,
         spacing=8,
         padding=12,
-        background=nib.RoundedRectangle(corner_radius=10, fill=bg_color),
+        background=nib.Rectangle(corner_radius=10, fill=bg_color),
     )
 
     # =========================================================================
@@ -150,7 +150,7 @@ def main(app: nib.App):
     # Multiple transition effects at once
 
     combined_visible = True
-    combined_box = nib.RoundedRectangle(
+    combined_box = nib.Rectangle(
         corner_radius=8,
         fill="#FF9F0A",
         width=60,
@@ -191,7 +191,7 @@ def main(app: nib.App):
         alignment=nib.HorizontalAlignment.LEADING,
         spacing=8,
         padding=12,
-        background=nib.RoundedRectangle(corner_radius=10, fill=bg_color),
+        background=nib.Rectangle(corner_radius=10, fill=bg_color),
     )
 
     # =========================================================================
@@ -199,7 +199,7 @@ def main(app: nib.App):
     # =========================================================================
 
     popfade_visible = True
-    popfade_box = nib.RoundedRectangle(
+    popfade_box = nib.Rectangle(
         corner_radius=8,
         fill="#BF5AF2",
         width=60,
@@ -213,7 +213,7 @@ def main(app: nib.App):
         popfade_box.visible = popfade_visible
 
     bounce_visible = True
-    bounce_box = nib.RoundedRectangle(
+    bounce_box = nib.Rectangle(
         corner_radius=8,
         fill="#FF453A",
         width=60,
@@ -274,7 +274,7 @@ def main(app: nib.App):
         alignment=nib.HorizontalAlignment.LEADING,
         spacing=8,
         padding=12,
-        background=nib.RoundedRectangle(corner_radius=10, fill=bg_color),
+        background=nib.Rectangle(corner_radius=10, fill=bg_color),
     )
 
     # =========================================================================
@@ -291,7 +291,7 @@ def main(app: nib.App):
     )
 
     swoosh_visible = True
-    swoosh_box = nib.RoundedRectangle(
+    swoosh_box = nib.Rectangle(
         corner_radius=8,
         fill="#64D2FF",
         width=60,
@@ -329,7 +329,7 @@ def main(app: nib.App):
         alignment=nib.HorizontalAlignment.LEADING,
         spacing=8,
         padding=12,
-        background=nib.RoundedRectangle(corner_radius=10, fill=bg_color),
+        background=nib.Rectangle(corner_radius=10, fill=bg_color),
     )
 
     # =========================================================================

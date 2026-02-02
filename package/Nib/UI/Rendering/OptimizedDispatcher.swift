@@ -118,7 +118,14 @@ extension OptimizedViewDispatcher {
                         .applyModifiers(childNode.modifiers)
                         .applyBackgroundView(childNode.backgroundView, onEvent: onEvent)
                         .applyOverlayView(childNode.overlayView, onEvent: onEvent)
-                        .applyDropZone(enabled: childNode.props.onDrop ?? false, nodeId: childNode.id, onEvent: onEvent)
+                        .applyInteractionHandlers(
+                            onDrop: childNode.props.onDrop,
+                            onHover: childNode.props.onHover,
+                            onClick: childNode.props.onClick,
+                            tooltip: childNode.props.tooltip,
+                            nodeId: childNode.id,
+                            onEvent: onEvent
+                        )
                 )
             }
         )

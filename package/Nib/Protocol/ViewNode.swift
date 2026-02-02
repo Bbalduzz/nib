@@ -167,6 +167,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         case forEach = "ForEach"
         case section = "Section"
         case group = "Group"
+        case form = "Form"
 
         // Navigation
         case navigationStack = "NavigationStack"
@@ -298,19 +299,19 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         var header: String?
         var footer: String?
 
+        // Form
+        var formStyle: String?
+
         // NavigationLink
         var destination: String?  // View ID or label
 
         // DisclosureGroup
         var isExpanded: Bool?
 
-        // Drag and Drop
+        // Interaction handlers
         var onDrop: Bool?
-
-        // Hover
         var onHover: Bool?
-
-        // Tooltip
+        var onClick: Bool?
         var tooltip: String?
 
         // Charts

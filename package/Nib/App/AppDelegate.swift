@@ -293,7 +293,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
                 }
                 self?.settingsController.render(payload)
-                self?.settingsController.show()
 
             case .settingsOpen:
                 debugPrint("Settings open")

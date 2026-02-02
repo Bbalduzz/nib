@@ -31,7 +31,7 @@ def main(app: nib.App):
                             ),
                         ],
                         padding=4,
-                        background=nib.RoundedRectangle(
+                        background=nib.Rectangle(
                             fill=nib.Color.BLACK.with_opacity(0.4),
                             corner_radius=8,
                             opacity=0.8,

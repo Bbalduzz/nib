@@ -13,9 +13,14 @@ struct DynamicView: View {
             .applyAnimationContext(node.animationContext, nodeHash: node.hashValue)
             .applyBackgroundView(node.backgroundView, onEvent: onEvent)
             .applyOverlayView(node.overlayView, onEvent: onEvent)
-            .applyDropZone(enabled: node.props.onDrop ?? false, nodeId: node.id, onEvent: onEvent)
-            .applyHoverHandler(enabled: node.props.onHover ?? false, nodeId: node.id, onEvent: onEvent)
-            .applyTooltip(node.props.tooltip)
+            .applyInteractionHandlers(
+                onDrop: node.props.onDrop,
+                onHover: node.props.onHover,
+                onClick: node.props.onClick,
+                tooltip: node.props.tooltip,
+                nodeId: node.id,
+                onEvent: onEvent
+            )
     }
 
     /// Recursively build child views
@@ -121,6 +126,8 @@ extension DynamicView {
             buildSection()
         case .group:
             buildGroup()
+        case .form:
+            buildForm()
 
         // Navigation
         case .navigationStack:

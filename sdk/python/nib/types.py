@@ -322,6 +322,32 @@ class ProgressStyle(str, Enum):
     circular = "circular"
 
 
+class FormStyle(str, Enum):
+    """Form visual styles matching SwiftUI FormStyle.
+
+    Controls the visual appearance and layout of Form containers.
+
+    Styles:
+        - AUTOMATIC: Platform default style
+        - COLUMNS: Two-column layout with labels on left, controls on right (macOS default)
+        - GROUPED: Grouped sections with visual separation
+
+    Example:
+        >>> nib.Form(controls=[...], style=FormStyle.GROUPED)
+        >>> nib.Form(controls=[...], style=FormStyle.COLUMNS)
+    """
+
+    # CAPS names (preferred)
+    AUTOMATIC = "automatic"
+    COLUMNS = "columns"
+    GROUPED = "grouped"
+
+    # Backwards-compatible aliases (deprecated)
+    automatic = "automatic"
+    columns = "columns"
+    grouped = "grouped"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Text Enums
 # ─────────────────────────────────────────────────────────────────────────────

@@ -282,7 +282,7 @@ class Chart(View):
         if not self._marks:
             return None
         return [
-            mark.to_dict(f"{parent_path}.{i}", depth + 1)
+            mark.to_dict(f"{parent_path}.{i}")
             for i, mark in enumerate(self._marks)
         ]
 

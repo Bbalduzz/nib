@@ -101,7 +101,7 @@ class SettingsPage:
     """A settings page with optional tabs.
 
     Creates a preferences window that can contain either a single content view
-    or multiple tabbed sections. Opens via Cmd+, or the Settings menu item.
+    or multiple tabbed sections. Opens via Cmd+, or programmatically via open().
 
     Args:
         tabs: List of SettingsTab objects for a tabbed interface.
@@ -123,13 +123,9 @@ class SettingsPage:
                 ]
             )
 
-        Simple settings (single view)::
+        Opening programmatically::
 
-            app.settings = nib.SettingsPage(
-                content=nib.VStack([
-                    nib.Toggle("Enable Feature"),
-                ], padding=20)
-            )
+            nib.Button("Preferences", action=app.settings.open)
     """
 
     def __init__(
@@ -154,10 +150,25 @@ class SettingsPage:
         self.width = width
         self.height = height
         self.title = title
+        self._app = None  # Set by App when assigned to app.settings
 
         # If content provided without tabs, wrap in single tab
         if content and not tabs:
             self.tabs = [SettingsTab("General", icon="gear", content=content)]
+
+    def open(self) -> None:
+        """Open the settings window.
+
+        Example:
+            nib.Button("Preferences", action=app.settings.open)
+        """
+        if self._app and self._app._connection:
+            self._app._connection.send_settings_open()
+
+    def close(self) -> None:
+        """Close the settings window."""
+        if self._app and self._app._connection:
+            self._app._connection.send_settings_close()
 
     def _to_dict(self, id_prefix: str = "settings") -> dict:
         """Serialize the settings page for the protocol.

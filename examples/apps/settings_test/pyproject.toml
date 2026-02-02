@@ -4,8 +4,7 @@ version = "0.1.0"
 description = "Wheredoiwatchit - A nib application"
 requires-python = ">=3.10"
 dependencies = [
-    "nib",
-    "httpx"
+    "nib"
 ]
 
 [tool.nib]

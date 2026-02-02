@@ -205,11 +205,28 @@ extension View {
     }
 }
 
-// MARK: - Drag and Drop
+// MARK: - Interaction Handlers
 
 extension View {
+    /// Apply all interaction handlers (drop, hover, click, tooltip) in one pass
     @ViewBuilder
-    func applyDropZone(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
+    func applyInteractionHandlers(
+        onDrop: Bool?,
+        onHover: Bool?,
+        onClick: Bool?,
+        tooltip: String?,
+        nodeId: String,
+        onEvent: @escaping (String, String) -> Void
+    ) -> some View {
+        self
+            .applyDropHandler(enabled: onDrop ?? false, nodeId: nodeId, onEvent: onEvent)
+            .applyHoverHandler(enabled: onHover ?? false, nodeId: nodeId, onEvent: onEvent)
+            .applyClickHandler(enabled: onClick ?? false, nodeId: nodeId, onEvent: onEvent)
+            .applyTooltip(tooltip)
+    }
+
+    @ViewBuilder
+    private func applyDropHandler(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
         if enabled {
             self.onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
                 handleDrop(providers: providers, nodeId: nodeId, onEvent: onEvent)
@@ -219,13 +236,9 @@ extension View {
             self
         }
     }
-}
 
-// MARK: - Hover
-
-extension View {
     @ViewBuilder
-    func applyHoverHandler(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
+    private func applyHoverHandler(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
         if enabled {
             self.onHover { isHovering in
                 onEvent(nodeId, "hover:\(isHovering ? "true" : "false")")
@@ -234,13 +247,22 @@ extension View {
             self
         }
     }
-}
 
-// MARK: - Tooltip
-
-extension View {
     @ViewBuilder
-    func applyTooltip(_ tooltip: String?) -> some View {
+    private func applyClickHandler(enabled: Bool, nodeId: String, onEvent: @escaping (String, String) -> Void) -> some View {
+        if enabled {
+            self
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onEvent(nodeId, "click")
+                }
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    private func applyTooltip(_ tooltip: String?) -> some View {
         if let tooltip = tooltip {
             self.help(tooltip)
         } else {

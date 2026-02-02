@@ -26,7 +26,7 @@ def main(app: nib.App):
                         nib.Spacer(min_length=16),
                         # Linear Gradient
                         nib.Text("LinearGradient", font=nib.Font.headline),
-                        nib.RoundedRectangle(
+                        nib.Rectangle(
                             corner_radius=12,
                             width=280,
                             height=60,
@@ -39,7 +39,7 @@ def main(app: nib.App):
                         nib.Spacer(min_length=16),
                         # Linear with stops
                         nib.Text("LinearGradient (stops)", font=nib.Font.headline),
-                        nib.RoundedRectangle(
+                        nib.Rectangle(
                             corner_radius=12,
                             width=280,
                             height=60,

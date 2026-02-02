@@ -104,6 +104,8 @@ from .types import (
     CustomTransitionBuilder,
     Font,
     FontWeight,
+    # Form style
+    FormStyle,
     # Alignment enums
     HorizontalAlignment,
     # Image enums
@@ -146,6 +148,8 @@ from .views import (
     Divider,
     Ellipse,
     EllipticalGradient,
+    # Form
+    Form,
     # New controls
     Gauge,
     GaugeStyle,
@@ -243,6 +247,8 @@ __all__ = [
     "List",
     "Section",
     "Group",
+    "Form",
+    "FormStyle",
     "NavigationStack",
     "NavigationLink",
     "DisclosureGroup",

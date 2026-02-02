@@ -32,9 +32,7 @@ def main(app: nib.App):
             alignment=nib.HorizontalAlignment.LEADING,
             spacing=8,
             padding=12,
-            background=nib.RoundedRectangle(
-                corner_radius=10, fill=card_bg, opacity=0.6
-            ),
+            background=nib.Rectangle(corner_radius=10, fill=card_bg, opacity=0.6),
         )
 
     def make_stat_row(icon: str, label: str, value_view, icon_color=None):

@@ -33,7 +33,7 @@ def main(app: nib.App):
                         nib.ZStack(
                             controls=[
                                 # Background
-                                nib.RoundedRectangle(
+                                nib.Rectangle(
                                     fill=nib.Color.SECONDARY.with_opacity(0.1),
                                     corner_radius=8,
                                 ),
@@ -68,7 +68,7 @@ def main(app: nib.App):
                         ),
                         nib.ZStack(
                             controls=[
-                                nib.RoundedRectangle(
+                                nib.Rectangle(
                                     fill=nib.Color.SECONDARY.with_opacity(0.1),
                                     corner_radius=8,
                                 ),
@@ -101,7 +101,7 @@ def main(app: nib.App):
                         ),
                         nib.ZStack(
                             controls=[
-                                nib.RoundedRectangle(
+                                nib.Rectangle(
                                     fill=nib.Color.SECONDARY.with_opacity(0.1),
                                     corner_radius=8,
                                 ),

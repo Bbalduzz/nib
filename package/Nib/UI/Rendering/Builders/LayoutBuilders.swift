@@ -94,6 +94,29 @@ extension DynamicView {
         }
     }
 
+    @ViewBuilder
+    func buildForm() -> some View {
+        let style = node.props.formStyle ?? "columns"
+
+        switch style.lowercased() {
+        case "grouped":
+            Form {
+                childViews
+            }
+            .formStyle(.grouped)
+        case "columns":
+            Form {
+                childViews
+            }
+            .formStyle(.columns)
+        default:
+            // automatic - let system decide
+            Form {
+                childViews
+            }
+        }
+    }
+
     private func scrollAxes(from axes: String?) -> Axis.Set {
         switch axes?.lowercased() {
         case "horizontal":

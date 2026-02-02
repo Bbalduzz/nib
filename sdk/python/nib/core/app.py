@@ -257,6 +257,8 @@ class App:
         self._pan_update_map: Dict[str, Callable] = {}
         self._pan_end_map: Dict[str, Callable] = {}
         self._hover_map: Dict[str, Callable] = {}
+        # Click handlers
+        self._click_map: Dict[str, Callable] = {}
         # Custom fonts
         self._fonts: Dict[str, str] = {}
         # App lifecycle callbacks
@@ -466,6 +468,8 @@ class App:
             )
         """
         self._settings_page = value
+        if value:
+            value._app = self
         if self._connection and value:
             self._send_settings_render()
 
@@ -494,26 +498,26 @@ class App:
             settings._set_connection(self._connection)
 
     def open_settings(self) -> None:
-        """
-        Programmatically open the settings window.
+        """Open the settings window.
 
-        The settings window must be configured via app.settings first.
+        Prefer using app.settings.open() instead.
 
         Example:
-            nib.Button("Preferences", action=app.open_settings)
+            nib.Button("Preferences", action=app.settings.open)
         """
-        if self._connection and self._settings_page:
-            self._connection.send_settings_open()
+        if self._settings_page:
+            self._settings_page.open()
 
     def close_settings(self) -> None:
-        """
-        Programmatically close the settings window.
+        """Close the settings window.
+
+        Prefer using app.settings.close() instead.
 
         Example:
-            nib.Button("Done", action=app.close_settings)
+            nib.Button("Done", action=app.settings.close)
         """
-        if self._connection:
-            self._connection.send_settings_close()
+        if self._settings_page:
+            self._settings_page.close()
 
     def _send_settings_render(self) -> None:
         """Send settings page configuration to Swift runtime."""
@@ -1146,6 +1150,7 @@ class App:
         self._pan_update_map.clear()
         self._pan_end_map.clear()
         self._hover_map.clear()
+        self._click_map.clear()
 
         # Build view tree
         root = self.body()
@@ -1253,6 +1258,8 @@ class App:
             self._pan_end_map[view._id] = view._on_pan_end
         if hasattr(view, "_on_hover") and view._on_hover is not None:
             self._hover_map[view._id] = view._on_hover
+        if hasattr(view, "_on_click") and view._on_click is not None:
+            self._click_map[view._id] = view._on_click
 
         # Recurse into children with indexed paths
         if hasattr(view, "_children") and view._children:
@@ -1380,6 +1387,13 @@ class App:
                     self._hover_map[node_id](PanEvent(x=x, y=y))
             except Exception as e:
                 logger.error("Error in hover handler", exc=e, node_id=node_id)
+
+        # Handle click events
+        elif event == "click" and node_id in self._click_map:
+            try:
+                self._click_map[node_id]()
+            except Exception as e:
+                logger.error("Error in click handler", exc=e, node_id=node_id)
 
         # Handle change events (change:value)
         elif event.startswith("change:") and node_id in self._change_map:
@@ -1754,7 +1768,7 @@ class MenuItem:
         if self.content is not None:
             result["content"] = self.content.to_dict()
         if self.height is not None:
-            result["height"] = self.height
+            result["height"] = float(self.height)
         if self.menu:
             result["children"] = [item.to_dict() for item in self.menu]
         if self.shortcut:

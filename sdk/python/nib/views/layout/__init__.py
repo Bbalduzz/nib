@@ -8,6 +8,7 @@ from .scroll_view import ScrollView
 from .list_view import List
 from .section import Section
 from .group import Group
+from .form import Form
 from .navigation import NavigationStack, NavigationLink, DisclosureGroup
 from .grid import Grid, GridRow, LazyVGrid, LazyHGrid, GridItem, GridItemSize
 
@@ -20,6 +21,7 @@ __all__ = [
     "List",
     "Section",
     "Group",
+    "Form",
     "NavigationStack",
     "NavigationLink",
     "DisclosureGroup",
