@@ -83,6 +83,15 @@ from .services import (
     Screen,
     ScreenInfo,
 )
+from .notifications import (
+    Notification,
+    NotificationManager,
+    NotificationSound,
+    NotificationSoundName,
+    NotificationAction,
+    NotificationActionOption,
+    TextInputNotificationAction,
+)
 from .types import (
     Alignment,
     # Core types
@@ -381,4 +390,12 @@ __all__ = [
     "Screen",
     "ScreenInfo",
     "Keychain",
+    # Notifications
+    "Notification",
+    "NotificationManager",
+    "NotificationSound",
+    "NotificationSoundName",
+    "NotificationAction",
+    "NotificationActionOption",
+    "TextInputNotificationAction",
 ]

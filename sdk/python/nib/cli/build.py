@@ -53,8 +53,10 @@ Requirements:
     - macOS (uses native tools: sips, iconutil)
     - nib-runtime Swift binary built
     - Internet connection (for downloading Python)
+        - https://github.com/astral-sh/python-build-standalone
 """
 
+import logging
 import os
 import platform
 import plistlib
@@ -69,8 +71,10 @@ from typing import Literal, Optional
 
 from .deps import detect_imports, extract_metadata, resolve_packages
 
+logger = logging.getLogger("nib.build")
+
 # python-build-standalone configuration
-PBS_VERSION = "20241219"  # Pin to a known good release
+PBS_VERSION = "20241219"
 PYTHON_VERSION = "3.12"
 
 
@@ -122,15 +126,16 @@ def download_python_standalone(arch: str) -> Path:
     cached_path = cache_dir / filename
 
     if cached_path.exists():
-        print(f"  Using cached Python: {filename}")
+        logger.info(f"Using cached Python: {filename}")
         return cached_path
 
-    print(f"  Downloading Python ({arch}): {filename}")
+    logger.info(f"Downloading Python ({arch}): {filename}")
 
     try:
         with urllib.request.urlopen(url) as response:
             total_size = int(response.headers.get("content-length", 0))
             downloaded = 0
+            last_logged_percent = -10  # Log every 10%
             with open(cached_path, "wb") as f:
                 while True:
                     chunk = response.read(8192)
@@ -140,8 +145,10 @@ def download_python_standalone(arch: str) -> Path:
                     downloaded += len(chunk)
                     if total_size:
                         progress = downloaded / total_size * 100
-                        print(f"\r  Progress: {progress:.1f}%", end="", flush=True)
-            print()  # Newline after progress
+                        if progress - last_logged_percent >= 10:
+                            logger.debug(f"Download progress: {progress:.0f}%")
+                            last_logged_percent = progress
+            logger.debug("Download complete")
     except Exception as e:
         if cached_path.exists():
             cached_path.unlink()
@@ -160,7 +167,7 @@ def extract_python_standalone(archive_path: Path, dest_dir: Path) -> Path:
     Returns:
         Path: Path to the extracted Python directory.
     """
-    print("  Extracting Python distribution...")
+    logger.info("Extracting Python distribution...")
     with tarfile.open(archive_path, "r:gz") as tar:
         tar.extractall(dest_dir)
 
@@ -188,14 +195,13 @@ def vendor_dependencies(
         vendor_dir: Directory to install packages to.
         packages: List of package names to install.
     """
-    # Always include nib's core dependencies
-    core_deps = ["msgpack"]
+    core_deps = ["msgpack"] # used by nib so dep is mandatory
     all_packages = list(set(packages + core_deps))
 
     if not all_packages:
-        print("  No dependencies to vendor")
+        logger.info("No dependencies to vendor")
     else:
-        print(f"  Vendoring {len(all_packages)} packages...")
+        logger.info(f"Vendoring {len(all_packages)} packages...")
         vendor_dir.mkdir(parents=True, exist_ok=True)
 
         cmd = [
@@ -213,17 +219,16 @@ def vendor_dependencies(
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"  Warning: pip install had issues: {result.stderr}")
-            # Don't fail - some packages might still have installed
+            logger.warning(f"pip install had issues: {result.stderr}")
+            # don't fail - some packages might still have installed
 
-    # Copy nib package to vendor
     nib_src = Path(__file__).parent.parent.resolve()  # python/nib
     nib_dest = vendor_dir / "nib"
     if nib_dest.exists():
         shutil.rmtree(nib_dest)
     shutil.copytree(nib_src, nib_dest)
 
-    print(f"  Vendored: {', '.join(all_packages)} + nib")
+    logger.info(f"Vendored: {', '.join(all_packages)} + nib")
 
 
 def cleanup_python_distribution(python_dir: Path) -> None:
@@ -232,7 +237,6 @@ def cleanup_python_distribution(python_dir: Path) -> None:
     Args:
         python_dir: Path to the Python distribution directory.
     """
-    # Patterns to remove
     remove_patterns = [
         "**/__pycache__",
         "**/test",
@@ -242,8 +246,8 @@ def cleanup_python_distribution(python_dir: Path) -> None:
         "**/*.pyo",
         "lib/python*/config-*",
         "lib/python*/lib-dynload/_test*.so",
-        "share",  # Documentation
-        "include",  # Headers (not needed for runtime)
+        "share",
+        "include",
     ]
 
     for pattern in remove_patterns:
@@ -306,7 +310,7 @@ def cleanup_python_distribution(python_dir: Path) -> None:
 
 
 
-def obfuscate_python_code(app_dir: Path) -> None:
+def compile_python_code(app_dir: Path) -> None:
     """Compile Python files to bytecode and remove source files.
 
     This provides basic code protection by converting .py files to .pyc
@@ -332,6 +336,44 @@ def obfuscate_python_code(app_dir: Path) -> None:
         pyc_file = py_file.with_suffix(".pyc")
         if pyc_file.exists():
             py_file.unlink()
+
+
+def obfuscate_python_code(app_dir: Path) -> bool:
+    """Obfuscate Python bytecode files.
+
+    Uses a custom obfuscator that modifies bytecode in-place without
+    adding any wrapper code. This works with Python's module import system.
+
+    Obfuscates:
+    - co_filename: Source file path -> empty string
+    - co_name: Function/class names -> empty string
+    - co_firstlineno: Line number -> 1
+    - co_linetable/co_lnotab: Line mapping -> empty bytes
+    - co_varnames: Local variable names -> numbered (0, 1, 2...)
+
+    Args:
+        app_dir: Path to the app directory containing .pyc files.
+
+    Returns:
+        bool: True if obfuscation succeeded, False otherwise.
+    """
+    from .obfuscate import obfuscate_pyc
+
+    pyc_files = list(app_dir.rglob("*.pyc"))
+
+    if not pyc_files:
+        logger.warning("No .pyc files to obfuscate")
+        return True
+
+    for pyc_file in pyc_files:
+        try:
+            obfuscate_pyc(pyc_file)
+        except Exception as e:
+            logger.warning(f"Failed to obfuscate {pyc_file.name}: {e}")
+            return False
+
+    logger.info(f"Obfuscated {len(pyc_files)} bytecode files")
+    return True
 
 
 def create_bundle_structure(output_dir: Path, name: str) -> dict[str, Path]:
@@ -610,7 +652,7 @@ def convert_icon_to_icns(icon_path: Path, output_dir: Path) -> Optional[Path]:
         return icns_path
 
     except subprocess.CalledProcessError as e:
-        print(f"Warning: Failed to convert icon: {e}")
+        logger.warning(f"Failed to convert icon: {e}")
         return None
 
 
@@ -723,7 +765,8 @@ def build_app(
     explicit_deps: Optional[list[str]] = None,
     arch: Optional[str] = None,
     launch_at_login: bool = False,
-    no_obfuscate: bool = False,
+    no_compile: bool = False,
+    obfuscate: bool = False,
 ) -> int:
     """Build a standalone macOS .app bundle from a Nib script.
 
@@ -744,7 +787,8 @@ def build_app(
         explicit_deps: Explicit dependency list (from pyproject.toml).
         arch: Target architecture ("arm64" or "x86_64", default: current).
         launch_at_login: Enable launch at login (default: False).
-        no_obfuscate: Skip bytecode compilation, keep source files (default: False).
+        no_compile: Skip bytecode compilation, keep source files (default: False).
+        obfuscate: Apply real obfuscation via pyc-zipper (default: False).
 
     Returns:
         int: Exit code (0 = success, 1 = failure).
@@ -752,18 +796,18 @@ def build_app(
     # Validate script exists
     script = script.resolve()
     if not script.exists():
-        print(f"Error: Script not found: {script}")
+        logger.error(f"Script not found: {script}")
         return 1
 
     # Find nib-runtime
     runtime = find_nib_runtime()
     if not runtime:
-        print("Error: nib-runtime not found.")
-        print("Please build it first: make build-runtime")
-        print("Or manually: cd package && swift build -c release")
+        logger.error("nib-runtime not found.")
+        logger.error("Please build it first: make build-runtime")
+        logger.error("Or manually: cd package && swift build -c release")
         return 1
 
-    print(f"Using nib-runtime: {runtime}")
+    logger.info(f"Using nib-runtime: {runtime}")
 
     # Extract metadata from script
     metadata = extract_metadata(script)
@@ -772,7 +816,7 @@ def build_app(
     if not name:
         name = metadata.get("title") or script.stem.replace("_", " ").title()
 
-    print(f"Building: {name}")
+    logger.info(f"Building: {name}")
 
     # Determine target architecture
     if arch is None:
@@ -782,17 +826,17 @@ def build_app(
         elif arch in ("x86_64", "AMD64"):
             arch = "x86_64"
         else:
-            print(f"Warning: Unknown architecture {arch}, defaulting to arm64")
+            logger.warning(f"Unknown architecture {arch}, defaulting to arm64")
             arch = "arm64"
 
-    print(f"Target architecture: {arch}")
+    logger.info(f"Target architecture: {arch}")
 
     # Determine dependencies
     if explicit_deps:
-        print("Using dependencies from pyproject.toml...")
+        logger.info("Using dependencies from pyproject.toml...")
         packages = list(explicit_deps)
     else:
-        print("Detecting dependencies...")
+        logger.info("Detecting dependencies...")
         project_dir = script.parent
         if project_dir.name == "src":
             project_dir = project_dir.parent
@@ -805,24 +849,24 @@ def build_app(
         packages.extend(extra)
 
     if packages:
-        print(f"  Dependencies: {', '.join(packages)}")
+        logger.info(f"Dependencies: {', '.join(packages)}")
     else:
-        print("  No third-party dependencies")
+        logger.info("No third-party dependencies")
 
     # Create output directory
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
     # Create bundle structure
-    print("Creating bundle structure...")
+    logger.info("Creating bundle structure...")
     paths = create_bundle_structure(output, name)
 
     # Download and extract Python
-    print("Setting up Python runtime...")
+    logger.info("Setting up Python runtime...")
     try:
         python_archive = download_python_standalone(arch)
     except RuntimeError as e:
-        print(f"Error: {e}")
+        logger.error(str(e))
         return 1
 
     # Extract to a temp location first, then move
@@ -838,11 +882,11 @@ def build_app(
     python_bin = paths["python_dir"] / "bin" / "python3"
 
     # Vendor dependencies
-    print("Installing dependencies...")
+    logger.info("Installing dependencies...")
     vendor_dependencies(python_bin, paths["vendor_dir"], packages)
 
     # Copy user code
-    print("Copying application code...")
+    logger.info("Copying application code...")
     main_dest = paths["app_dir"] / "main.py"
     shutil.copy2(script, main_dest)
 
@@ -886,7 +930,7 @@ def build_app(
     if assets_src:
         assets_dest = paths["resources"] / "assets"
         shutil.copytree(assets_src, assets_dest, dirs_exist_ok=True)
-        print(f"  Copied assets from {assets_src}")
+        logger.info(f"Copied assets from {assets_src}")
 
         # Detect fonts in assets for Info.plist registration
         fonts = detect_fonts_in_assets(assets_dest)
@@ -905,15 +949,20 @@ def build_app(
             else:
                 fonts_plist_path = "assets"
 
-            print(f"  Registered {len(fonts)} font(s) in {fonts_plist_path}")
+            logger.info(f"Registered {len(fonts)} font(s) in {fonts_plist_path}")
 
-    # Obfuscate Python code (compile to bytecode, remove source)
-    if not no_obfuscate:
-        print("Compiling Python bytecode...")
-        obfuscate_python_code(paths["app_dir"])
+    # Compile and/or obfuscate Python code
+    if not no_compile:
+        logger.info("Compiling Python bytecode...")
+        compile_python_code(paths["app_dir"])
+
+        if obfuscate:
+            logger.info("Obfuscating Python bytecode...")
+            if not obfuscate_python_code(paths["app_dir"]):
+                logger.warning("Obfuscation failed, continuing with compiled bytecode")
 
     # Copy Swift runtime as main executable
-    print("Installing Swift runtime...")
+    logger.info("Installing Swift runtime...")
     swift_dest = paths["macos"] / name
     shutil.copy2(runtime, swift_dest)
     os.chmod(swift_dest, 0o755)
@@ -927,10 +976,10 @@ def build_app(
             if icns:
                 icon_filename = icns.name
         else:
-            print(f"Warning: Icon not found: {icon}")
+            logger.warning(f"Icon not found: {icon}")
 
     # Generate Info.plist
-    print("Generating Info.plist...")
+    logger.info("Generating Info.plist...")
     plist = build_plist_dict(
         name=name,
         identifier=identifier or f"com.nib.{name.lower().replace(' ', '')}",
@@ -949,7 +998,7 @@ def build_app(
         plistlib.dump(plist, f)
 
     # Clean up Python distribution to reduce size
-    print("Cleaning up...")
+    logger.info("Cleaning up...")
     cleanup_python_distribution(paths["python_dir"])
 
     # Also clean vendor directory
@@ -958,13 +1007,13 @@ def build_app(
             shutil.rmtree(pycache)
 
     # Code sign the app bundle (required for SMAppService/launch at login)
-    print("Signing app bundle...")
+    logger.info("Signing app bundle...")
     if codesign_app(paths["app"]):
-        print("  App signed with ad-hoc signature")
+        logger.info("App signed with ad-hoc signature")
     else:
-        print("  Warning: Code signing failed (some features may not work)")
+        logger.warning("Code signing failed (some features may not work)")
 
-    print(f"\nSuccess! App bundle created at: {paths['app']}")
-    print(f"Bundle size: {get_dir_size(paths['app']):.1f} MB")
+    logger.success(f"App bundle created at: {paths['app']}")
+    logger.success(f"Bundle size: {get_dir_size(paths['app']):.1f} MB")
 
     return 0

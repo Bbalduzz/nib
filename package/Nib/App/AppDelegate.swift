@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import ServiceManagement
 import UserNotifications
+import MessagePack
 
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarController: StatusBarController?
@@ -9,6 +10,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var hotkeyManager = HotkeyManager()
     var pythonProcess: Process?
     private lazy var settingsController = SettingsWindowController()
+    private lazy var notificationService = NotificationService()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         clearLog()
@@ -257,8 +259,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self?.handlePatch(payload)
 
             case .notify(let payload):
-                debugPrint("Notification - title:", payload.title)
+                debugPrint("Notification (legacy) - title:", payload.title)
                 self?.sendNotification(payload)
+
+            case .notification(let payload):
+                debugPrint("Notification - action:", payload.action)
+                self?.notificationService.handle(payload)
 
             case .clipboard(let payload):
                 debugPrint("Clipboard - action:", payload.action)
@@ -375,15 +381,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }()
 
     private func setupNotifications() {
-        // IMPORTANT: Do NOT call UNUserNotificationCenter.current() outside of an .app bundle
-        // It will crash with "bundleProxyForCurrentProcess is nil"
+        // Configure notification service with callbacks
+        notificationService.configure(
+            sendResponse: { [weak self] response in
+                self?.sendNotificationResponse(response)
+            },
+            sendEvent: { [weak self] nodeId, event in
+                self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+            }
+        )
+
+        // Set up notification center (handles app bundle check internally)
+        notificationService.setupNotificationCenter()
+
+        // Legacy setup for old notification API
         guard isRunningFromAppBundle else {
-            debugPrint("Skipping notification setup (not running from .app bundle - dev mode)")
+            debugPrint("Skipping legacy notification setup (not running from .app bundle - dev mode)")
             return
         }
 
         let center = UNUserNotificationCenter.current()
-        center.delegate = self
+        center.delegate = notificationService
 
         // Request authorization for notifications
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -391,6 +409,99 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 debugPrint("Notification authorization error: \(error)")
             } else {
                 debugPrint("Notification authorization granted: \(granted)")
+            }
+        }
+    }
+
+    private func sendNotificationResponse(_ response: NotificationService.NotificationResponse) {
+        guard let socketServer = socketServer else { return }
+
+        // Build response dictionary
+        var responseDict: [String: Any] = [
+            "type": response.type
+        ]
+        if let requestId = response.requestId {
+            responseDict["requestId"] = requestId
+        }
+
+        var dataDict: [String: Any] = [:]
+        if let granted = response.data.granted {
+            dataDict["granted"] = granted
+        }
+        if let success = response.data.success {
+            dataDict["success"] = success
+        }
+        if let error = response.data.error {
+            dataDict["error"] = error
+        }
+        if let notifications = response.data.notifications {
+            dataDict["notifications"] = notifications
+        }
+        if let notification = response.data.notification {
+            dataDict["notification"] = notification
+        }
+        responseDict["data"] = dataDict
+
+        // Send via MessagePack
+        do {
+            let encoder = MessagePackEncoder()
+            let packed = try encoder.encode(AnyCodableDict(responseDict))
+            socketServer.sendMessage(packed)
+        } catch {
+            debugPrint("Failed to encode notification response: \(error)")
+        }
+    }
+
+    /// Helper struct for encoding arbitrary dictionaries
+    private struct AnyCodableDict: Encodable {
+        let dict: [String: Any]
+
+        init(_ dict: [String: Any]) {
+            self.dict = dict
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: DynamicCodingKey.self)
+            for (key, value) in dict {
+                let codingKey = DynamicCodingKey(stringValue: key)!
+                try encodeValue(value, forKey: codingKey, in: &container)
+            }
+        }
+
+        private func encodeValue(_ value: Any, forKey key: DynamicCodingKey, in container: inout KeyedEncodingContainer<DynamicCodingKey>) throws {
+            switch value {
+            case let str as String:
+                try container.encode(str, forKey: key)
+            case let int as Int:
+                try container.encode(int, forKey: key)
+            case let double as Double:
+                try container.encode(double, forKey: key)
+            case let bool as Bool:
+                try container.encode(bool, forKey: key)
+            case let dict as [String: Any]:
+                try container.encode(AnyCodableDict(dict), forKey: key)
+            case let array as [[String: Any]]:
+                var nested = container.nestedUnkeyedContainer(forKey: key)
+                for item in array {
+                    try nested.encode(AnyCodableDict(item))
+                }
+            default:
+                break
+            }
+        }
+
+        private struct DynamicCodingKey: CodingKey {
+            var stringValue: String
+            var intValue: Int?
+
+            init?(stringValue: String) {
+                self.stringValue = stringValue
+                self.intValue = nil
+            }
+
+            init?(intValue: Int) {
+                self.stringValue = String(intValue)
+                self.intValue = intValue
             }
         }
     }
@@ -438,24 +549,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func sendNotificationLegacy(_ payload: NibMessage.NotifyPayload) {
-        // Fall back to deprecated NSUserNotification for dev mode (no bundle)
-        let notification = NSUserNotification()
-        notification.title = payload.title
-        if let body = payload.body {
-            notification.informativeText = body
-        }
-        if let subtitle = payload.subtitle {
-            notification.subtitle = subtitle
+        // Use AppleScript for dev mode (no bundle) - avoids deprecated APIs
+        let title = payload.title.replacingOccurrences(of: "\"", with: "\\\"")
+        let body = (payload.body ?? "").replacingOccurrences(of: "\"", with: "\\\"")
+        let subtitle = payload.subtitle?.replacingOccurrences(of: "\"", with: "\\\"")
+
+        var script = "display notification \"\(body)\" with title \"\(title)\""
+        if let sub = subtitle {
+            script += " subtitle \"\(sub)\""
         }
         if payload.sound ?? true {
-            notification.soundName = NSUserNotificationDefaultSoundName
-        }
-        if let identifier = payload.identifier {
-            notification.identifier = identifier
+            script += " sound name \"default\""
         }
 
-        NSUserNotificationCenter.default.deliver(notification)
-        debugPrint("Notification sent (legacy): \(payload.title)")
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = ["-e", script]
+        try? process.run()
+        debugPrint("Notification sent (AppleScript): \(payload.title)")
     }
 
     // MARK: - UNUserNotificationCenterDelegate

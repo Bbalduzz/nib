@@ -52,9 +52,12 @@ See Also:
     - :mod:`nib.cli`: Main CLI module for command handling
 """
 
+import logging
 import os
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger("nib.create")
 
 MAIN_PY_TEMPLATE = '''"""
 {name} - A nib application
@@ -254,10 +257,10 @@ def create_project(
 
     # Check if directory already exists
     if project_dir.exists():
-        print(f"Error: Directory already exists: {project_dir}")
+        logger.error(f"Directory already exists: {project_dir}")
         return 1
 
-    print(f"Creating nib project: {name_display}")
+    logger.info(f"Creating nib project: {name_display}")
 
     # Create directory structure
     (project_dir / "src" / "assets").mkdir(parents=True)
@@ -265,7 +268,7 @@ def create_project(
     # Create main.py
     main_py = project_dir / "src" / "main.py"
     main_py.write_text(MAIN_PY_TEMPLATE.format(name=name_display))
-    print(f"  Created: src/main.py")
+    logger.info("Created: src/main.py")
 
     # Create pyproject.toml
     pyproject = project_dir / "pyproject.toml"
@@ -275,22 +278,22 @@ def create_project(
             name_lower=name_lower,
         )
     )
-    print(f"  Created: pyproject.toml")
+    logger.info("Created: pyproject.toml")
 
     # Create README.md
     readme = project_dir / "README.md"
     readme.write_text(README_TEMPLATE.format(name=name_display))
-    print(f"  Created: README.md")
+    logger.info("Created: README.md")
 
     # Create placeholder for icon
     assets_readme = project_dir / "src" / "assets" / ".gitkeep"
     assets_readme.write_text("# Place your icon.png here\n")
-    print(f"  Created: src/assets/")
+    logger.info("Created: src/assets/")
 
-    print(f"\nProject created at: {project_dir}")
-    print(f"\nNext steps:")
-    print(f"  cd {name_lower}")
-    print(f"  python src/main.py    # Run in development")
-    print(f"  nib build             # Build standalone app")
+    logger.success(f"Project created at: {project_dir}")
+    logger.info("Next steps:")
+    logger.info(f"  cd {name_lower}")
+    logger.info("  python src/main.py    # Run in development")
+    logger.info("  nib build             # Build standalone app")
 
     return 0

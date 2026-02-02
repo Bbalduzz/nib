@@ -3,7 +3,8 @@ import Foundation
 enum NibMessage {
     case render(RenderPayload)
     case patch(PatchPayload)
-    case notify(NotifyPayload)
+    case notify(NotifyPayload)  // Legacy simple notification
+    case notification(NotificationPayload)  // New full-featured notification
     case clipboard(ClipboardPayload)
     case fileDialog(FileDialogPayload)
     case userDefaults(UserDefaultsPayload)
@@ -58,6 +59,55 @@ enum NibMessage {
         let subtitle: String?
         let sound: Bool?
         let identifier: String?
+    }
+
+    // MARK: - New Notification System
+
+    struct NotificationPayload: Codable {
+        let action: String  // "push", "schedule", "cancel", "cancelAll", "getScheduled", "getDelivered", "requestPermission"
+        let requestId: String?
+        let notification: NotificationConfig?
+        let notificationId: String?
+        let trigger: NotificationTrigger?
+    }
+
+    struct NotificationConfig: Codable {
+        let id: String
+        let title: String
+        let body: String?
+        let subtitle: String?
+        let sound: NotificationSoundConfig?
+        let actions: [NotificationActionConfig]?
+    }
+
+    struct NotificationSoundConfig: Codable {
+        let name: String
+        let custom: Bool?
+        let volume: Double?
+    }
+
+    struct NotificationActionConfig: Codable {
+        let id: String
+        let title: String
+        let options: [String]?  // "foreground", "destructive", "authenticationRequired"
+        let textInput: NotificationTextInputConfig?
+    }
+
+    struct NotificationTextInputConfig: Codable {
+        let buttonTitle: String?
+        let placeholder: String?
+    }
+
+    struct NotificationTrigger: Codable {
+        let type: String  // "date", "interval", "calendar"
+        let date: String?  // ISO8601 date string
+        let interval: Double?  // seconds
+        let fromTime: String?  // "HH:MM" for calendar trigger
+        let toTime: String?
+        let count: Int?
+        let fromDate: String?
+        let toDate: String?
+        let repeats: Bool?
     }
 
     struct ClipboardPayload: Codable {
@@ -388,6 +438,10 @@ struct RawMessage: Codable {
         let nodeId: String?
         // For settings
         let tabs: [NibMessage.SettingsTabPayload]?
+        // For notification (new system)
+        let notification: NibMessage.NotificationConfig?
+        let notificationId: String?
+        let trigger: NibMessage.NotificationTrigger?
         // Shared
         let statusBar: StatusBarConfig?
         let window: WindowConfig?

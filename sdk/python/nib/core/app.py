@@ -268,6 +268,24 @@ class App:
         # Settings
         self._settings_page: Optional[SettingsPage] = None
         self._settings: Optional[Settings] = None
+        # Notifications
+        from ..notifications import NotificationManager
+        self._notifications = NotificationManager()
+
+    @property
+    def notifications(self) -> "NotificationManager":
+        """Access the notification manager.
+
+        Returns:
+            NotificationManager instance for pushing, scheduling, and managing notifications.
+
+        Example:
+            from nib import Notification
+
+            notification = Notification(title="Hello", body="World")
+            app.notifications.push(notification)
+        """
+        return self._notifications
 
     @property
     def fonts(self) -> Dict[str, str]:
@@ -1053,6 +1071,10 @@ class App:
 
         # Set up event handler
         self._connection.set_event_handler(self._handle_event)
+
+        # Set up notification manager
+        self._notifications._set_connection(self._connection)
+        self._connection.set_notification_manager(self._notifications)
 
         # Register settings if already set
         if self._settings:

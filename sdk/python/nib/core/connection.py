@@ -467,6 +467,42 @@ class Connection:
         }
         self._send(message)
 
+    def send_notification_action(
+        self,
+        action: str,
+        request_id: Optional[str] = None,
+        notification: Optional[dict] = None,
+        notification_id: Optional[str] = None,
+        trigger: Optional[dict] = None,
+    ) -> None:
+        """Send a notification action to the Swift runtime.
+
+        Args:
+            action: Action type - "push", "schedule", "cancel", "cancelAll",
+                   "getScheduled", "getDelivered", "getScheduledById",
+                   "getDeliveredById", "requestPermission".
+            request_id: Unique ID for async response matching.
+            notification: Notification data dictionary (for push/schedule).
+            notification_id: Target notification ID (for cancel/get by id).
+            trigger: Trigger configuration (for schedule).
+        """
+        payload: dict = {"action": action}
+
+        if request_id is not None:
+            payload["requestId"] = request_id
+        if notification is not None:
+            payload["notification"] = notification
+        if notification_id is not None:
+            payload["notificationId"] = notification_id
+        if trigger is not None:
+            payload["trigger"] = trigger
+
+        message = {
+            "type": "notification",
+            "payload": payload,
+        }
+        self._send(message)
+
     def set_event_handler(self, handler: Callable[[str, str], None]) -> None:
         """Set the handler for events from the Swift runtime.
 
@@ -569,6 +605,9 @@ class Connection:
         elif msg_type == "serviceResponse":
             self._handle_service_response(message)
 
+        elif msg_type == "notificationResponse":
+            self._handle_notification_response(message)
+
     def _dispatch_event(self, node_id: str, event: str) -> None:
         """Dispatch an event to the handler (runs on separate thread)."""
         try:
@@ -594,3 +633,24 @@ class Connection:
             Service._handle_response(request_id, data)
         except Exception as e:
             logger.error("Error handling service response", exc=e, service=service)
+
+    def _handle_notification_response(self, message: dict) -> None:
+        """Handle a notification response from Swift."""
+        request_id = message.get("requestId", "")
+        data = message.get("data", {})
+
+        try:
+            # Import here to avoid circular import
+            from ..notifications.manager import NotificationManager
+
+            # Find the manager instance - it's stored on the App
+            # This is a bit of a hack, but we need to route the response
+            # to the correct manager instance
+            if hasattr(self, "_notification_manager") and self._notification_manager:
+                self._notification_manager._handle_response(request_id, data)
+        except Exception as e:
+            logger.error("Error handling notification response", exc=e)
+
+    def set_notification_manager(self, manager: "NotificationManager") -> None:
+        """Set the notification manager for handling responses."""
+        self._notification_manager = manager

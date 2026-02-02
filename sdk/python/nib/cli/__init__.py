@@ -47,6 +47,7 @@ See Also:
 """
 
 import argparse
+import logging
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -54,6 +55,91 @@ from typing import Any, Optional
 from .build import build_app
 from .create import create_project
 from .deps import detect_imports, resolve_packages
+
+
+# Add custom SUCCESS level (between INFO and WARNING)
+SUCCESS_LEVEL = 25
+logging.addLevelName(SUCCESS_LEVEL, "SUCCESS")
+
+
+def _success(self, message, *args, **kwargs):
+    if self.isEnabledFor(SUCCESS_LEVEL):
+        self._log(SUCCESS_LEVEL, message, args, **kwargs)
+
+
+logging.Logger.success = _success
+
+
+class ColoredFormatter(logging.Formatter):
+    """Colored log formatter for terminal output (loguru-style)."""
+
+    # ANSI color codes
+    GREY = "\033[38;5;245m"
+    CYAN = "\033[36m"
+    GREEN = "\033[32m"
+    BRIGHT_GREEN = "\033[92m"
+    YELLOW = "\033[33m"
+    RED = "\033[31m"
+    MAGENTA = "\033[35m"
+    BOLD = "\033[1m"
+    RESET = "\033[0m"
+
+    LEVEL_COLORS = {
+        "DEBUG": CYAN,
+        "INFO": GREEN,
+        "SUCCESS": BRIGHT_GREEN,
+        "WARNING": YELLOW,
+        "ERROR": RED,
+        "CRITICAL": MAGENTA,
+    }
+
+    def format(self, record: logging.LogRecord) -> str:
+        from datetime import datetime
+
+        # Check if terminal supports colors
+        use_colors = sys.stdout.isatty()
+
+        # Timestamp
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.") + f"{datetime.now().microsecond // 1000:03d}"
+
+        # Level (padded to 8 chars)
+        level = record.levelname.ljust(8)
+
+        # Module and line info
+        module = record.name.split(".")[-1]  # Just the last part (e.g., "build" from "nib.build")
+        func = record.funcName if record.funcName != "<module>" else "main"
+        location = f"{module}:{func}:{record.lineno}"
+
+        # Message
+        message = record.getMessage()
+
+        if use_colors:
+            level_color = self.LEVEL_COLORS.get(record.levelname, "")
+            return (
+                f"{self.GREY}{timestamp}{self.RESET} | "
+                f"{level_color}{self.BOLD}{level}{self.RESET} | "
+                f"{self.CYAN}{location}{self.RESET} - {message}"
+            )
+        else:
+            return f"{timestamp} | {level} | {location} - {message}"
+
+
+def setup_logging(verbose: bool = False) -> None:
+    """Configure logging for the CLI.
+
+    Args:
+        verbose: If True, enable DEBUG level logging. Otherwise INFO.
+    """
+    level = logging.DEBUG if verbose else logging.INFO
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(ColoredFormatter())
+
+    # Clear any existing handlers
+    root = logging.getLogger()
+    root.handlers.clear()
+    root.addHandler(handler)
+    root.setLevel(level)
 
 __all__ = ["build_app", "create_project", "detect_imports", "resolve_packages", "main"]
 
@@ -185,6 +271,11 @@ def main() -> int:
         prog="nib",
         description="Nib - Build macOS menu bar apps with Python",
     )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Enable verbose output",
+    )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Create command
@@ -250,9 +341,14 @@ def main() -> int:
         help="Target architecture (default: current machine)",
     )
     build_parser.add_argument(
-        "--no-obfuscate",
+        "--no-compile",
         action="store_true",
-        help="Keep Python source files (don't compile to bytecode)",
+        help="Keep Python source files (skip bytecode compilation)",
+    )
+    build_parser.add_argument(
+        "--obfuscate",
+        action="store_true",
+        help="Apply real obfuscation via pyc-zipper (implies compilation)",
     )
 
     # Run command
@@ -276,6 +372,10 @@ def main() -> int:
 
     args = parser.parse_args()
 
+    # Configure logging
+    setup_logging(verbose=getattr(args, "verbose", False))
+    logger = logging.getLogger("nib.cli")
+
     if args.command == "create":
         return create_project(name=args.name)
 
@@ -290,8 +390,8 @@ def main() -> int:
             entry = config.get("entry", "src/main.py")
             script = Path(entry)
             if not script.exists():
-                print(f"Error: Entry point not found: {script}")
-                print("Specify a script or create pyproject.toml with [tool.nib] entry")
+                logger.error(f"Entry point not found: {script}")
+                logger.error("Specify a script or create pyproject.toml with [tool.nib] entry")
                 return 1
 
         # Merge CLI args with config (CLI takes precedence)
@@ -330,8 +430,16 @@ def main() -> int:
         # Launch at login setting
         launch_at_login = build_config.get("launch_at_login", False)
 
-        # Obfuscation setting (default: True, can be disabled via CLI or config)
-        no_obfuscate = args.no_obfuscate or not build_config.get("obfuscate", True)
+        # Compilation setting (default: True, can be disabled via CLI or config)
+        no_compile = args.no_compile or not build_config.get("compile", True)
+
+        # Obfuscation setting (default: False, can be enabled via CLI or config)
+        obfuscate = args.obfuscate or build_config.get("obfuscate", False)
+
+        # Validate: can't obfuscate without compiling
+        if obfuscate and no_compile:
+            logger.error("Cannot use --obfuscate with --no-compile")
+            return 1
 
         return build_app(
             script=script,
@@ -347,7 +455,8 @@ def main() -> int:
             explicit_deps=project_deps if project_deps else None,
             arch=arch,
             launch_at_login=launch_at_login,
-            no_obfuscate=no_obfuscate,
+            no_compile=no_compile,
+            obfuscate=obfuscate,
         )
 
     elif args.command == "run":
@@ -360,12 +469,12 @@ def main() -> int:
             entry = config.get("entry", "src/main.py")
             script = Path(entry)
             if not script.exists():
-                print(f"Error: Entry point not found: {script}")
-                print("Specify a script or create pyproject.toml with [tool.nib] entry")
+                logger.error(f"Entry point not found: {script}")
+                logger.error("Specify a script or create pyproject.toml with [tool.nib] entry")
                 return 1
 
         if not script.exists():
-            print(f"Error: Script not found: {script}")
+            logger.error(f"Script not found: {script}")
             return 1
 
         # If script is a directory, look for src/main.py inside it
@@ -374,7 +483,7 @@ def main() -> int:
             project_dir = script
             main_file = project_dir / "src" / "main.py"
             if not main_file.exists():
-                print(f"Error: No src/main.py found in {project_dir}")
+                logger.error(f"No src/main.py found in {project_dir}")
                 return 1
             script = main_file
             # Enable recursive watching for project directories

@@ -4,6 +4,7 @@ This module provides the `nib run` command which watches for file changes
 and automatically reloads the application while keeping the Swift runtime alive.
 """
 
+import logging
 import os
 import signal
 import subprocess
@@ -18,6 +19,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
 from ..core.connection import Connection
+
+logger = logging.getLogger("nib.run")
 
 
 # Directories to exclude from watching
@@ -101,7 +104,7 @@ class HotReloadRunner:
     def start(self) -> int:
         """Start the hot reload runner."""
         if not self.script_path.exists():
-            print(f"[nib] Error: Script not found: {self.script_path}")
+            logger.error(f"Script not found: {self.script_path}")
             return 1
 
         try:
@@ -117,10 +120,10 @@ class HotReloadRunner:
 
             return 0
         except KeyboardInterrupt:
-            print("\n[nib] Shutting down...")
+            logger.info("Shutting down...")
             return 0
         except Exception as e:
-            print(f"[nib] Error: {e}")
+            logger.error(str(e))
             traceback.print_exc()
             return 1
         finally:
@@ -210,7 +213,7 @@ class HotReloadRunner:
                 "  cd package && swift build -c release"
             )
 
-        print(f"[nib] Using runtime: {runtime_path}")
+        logger.info(f"Using runtime: {runtime_path}")
 
         # Launch runtime with socket path
         env = os.environ.copy()
@@ -228,7 +231,7 @@ class HotReloadRunner:
         if not self._connection.connect():
             raise RuntimeError("Failed to connect to nib-runtime")
 
-        print("[nib] Connected to Swift runtime")
+        logger.info("Connected to Swift runtime")
 
         # Handle signals
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -248,17 +251,17 @@ class HotReloadRunner:
         self._observer.start()
 
         watch_mode = "recursively" if self.recursive else "non-recursively"
-        print(f"[nib] Watching {self.script_dir} ({watch_mode})")
+        logger.info(f"Watching {self.script_dir} ({watch_mode})")
 
     def _on_file_change(self, path: str):
         """Handle file change event."""
         rel_path = Path(path).relative_to(self.script_dir)
-        print(f"\n[nib] File changed: {rel_path}")
+        logger.info(f"File changed: {rel_path}")
         self._reload()
 
     def _reload(self):
         """Reload the user's application."""
-        print("[nib] Reloading...")
+        logger.info("Reloading...")
 
         try:
             # Clear cached modules
@@ -272,7 +275,7 @@ class HotReloadRunner:
             elif app_class:
                 self._run_class_based(app_class)
             else:
-                print("[nib] Warning: No nib.run() call or App subclass found")
+                logger.warning("No nib.run() call or App subclass found")
 
         except SyntaxError as e:
             self._handle_syntax_error(e)
@@ -423,19 +426,19 @@ class HotReloadRunner:
 
     def _handle_syntax_error(self, error: SyntaxError):
         """Display syntax error to user."""
-        print(f"\n[nib] Syntax error in {error.filename}:{error.lineno}")
+        logger.error(f"Syntax error in {error.filename}:{error.lineno}")
         if error.text:
-            print(f"       {error.text.rstrip()}")
+            logger.error(f"  {error.text.rstrip()}")
             if error.offset:
-                print(f"       {' ' * (error.offset - 1)}^")
-        print(f"       {error.msg}")
-        print("\n[nib] Fix the error and save to reload...")
+                logger.error(f"  {' ' * (error.offset - 1)}^")
+        logger.error(f"  {error.msg}")
+        logger.info("Fix the error and save to reload...")
 
     def _handle_runtime_error(self, error: Exception):
         """Display runtime error to user."""
-        print(f"\n[nib] Runtime error: {error}")
+        logger.error(f"Runtime error: {error}")
         traceback.print_exc()
-        print("\n[nib] Fix the error and save to reload...")
+        logger.info("Fix the error and save to reload...")
 
     def _main_loop(self):
         """Main event loop."""
@@ -444,7 +447,7 @@ class HotReloadRunner:
                 time.sleep(0.1)
                 # Check if runtime is still alive
                 if self._runtime_process and self._runtime_process.poll() is not None:
-                    print("[nib] Swift runtime exited")
+                    logger.info("Swift runtime exited")
                     self._running = False
             except KeyboardInterrupt:
                 break

@@ -288,6 +288,15 @@ class SocketServer {
                 requestId: raw.payload?.requestId
             )
             return .userDefaults(payload)
+        case "notification":
+            let payload = NibMessage.NotificationPayload(
+                action: raw.payload?.action ?? "",
+                requestId: raw.payload?.requestId,
+                notification: raw.payload?.notification,
+                notificationId: raw.payload?.notificationId,
+                trigger: raw.payload?.trigger
+            )
+            return .notification(payload)
         case "settingsRender":
             let payload = NibMessage.SettingsRenderPayload(
                 title: raw.payload?.title,
@@ -308,7 +317,7 @@ class SocketServer {
         }
     }
 
-    private func sendMessage(_ data: Data) {
+    func sendMessage(_ data: Data) {
         guard clientSocket >= 0 else { return }
 
         // Length prefix
