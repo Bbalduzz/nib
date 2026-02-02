@@ -279,6 +279,27 @@ class SocketServer {
                 params: raw.payload?.params
             )
             return .action(payload)
+        case "userDefaults":
+            let payload = NibMessage.UserDefaultsPayload(
+                action: raw.payload?.action ?? "get",
+                key: raw.payload?.key,
+                value: raw.payload?.value,
+                prefix: raw.payload?.prefix,
+                requestId: raw.payload?.requestId
+            )
+            return .userDefaults(payload)
+        case "settingsRender":
+            let payload = NibMessage.SettingsRenderPayload(
+                title: raw.payload?.title,
+                width: raw.payload?.window?.width,
+                height: raw.payload?.window?.height,
+                tabs: raw.payload?.tabs ?? []
+            )
+            return .settingsRender(payload)
+        case "settingsOpen":
+            return .settingsOpen
+        case "settingsClose":
+            return .settingsClose
         case "quit":
             return .quit
         default:

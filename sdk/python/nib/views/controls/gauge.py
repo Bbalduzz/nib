@@ -210,7 +210,7 @@ class Gauge(View):
             props["tint"] = self._tint.to_dict() if isinstance(self._tint, Color) else self._tint
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         """Serialize view labels as children with slot identifiers."""
         children = []
         slot_map = [
@@ -221,7 +221,7 @@ class Gauge(View):
         ]
         for i, (slot, lbl) in enumerate(slot_map):
             if isinstance(lbl, View) and lbl._visible:
-                child_dict = lbl.to_dict(f"{parent_path}.{i}")
+                child_dict = lbl.to_dict(f"{parent_path}.{i}", depth + 1)
                 child_dict["slot"] = slot  # Mark which slot this child belongs to
                 children.append(child_dict)
         return children if children else None

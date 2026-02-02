@@ -57,6 +57,21 @@ from ..modifiers import ModifierRegistry
 if TYPE_CHECKING:
     from ..core.app import App
 
+# Maximum depth for view tree to prevent stack overflow in Swift runtime
+MAX_TREE_DEPTH = 100
+
+
+class NibDepthError(Exception):
+    """Raised when view tree exceeds maximum allowed depth."""
+
+    def __init__(self, depth: int, max_depth: int = MAX_TREE_DEPTH):
+        self.depth = depth
+        self.max_depth = max_depth
+        super().__init__(
+            f"View tree exceeds maximum depth of {max_depth} (current: {depth}). "
+            "Simplify your view hierarchy or check for unintended nesting."
+        )
+
 
 def _float(value: Optional[Union[int, float]]) -> Optional[float]:
     """Convert numeric value to float for MessagePack compatibility.
@@ -423,7 +438,7 @@ class View:
             return None
         return anim.to_dict()
 
-    def to_dict(self, path: str = "0") -> dict:
+    def to_dict(self, path: str = "0", depth: int = 0) -> dict:
         """Convert the view to a dictionary for serialization.
 
         Serializes the view and its children into a dictionary structure
@@ -432,11 +447,19 @@ class View:
         Args:
             path: Position-based path for stable view identity
                 (e.g., "0", "0.0", "0.1.2").
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             Dictionary containing id, type, props, children, modifiers,
             animationContext, and optional backgroundView/overlayView.
+
+        Raises:
+            NibDepthError: If view tree depth exceeds MAX_TREE_DEPTH.
         """
+        # Check depth limit to prevent stack overflow in Swift runtime
+        if depth > MAX_TREE_DEPTH:
+            raise NibDepthError(depth)
+
         # Use pre-assigned _id if available (from _collect_actions), otherwise use path
         view_id = self._id if self._id is not None else path
         props = self._get_props()
@@ -459,7 +482,7 @@ class View:
             "id": view_id,
             "type": self._type,
             "props": props,
-            "children": self._get_children(path),
+            "children": self._get_children(path, depth),
             "modifiers": self._modifiers if self._modifiers else None,
         }
         # Add animation context for per-view reactive animations
@@ -468,11 +491,117 @@ class View:
             result["animationContext"] = anim_context
         # Add background view if present
         if hasattr(self, "_background_view") and self._background_view is not None:
-            result["backgroundView"] = self._background_view.to_dict(f"{path}.bg")
+            result["backgroundView"] = self._background_view.to_dict(f"{path}.bg", depth + 1)
         # Add overlay view if present
         if hasattr(self, "_overlay_view") and self._overlay_view is not None:
-            result["overlayView"] = self._overlay_view.to_dict(f"{path}.ov")
+            result["overlayView"] = self._overlay_view.to_dict(f"{path}.ov", depth + 1)
         return result
+
+    def to_flat_list(self, path: str = "0") -> tuple[list[dict], str]:
+        """Convert the view tree to a flat list of nodes.
+
+        Instead of nested children, each node has parentId and childIds references.
+        This enables iterative (non-recursive) parsing on the Swift side.
+
+        Args:
+            path: Position-based path for stable view identity.
+
+        Returns:
+            Tuple of (flat_nodes_list, root_id).
+            Each node dict has: id, type, props, modifiers, animationContext,
+            parentId, childIds, backgroundId, overlayId.
+
+        Raises:
+            NibDepthError: If view tree depth exceeds MAX_TREE_DEPTH.
+        """
+        nodes = []
+        # Use explicit stack instead of recursion: (view, path, depth, parent_id)
+        stack: list[tuple["View", str, int, Optional[str]]] = [(self, path, 0, None)]
+        root_id = path
+
+        while stack:
+            view, current_path, depth, parent_id = stack.pop()
+
+            # Check depth limit
+            if depth > MAX_TREE_DEPTH:
+                raise NibDepthError(depth)
+
+            # Use pre-assigned _id if available, otherwise use path
+            view_id = view._id if view._id is not None else current_path
+
+            # Get props
+            props = view._get_props()
+            if hasattr(view, "_on_drop") and view._on_drop is not None:
+                props["onDrop"] = True
+            if hasattr(view, "_on_hover") and view._on_hover is not None:
+                props["onHover"] = True
+            if hasattr(view, "_tooltip") and view._tooltip is not None:
+                if isinstance(view._tooltip, str):
+                    props["tooltip"] = view._tooltip
+                elif hasattr(view._tooltip, "_content"):
+                    props["tooltip"] = view._tooltip._content
+                elif hasattr(view._tooltip, "content"):
+                    props["tooltip"] = view._tooltip.content
+
+            # Collect child IDs
+            child_ids = []
+            if hasattr(view, "_children"):
+                visible = [c for c in view._children if c._visible]
+                for i, child in enumerate(visible):
+                    child_path = f"{current_path}.{i}"
+                    child_id = child._id if child._id is not None else child_path
+                    child_ids.append(child_id)
+                    # Add to stack (reverse order so first child is processed first)
+                    stack.append((child, child_path, depth + 1, view_id))
+
+            # Handle special child containers (e.g., _content, _destination)
+            if hasattr(view, "_content") and view._content is not None and view._content._visible:
+                child_path = f"{current_path}.0"
+                child_id = view._content._id if view._content._id is not None else child_path
+                child_ids.append(child_id)
+                stack.append((view._content, child_path, depth + 1, view_id))
+
+            if hasattr(view, "_destination"):
+                visible = [c for c in view._destination if c._visible]
+                for i, child in enumerate(visible):
+                    child_path = f"{current_path}.{i}"
+                    child_id = child._id if child._id is not None else child_path
+                    child_ids.append(child_id)
+                    stack.append((child, child_path, depth + 1, view_id))
+
+            # Background and overlay
+            background_id = None
+            if hasattr(view, "_background_view") and view._background_view is not None:
+                bg_path = f"{current_path}.bg"
+                background_id = view._background_view._id if view._background_view._id else bg_path
+                stack.append((view._background_view, bg_path, depth + 1, view_id))
+
+            overlay_id = None
+            if hasattr(view, "_overlay_view") and view._overlay_view is not None:
+                ov_path = f"{current_path}.ov"
+                overlay_id = view._overlay_view._id if view._overlay_view._id else ov_path
+                stack.append((view._overlay_view, ov_path, depth + 1, view_id))
+
+            # Build flat node
+            node = {
+                "id": view_id,
+                "type": view._type,
+                "props": props,
+                "modifiers": view._modifiers if view._modifiers else None,
+                "parentId": parent_id,
+                "childIds": child_ids if child_ids else None,
+                "backgroundId": background_id,
+                "overlayId": overlay_id,
+            }
+
+            # Add animation context if present
+            anim_context = view._serialize_animation_context()
+            if anim_context is not None:
+                node["animationContext"] = anim_context
+
+            nodes.append(node)
+
+        return nodes, root_id
 
     def _get_props(self) -> dict:
         """Get view-specific properties for serialization.
@@ -485,7 +614,7 @@ class View:
         """
         return {}
 
-    def _get_children(self, parent_path: str) -> Optional[List[dict]]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> Optional[List[dict]]:
         """Get serialized child views.
 
         Override in container subclasses (VStack, HStack, etc.) to return
@@ -493,6 +622,7 @@ class View:
 
         Args:
             parent_path: The path of this view, used to generate child paths.
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             List of child view dictionaries, or None if no children.

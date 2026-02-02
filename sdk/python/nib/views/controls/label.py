@@ -143,11 +143,11 @@ class Label(View):
             props["labelStyles"] = self._label_styles
         return props
 
-    def _get_children(self, parent_path: str) -> Optional[List[dict]]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> Optional[List[dict]]:
         """Return custom content as children if provided."""
         children = []
         if self._title_view and self._title_view._visible:
-            children.append({"role": "title", **self._title_view.to_dict(f"{parent_path}.title")})
+            children.append({"role": "title", **self._title_view.to_dict(f"{parent_path}.title", depth + 1)})
         if self._icon_view and self._icon_view._visible:
-            children.append({"role": "icon", **self._icon_view.to_dict(f"{parent_path}.icon")})
+            children.append({"role": "icon", **self._icon_view.to_dict(f"{parent_path}.icon", depth + 1)})
         return children if children else None

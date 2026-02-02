@@ -2,7 +2,17 @@ import Foundation
 
 /// Handles UserDefaults get/set/remove operations
 struct UserDefaultsHandler {
+    /// Background queue for UserDefaults operations to avoid blocking the main thread
+    private static let queue = DispatchQueue(label: "nib.userdefaults", qos: .userInitiated)
+
     static func handle(_ payload: NibMessage.UserDefaultsPayload, sendEvent: @escaping (String, String) -> Void) {
+        // Handle on background queue to avoid blocking UI
+        queue.async {
+            handleSync(payload, sendEvent: sendEvent)
+        }
+    }
+
+    private static func handleSync(_ payload: NibMessage.UserDefaultsPayload, sendEvent: @escaping (String, String) -> Void) {
         let defaults = UserDefaults.standard
         let requestId = payload.requestId ?? ""
 

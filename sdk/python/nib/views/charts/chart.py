@@ -263,7 +263,7 @@ class Chart(View):
 
         return props
 
-    def _get_children(self, parent_path: str) -> Optional[List[dict]]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> Optional[List[dict]]:
         """Get mark children for the view tree.
 
         Converts the list of mark objects into serializable dictionaries
@@ -272,6 +272,7 @@ class Chart(View):
         Args:
             parent_path: The path identifier of this chart in the view tree.
                 Used to generate unique IDs for child marks (e.g., "0.1", "0.2").
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             List of dictionaries representing each mark, or None if there
@@ -281,7 +282,7 @@ class Chart(View):
         if not self._marks:
             return None
         return [
-            mark.to_dict(f"{parent_path}.{i}")
+            mark.to_dict(f"{parent_path}.{i}", depth + 1)
             for i, mark in enumerate(self._marks)
         ]
 

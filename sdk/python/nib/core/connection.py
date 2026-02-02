@@ -151,6 +151,55 @@ class Connection:
         }
         self._send(message)
 
+    def send_flat_render(
+        self,
+        nodes: list[dict],
+        root_id: str,
+        icon: Optional[str] = None,
+        title: Optional[str] = None,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+        menu: Optional[list] = None,
+        hotkeys: Optional[list] = None,
+        fonts: Optional[dict] = None,
+    ) -> None:
+        """Send a flat render message to the Swift runtime.
+
+        Uses flat node list instead of nested tree structure.
+        This enables iterative (non-recursive) parsing on Swift side,
+        preventing stack overflow with deeply nested views.
+
+        Args:
+            nodes: List of flat node dictionaries with parentId references.
+            root_id: ID of the root node.
+            icon: Menu bar icon (SF Symbol name or config dict).
+            title: Menu bar title text.
+            width: Popover window width in points.
+            height: Popover window height in points.
+            menu: List of serialized menu item dictionaries.
+            hotkeys: List of hotkey strings to register.
+            fonts: Dictionary mapping font names to paths/URLs.
+        """
+        window = {}
+        if width is not None:
+            window["width"] = float(width)
+        if height is not None:
+            window["height"] = float(height)
+
+        message = {
+            "type": "flatRender",
+            "payload": {
+                "nodes": nodes,
+                "rootId": root_id,
+                "statusBar": {"icon": icon, "title": title},
+                "window": window if window else None,
+                "menu": menu,
+                "hotkeys": hotkeys,
+                "fonts": fonts,
+            },
+        }
+        self._send(message)
+
     def send_patch(
         self,
         patches: list,
@@ -376,6 +425,41 @@ class Connection:
         }
         if params:
             message["payload"]["params"] = params
+        self._send(message)
+
+    def send_settings_render(self, settings_config: dict) -> None:
+        """Send settings page configuration to the Swift runtime.
+
+        This creates or updates the settings window with the specified
+        tabs and content.
+
+        Args:
+            settings_config: Dictionary with width, height, title, and tabs.
+        """
+        message = {
+            "type": "settingsRender",
+            "payload": settings_config,
+        }
+        self._send(message)
+
+    def send_settings_open(self) -> None:
+        """Open the settings window.
+
+        The settings window must have been rendered first via
+        send_settings_render().
+        """
+        message = {
+            "type": "settingsOpen",
+            "payload": {},
+        }
+        self._send(message)
+
+    def send_settings_close(self) -> None:
+        """Close the settings window."""
+        message = {
+            "type": "settingsClose",
+            "payload": {},
+        }
         self._send(message)
 
     def set_event_handler(self, handler: Callable[[str, str], None]) -> None:

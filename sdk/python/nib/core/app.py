@@ -57,7 +57,9 @@ import uuid
 from .connection import Connection
 from .diff import diff_trees
 from .logging import logger
+from .settings import Settings
 from ..views import View
+from ..views.settings_page import SettingsPage, SettingsTab
 from ..types import SymbolRenderingMode, resolve_enum
 
 
@@ -261,6 +263,9 @@ class App:
         self._on_appear: Optional[Callable[[], None]] = None
         self._on_disappear: Optional[Callable[[], None]] = None
         self._on_quit: Optional[Callable[[], None]] = None
+        # Settings
+        self._settings_page: Optional[SettingsPage] = None
+        self._settings: Optional[Settings] = None
 
     @property
     def fonts(self) -> Dict[str, str]:
@@ -427,6 +432,93 @@ class App:
             app.on_quit = cleanup
         """
         self._on_quit = callback
+
+    # --- Settings ---
+
+    @property
+    def settings(self) -> Optional[SettingsPage]:
+        """Get the settings page configuration."""
+        return self._settings_page
+
+    @settings.setter
+    def settings(self, value: SettingsPage) -> None:
+        """
+        Set the settings page for the application.
+
+        When a settings page is set, it becomes accessible via:
+        - Cmd+, keyboard shortcut (standard macOS)
+        - App menu -> Settings item (if menu is configured)
+
+        Args:
+            value: A SettingsPage instance defining the preferences UI.
+
+        Example:
+            app.settings = nib.SettingsPage(
+                tabs=[
+                    nib.SettingsTab(
+                        "General",
+                        icon="gear",
+                        content=nib.VStack([
+                            nib.Toggle("Dark Mode", is_on=False),
+                        ])
+                    ),
+                ]
+            )
+        """
+        self._settings_page = value
+        if self._connection and value:
+            self._send_settings_render()
+
+    def register_settings(self, settings: Settings) -> None:
+        """
+        Register a Settings object for persistence.
+
+        The Settings object provides sync cache + async persist behavior,
+        allowing instant reads and background writes to UserDefaults.
+
+        Args:
+            settings: A Settings instance with defined defaults.
+
+        Example:
+            settings = nib.Settings({
+                "dark_mode": False,
+                "font_size": 14,
+            })
+            app.register_settings(settings)
+
+            # Now settings.dark_mode reads instantly from cache
+            # and settings.dark_mode = True persists in background
+        """
+        self._settings = settings
+        if self._connection:
+            settings._set_connection(self._connection)
+
+    def open_settings(self) -> None:
+        """
+        Programmatically open the settings window.
+
+        The settings window must be configured via app.settings first.
+
+        Example:
+            nib.Button("Preferences", action=app.open_settings)
+        """
+        if self._connection and self._settings_page:
+            self._connection.send_settings_open()
+
+    def close_settings(self) -> None:
+        """
+        Programmatically close the settings window.
+
+        Example:
+            nib.Button("Done", action=app.close_settings)
+        """
+        if self._connection:
+            self._connection.send_settings_close()
+
+    def _send_settings_render(self) -> None:
+        """Send settings page configuration to Swift runtime."""
+        if self._settings_page and self._connection:
+            self._connection.send_settings_render(self._settings_page._to_dict())
 
     # --- Service Properties ---
 
@@ -958,6 +1050,10 @@ class App:
         # Set up event handler
         self._connection.set_event_handler(self._handle_event)
 
+        # Register settings if already set
+        if self._settings:
+            self._settings._set_connection(self._connection)
+
         # Handle signals
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
@@ -1061,6 +1157,13 @@ class App:
         if hasattr(self._icon, "to_dict"):
             self._collect_actions(self._icon, "_icon")
 
+        # Collect actions from settings page views (must do on every render
+        # since action maps are cleared)
+        if self._settings_page:
+            for i, tab in enumerate(self._settings_page.tabs):
+                if tab.content:
+                    self._collect_actions(tab.content, f"settings.{i}")
+
         # Serialize
         root_dict = root.to_dict()
 
@@ -1107,8 +1210,15 @@ class App:
                 height=self._height,
             )
 
+        # Send settings page if configured (only on full render)
+        is_full_render = self._previous_tree is None
+
         # Store for next diff
         self._previous_tree = root_dict
+
+        # Send settings on first render
+        if is_full_render and self._settings_page:
+            self._send_settings_render()
 
     def _collect_actions(self, view: View, path: str = "0") -> None:
         """Recursively collect actions and change handlers from the view tree.

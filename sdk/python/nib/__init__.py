@@ -66,7 +66,8 @@ https://nib.readthedocs.io/
 """
 
 from . import draw
-from .core import App, MenuDivider, MenuItem, SFSymbol, State, UserDefaults, run
+from .core import App, MenuDivider, MenuItem, Settings, SFSymbol, State, UserDefaults, run
+from .views.settings_page import SettingsPage, SettingsTab
 from .services import (
     Battery,
     BatteryInfo,
@@ -228,6 +229,9 @@ __all__ = [
     "MenuItem",
     "MenuDivider",
     "UserDefaults",
+    "Settings",
+    "SettingsPage",
+    "SettingsTab",
     # Base
     "View",
     # Layout

@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     var socketServer: SocketServer?
     var hotkeyManager = HotkeyManager()
     var pythonProcess: Process?
+    private lazy var settingsController = SettingsWindowController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         clearLog()
@@ -285,6 +286,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             case .action(let payload):
                 debugPrint("Action - nodeId:", payload.nodeId, "action:", payload.action)
                 self?.statusBarController?.handleAction(nodeId: payload.nodeId, action: payload.action, params: payload.params)
+
+            case .settingsRender(let payload):
+                debugPrint("Settings render - tabs:", payload.tabs.count)
+                self?.settingsController.onEvent = { [weak self] nodeId, event in
+                    self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+                }
+                self?.settingsController.render(payload)
+                self?.settingsController.show()
+
+            case .settingsOpen:
+                debugPrint("Settings open")
+                self?.settingsController.show()
+
+            case .settingsClose:
+                debugPrint("Settings close")
+                self?.settingsController.close()
 
             case .quit:
                 debugPrint("Quit message received")

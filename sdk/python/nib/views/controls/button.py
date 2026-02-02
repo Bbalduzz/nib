@@ -189,8 +189,8 @@ class Button(View):
             props["buttonStyles"] = self._button_styles
         return props
 
-    def _get_children(self, parent_path: str) -> Optional[List[dict]]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> Optional[List[dict]]:
         """Return custom content as children if provided."""
         if self._content and self._content._visible:
-            return [self._content.to_dict(f"{parent_path}.0")]
+            return [self._content.to_dict(f"{parent_path}.0", depth + 1)]
         return None

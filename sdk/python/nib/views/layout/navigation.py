@@ -147,19 +147,20 @@ class NavigationStack(View):
         """
         return {}
 
-    def _get_children(self, parent_path: str) -> ListType[dict]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> ListType[dict]:
         """Convert child views to their dictionary representations.
 
         Args:
             parent_path: The path identifier of this NavigationStack in the
                 view tree, used to generate unique paths for child views.
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             A list of dictionaries, each representing a serialized child view
             with its assigned path in the view hierarchy.
         """
         visible = [c for c in self._children if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
 
 class NavigationLink(View):
@@ -245,19 +246,20 @@ class NavigationLink(View):
         """
         return {"label": self._label}
 
-    def _get_children(self, parent_path: str) -> ListType[dict]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> ListType[dict]:
         """Convert destination views to their dictionary representations.
 
         Args:
             parent_path: The path identifier of this NavigationLink in the
                 view tree, used to generate unique paths for destination views.
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             A list of dictionaries, each representing a serialized destination
             view with its assigned path in the view hierarchy.
         """
         visible = [c for c in self._destination if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
 
 class DisclosureGroup(View):
@@ -380,19 +382,20 @@ class DisclosureGroup(View):
             "isExpanded": self._is_expanded,
         }
 
-    def _get_children(self, parent_path: str) -> ListType[dict]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> ListType[dict]:
         """Convert child views to their dictionary representations.
 
         Args:
             parent_path: The path identifier of this DisclosureGroup in the
                 view tree, used to generate unique paths for child views.
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             A list of dictionaries, each representing a serialized child view
             with its assigned path in the view hierarchy.
         """
         visible = [c for c in self._children if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
     def _handle_event(self, event: str) -> None:
         """Handle events from the Swift runtime.

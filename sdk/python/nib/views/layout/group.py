@@ -127,16 +127,17 @@ class Group(View):
         """
         return {}
 
-    def _get_children(self, parent_path: str) -> ListType[dict]:
+    def _get_children(self, parent_path: str, depth: int = 0) -> ListType[dict]:
         """Convert child views to their dictionary representations.
 
         Args:
             parent_path: The path identifier of this Group in the view tree,
                 used to generate unique paths for child views.
+            depth: Current depth in the view tree (for stack overflow protection).
 
         Returns:
             A list of dictionaries, each representing a serialized child view
             with its assigned path in the view hierarchy.
         """
         visible = [c for c in self._children if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]

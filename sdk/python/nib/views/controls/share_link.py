@@ -141,7 +141,7 @@ class ShareLink(View):
             props["message"] = self._message
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         if self._content is not None and self._content._visible:
-            return [self._content.to_dict(f"{parent_path}.0")]
+            return [self._content.to_dict(f"{parent_path}.0", depth + 1)]
         return []

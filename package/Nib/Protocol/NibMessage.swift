@@ -9,6 +9,9 @@ enum NibMessage {
     case userDefaults(UserDefaultsPayload)
     case service(ServicePayload)
     case action(ActionPayload)
+    case settingsRender(SettingsRenderPayload)
+    case settingsOpen
+    case settingsClose
     case quit
 
     struct WindowConfig: Codable {
@@ -92,6 +95,19 @@ enum NibMessage {
         let nodeId: String   // Target view node ID
         let action: String   // Action to perform (e.g., "reload", "goBack", "goForward")
         let params: [String: AnyCodable]?
+    }
+
+    struct SettingsRenderPayload: Codable {
+        let title: String?
+        let width: CGFloat?
+        let height: CGFloat?
+        let tabs: [SettingsTabPayload]
+    }
+
+    struct SettingsTabPayload: Codable {
+        let title: String
+        let icon: String?
+        let content: ViewNode?
     }
 
     struct MenuItemConfig: Codable {
@@ -370,6 +386,8 @@ struct RawMessage: Codable {
         let params: [String: AnyCodable]?
         // For action
         let nodeId: String?
+        // For settings
+        let tabs: [NibMessage.SettingsTabPayload]?
         // Shared
         let statusBar: StatusBarConfig?
         let window: WindowConfig?

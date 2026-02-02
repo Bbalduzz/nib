@@ -173,9 +173,9 @@ class LazyVGrid(View):
             props["pinnedViews"] = self._pinned_views
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         visible = [c for c in self._controls if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
 
 class LazyHGrid(View):
@@ -262,9 +262,9 @@ class LazyHGrid(View):
             props["pinnedViews"] = self._pinned_views
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         visible = [c for c in self._controls if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
 
 class Grid(View):
@@ -337,9 +337,9 @@ class Grid(View):
             props["verticalSpacing"] = float(self._vertical_spacing)
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         visible = [c for c in self._controls if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]
 
 
 class GridRow(View):
@@ -393,6 +393,6 @@ class GridRow(View):
             props["alignment"] = self._alignment
         return props
 
-    def _get_children(self, parent_path: str = "") -> list:
+    def _get_children(self, parent_path: str = "", depth: int = 0) -> list:
         visible = [c for c in self._controls if c._visible]
-        return [child.to_dict(f"{parent_path}.{i}") for i, child in enumerate(visible)]
+        return [child.to_dict(f"{parent_path}.{i}", depth + 1) for i, child in enumerate(visible)]

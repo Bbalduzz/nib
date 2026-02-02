@@ -11,7 +11,7 @@ build: build-runtime
 
 # Install the Python package in development mode
 install: build-runtime
-	pip install -e sdk/python/
+	pip install -e .
 
 # Clean build artifacts
 clean:
