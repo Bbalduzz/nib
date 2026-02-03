@@ -47,99 +47,15 @@ See Also:
 """
 
 import argparse
-import logging
 import sys
 from pathlib import Path
 from typing import Any, Optional
 
+from ..core.logging import logger
+
 from .build import build_app
 from .create import create_project
 from .deps import detect_imports, resolve_packages
-
-
-# Add custom SUCCESS level (between INFO and WARNING)
-SUCCESS_LEVEL = 25
-logging.addLevelName(SUCCESS_LEVEL, "SUCCESS")
-
-
-def _success(self, message, *args, **kwargs):
-    if self.isEnabledFor(SUCCESS_LEVEL):
-        self._log(SUCCESS_LEVEL, message, args, **kwargs)
-
-
-logging.Logger.success = _success
-
-
-class ColoredFormatter(logging.Formatter):
-    """Colored log formatter for terminal output (loguru-style)."""
-
-    # ANSI color codes
-    GREY = "\033[38;5;245m"
-    CYAN = "\033[36m"
-    GREEN = "\033[32m"
-    BRIGHT_GREEN = "\033[92m"
-    YELLOW = "\033[33m"
-    RED = "\033[31m"
-    MAGENTA = "\033[35m"
-    BOLD = "\033[1m"
-    RESET = "\033[0m"
-
-    LEVEL_COLORS = {
-        "DEBUG": CYAN,
-        "INFO": GREEN,
-        "SUCCESS": BRIGHT_GREEN,
-        "WARNING": YELLOW,
-        "ERROR": RED,
-        "CRITICAL": MAGENTA,
-    }
-
-    def format(self, record: logging.LogRecord) -> str:
-        from datetime import datetime
-
-        # Check if terminal supports colors
-        use_colors = sys.stdout.isatty()
-
-        # Timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.") + f"{datetime.now().microsecond // 1000:03d}"
-
-        # Level (padded to 8 chars)
-        level = record.levelname.ljust(8)
-
-        # Module and line info
-        module = record.name.split(".")[-1]  # Just the last part (e.g., "build" from "nib.build")
-        func = record.funcName if record.funcName != "<module>" else "main"
-        location = f"{module}:{func}:{record.lineno}"
-
-        # Message
-        message = record.getMessage()
-
-        if use_colors:
-            level_color = self.LEVEL_COLORS.get(record.levelname, "")
-            return (
-                f"{self.GREY}{timestamp}{self.RESET} | "
-                f"{level_color}{self.BOLD}{level}{self.RESET} | "
-                f"{self.CYAN}{location}{self.RESET} - {message}"
-            )
-        else:
-            return f"{timestamp} | {level} | {location} - {message}"
-
-
-def setup_logging(verbose: bool = False) -> None:
-    """Configure logging for the CLI.
-
-    Args:
-        verbose: If True, enable DEBUG level logging. Otherwise INFO.
-    """
-    level = logging.DEBUG if verbose else logging.INFO
-
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(ColoredFormatter())
-
-    # Clear any existing handlers
-    root = logging.getLogger()
-    root.handlers.clear()
-    root.addHandler(handler)
-    root.setLevel(level)
 
 __all__ = ["build_app", "create_project", "detect_imports", "resolve_packages", "main"]
 
@@ -372,9 +288,10 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    # Configure logging
-    setup_logging(verbose=getattr(args, "verbose", False))
-    logger = logging.getLogger("nib.cli")
+    # Configure log level based on verbose flag
+    from ..core.logging import LogLevel
+    if getattr(args, "verbose", False):
+        logger.set_level(LogLevel.DEBUG)
 
     if args.command == "create":
         return create_project(name=args.name)

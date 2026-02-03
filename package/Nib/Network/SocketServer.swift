@@ -38,25 +38,21 @@ class SocketServer {
     }
 
     func sendEvent(nodeId: String, event: String) {
-        debugPrint("SocketServer.sendEvent called - nodeId:", nodeId, "event:", event)
-        debugPrint("clientSocket:", clientSocket)
+        log.info("SocketServer.sendEvent - nodeId: \(nodeId), event: \(event), clientSocket: \(clientSocket)")
 
         guard clientSocket >= 0 else {
-            debugPrint("No client socket, cannot send event")
+            log.warn("No client socket, cannot send event")
             return
         }
 
-        debugPrint("Creating NibEvent...")
         let eventData = NibEvent(nodeId: nodeId, event: event)
-        debugPrint("NibEvent created, encoding...")
 
         do {
             let packed = try encoder.encode(eventData)
-            debugPrint("Event packed, size:", packed.count, "bytes")
             sendMessage(packed)
-            debugPrint("Event sent successfully")
+            log.info("Event sent successfully")
         } catch {
-            debugPrint("Failed to pack event:", error)
+            log.error("Failed to pack event: \(error)")
         }
     }
 
@@ -255,13 +251,23 @@ class SocketServer {
             return .clipboard(payload)
         case "fileDialog":
             let payload = NibMessage.FileDialogPayload(
-                action: raw.payload?.action ?? "open",
+                action: raw.payload?.action ?? "pickFiles",
+                requestId: raw.payload?.requestId ?? "",
                 title: raw.payload?.title,
-                types: raw.payload?.types,
-                multiple: raw.payload?.multiple,
+                message: raw.payload?.message,
+                buttonLabel: raw.payload?.buttonLabel,
                 directory: raw.payload?.directory,
-                defaultName: raw.payload?.defaultName,
-                requestId: raw.payload?.requestId ?? ""
+                showsHiddenFiles: raw.payload?.showsHiddenFiles,
+                resolvesAliases: raw.payload?.resolvesAliases,
+                multiple: raw.payload?.multiple,
+                extensions: raw.payload?.extensions,
+                uttypes: raw.payload?.uttypes,
+                allowsOtherFileTypes: raw.payload?.allowsOtherFileTypes,
+                treatsPackagesAsDirectories: raw.payload?.treatsPackagesAsDirectories,
+                canCreateDirectories: raw.payload?.canCreateDirectories,
+                filename: raw.payload?.filename,
+                nameFieldLabel: raw.payload?.nameFieldLabel,
+                showsTagField: raw.payload?.showsTagField
             )
             return .fileDialog(payload)
         case "service":
@@ -345,6 +351,22 @@ class SocketServer {
             debugPrint("Service response sent successfully")
         } catch {
             debugPrint("Failed to encode service response:", error)
+        }
+    }
+
+    func sendFileDialogResponse(_ response: NibMessage.FileDialogResponse) {
+        debugPrint("Sending file dialog response, cancelled:", response.cancelled)
+        guard clientSocket >= 0 else {
+            debugPrint("No client connected for file dialog response")
+            return
+        }
+
+        do {
+            let packed = try encoder.encode(response)
+            sendMessage(packed)
+            debugPrint("File dialog response sent successfully")
+        } catch {
+            debugPrint("Failed to encode file dialog response:", error)
         }
     }
 }

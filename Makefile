@@ -4,7 +4,8 @@
 build-runtime:
 	cd package && swift build -c release
 	cp package/.build/release/nib-runtime sdk/python/nib/bin/nib-runtime
-	@echo "Runtime built and copied to sdk/python/nib/bin/nib-runtime"
+	codesign --force --sign - sdk/python/nib/bin/nib-runtime
+	@echo "Runtime built, signed, and copied to sdk/python/nib/bin/nib-runtime"
 
 # Build everything
 build: build-runtime

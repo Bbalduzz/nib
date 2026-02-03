@@ -316,38 +316,84 @@ class Connection:
         action: str,
         request_id: str,
         title: Optional[str] = None,
-        types: Optional[list] = None,
-        multiple: bool = False,
+        message: Optional[str] = None,
+        button_label: Optional[str] = None,
         directory: Optional[str] = None,
-        default_name: Optional[str] = None,
+        shows_hidden_files: bool = False,
+        resolves_aliases: bool = True,
+        multiple: bool = False,
+        extensions: Optional[list] = None,
+        uttypes: Optional[list] = None,
+        allows_other_file_types: bool = False,
+        treats_packages_as_directories: bool = False,
+        can_create_directories: bool = True,
+        filename: Optional[str] = None,
+        name_field_label: Optional[str] = None,
+        shows_tag_field: bool = True,
     ) -> None:
-        """Show a file open or save dialog.
+        """Show a file picker or save dialog.
 
-        The selected file path(s) will be returned via an event callback
-        with the format ``fileDialog:<paths>``.
+        The response will be sent as a fileDialogResponse message.
 
         Args:
-            action: Either "open" or "save".
-            request_id: Unique ID to match the response callback.
+            action: "pickFiles", "pickDirectory", or "saveFile".
+            request_id: Unique ID to match the response.
             title: Dialog window title.
-            types: Allowed file extensions (e.g., ["txt", "md"]).
-            multiple: Allow selecting multiple files (open only).
+            message: Prompt text below the title.
+            button_label: Text for the OK/Save button.
             directory: Starting directory path.
-            default_name: Default filename (save only).
+            shows_hidden_files: Show hidden files.
+            resolves_aliases: Follow alias files to targets.
+            multiple: Allow selecting multiple items.
+            extensions: Allowed file extensions (e.g., ["txt", "md"]).
+            uttypes: Allowed UTIs (e.g., ["public.image"]).
+            allows_other_file_types: Allow files outside allowed types.
+            treats_packages_as_directories: Treat .app as folders.
+            can_create_directories: Allow creating new folders.
+            filename: Suggested filename (save only).
+            name_field_label: Label for filename field (save only).
+            shows_tag_field: Show Finder tags selector (save only).
         """
-        message = {
-            "type": "fileDialog",
-            "payload": {
-                "action": action,
-                "requestId": request_id,
-                "title": title,
-                "types": types,
-                "multiple": multiple,
-                "directory": directory,
-                "defaultName": default_name,
-            },
+        payload = {
+            "action": action,
+            "requestId": request_id,
         }
-        self._send(message)
+        if title is not None:
+            payload["title"] = title
+        if message is not None:
+            payload["message"] = message
+        if button_label is not None:
+            payload["buttonLabel"] = button_label
+        if directory is not None:
+            payload["directory"] = directory
+        if shows_hidden_files:
+            payload["showsHiddenFiles"] = shows_hidden_files
+        if not resolves_aliases:
+            payload["resolvesAliases"] = resolves_aliases
+        if multiple:
+            payload["multiple"] = multiple
+        if extensions:
+            payload["extensions"] = extensions
+        if uttypes:
+            payload["uttypes"] = uttypes
+        if allows_other_file_types:
+            payload["allowsOtherFileTypes"] = allows_other_file_types
+        if treats_packages_as_directories:
+            payload["treatsPackagesAsDirectories"] = treats_packages_as_directories
+        if not can_create_directories:
+            payload["canCreateDirectories"] = can_create_directories
+        if filename is not None:
+            payload["filename"] = filename
+        if name_field_label is not None:
+            payload["nameFieldLabel"] = name_field_label
+        if not shows_tag_field:
+            payload["showsTagField"] = shows_tag_field
+
+        msg = {
+            "type": "fileDialog",
+            "payload": payload,
+        }
+        self._send(msg)
 
     def send_user_defaults(
         self,
@@ -590,10 +636,12 @@ class Connection:
     def _handle_message(self, message: dict) -> None:
         """Handle a message from the Swift runtime."""
         msg_type = message.get("type")
+        logger.info("Received message", type=msg_type)
 
         if msg_type == "event" and self._on_event:
             node_id = message.get("nodeId", "")
             event = message.get("event", "")
+            logger.info("Dispatching event", node_id=node_id, event=event)
             # Run event handlers on a separate thread to avoid blocking the read loop
             # This allows service requests made in callbacks to complete
             threading.Thread(
@@ -607,6 +655,14 @@ class Connection:
 
         elif msg_type == "notificationResponse":
             self._handle_notification_response(message)
+
+        elif msg_type == "fileDialogResponse":
+            self._handle_file_dialog_response(message)
+
+    def _handle_file_dialog_response(self, message: dict) -> None:
+        """Handle a file dialog response."""
+        from ..file_picker import _handle_file_dialog_response
+        _handle_file_dialog_response(message)
 
     def _dispatch_event(self, node_id: str, event: str) -> None:
         """Dispatch an event to the handler (runs on separate thread)."""

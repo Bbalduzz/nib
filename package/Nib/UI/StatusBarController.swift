@@ -342,6 +342,7 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     func setEventHandler(_ handler: @escaping (String, String) -> Void) {
+        log.info("setEventHandler called")
         eventHandler = handler
         viewStore.onEvent = { [weak self] nodeId, event in
             self?.emitEvent(nodeId: nodeId, event: event)
@@ -349,9 +350,16 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     private func emitEvent(nodeId: String, event: String) {
-        debugPrint("Emitting event:", event, "for node:", nodeId)
+        log.info("emitEvent: \(event) for node: \(nodeId), handler is \(eventHandler == nil ? "nil" : "set")")
         eventHandler?(nodeId, event)
-        debugPrint("Event emitted")
+        log.info("emitEvent completed")
+    }
+
+    // MARK: - NSPopoverDelegate
+
+    func popoverDidClose(_ notification: Notification) {
+        debugPrint("Popover closed")
+        emitEvent(nodeId: "_app", event: "disappear")
     }
 
     @objc private func handleStatusBarClick() {
@@ -383,12 +391,15 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     // MARK: - Right-Click Menu
 
     func updateMenu(_ items: [NibMessage.MenuItemConfig]) {
+        log.info("updateMenu called with \(items.count) items")
         menuItems = items
         buildMenu()
     }
 
     private func buildMenu() {
+        log.info("buildMenu called, building \(menuItems.count) items")
         rightClickMenu = buildSubmenu(from: menuItems)
+        log.info("rightClickMenu built: \(rightClickMenu?.items.count ?? 0) items")
     }
 
     private func buildSubmenu(from items: [NibMessage.MenuItemConfig]) -> NSMenu {
@@ -579,7 +590,11 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     private func showRightClickMenu() {
-        guard let menu = rightClickMenu, !menuItems.isEmpty else { return }
+        log.info("showRightClickMenu called, menuItems: \(menuItems.count), rightClickMenu: \(rightClickMenu?.items.count ?? -1)")
+        guard let menu = rightClickMenu, !menuItems.isEmpty else {
+            log.info("showRightClickMenu: guard failed - menu is nil or empty")
+            return
+        }
 
         if let button = statusItem.button {
             menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 5), in: button)
@@ -587,8 +602,12 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     @objc private func menuItemClicked(_ sender: NSMenuItem) {
+        log.info("menuItemClicked called, title: \(sender.title)")
         if let itemId = sender.representedObject as? String {
+            log.info("menuItemClicked emitting event for id: \(itemId)")
             emitEvent(nodeId: itemId, event: "menu:tap")
+        } else {
+            log.info("menuItemClicked: no representedObject found")
         }
     }
 

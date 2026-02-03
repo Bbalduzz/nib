@@ -1,8 +1,8 @@
 import AppKit
-import SwiftUI
-import ServiceManagement
-import UserNotifications
 import MessagePack
+import ServiceManagement
+import SwiftUI
+import UserNotifications
 
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarController: StatusBarController?
@@ -16,32 +16,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         clearLog()
         debugPrint("Nib runtime starting...")
 
-        // Check if we're running as a bundled app with embedded Python
+        setupEditMenu()
+        registerLaunchAtLoginIfNeeded()
+        setupNotifications()
+        statusBarController = StatusBarController()
+        hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
+            self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
+        }
+
         if isBundledApp() {
             debugPrint("Running in bundled mode - launching embedded Python")
-            // Full initialization for bundled mode
-            setupEditMenu()
-            registerLaunchAtLoginIfNeeded()
-            setupNotifications()
-            statusBarController = StatusBarController()
-            hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
-                self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
-            }
             launchEmbeddedPython()
         } else {
-            // Development mode: Start socket server FIRST so Python can connect quickly
             debugPrint("Running in development mode - starting socket server immediately")
             startSocketServer()
-
-            // Then do the rest of initialization (Python can start connecting now)
-            setupEditMenu()
-            registerLaunchAtLoginIfNeeded()
-            setupNotifications()
-            statusBarController = StatusBarController()
-            hotkeyManager.setHotkeyHandler { [weak self] hotkeyString in
-                self?.socketServer?.sendEvent(nodeId: "hotkey", event: "hotkey:\(hotkeyString)")
-            }
         }
+
+        wireHandlers()
     }
 
     // MARK: - Launch at Login
@@ -49,7 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     private func registerLaunchAtLoginIfNeeded() {
         // Check if launch_at_login is enabled in Info.plist
         guard let launchAtLogin = Bundle.main.infoDictionary?["NibLaunchAtLogin"] as? Bool,
-              launchAtLogin else {
+            launchAtLogin
+        else {
             return
         }
 
@@ -95,9 +87,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         return FileManager.default.fileExists(atPath: pythonPath)
     }
 
+    private func wireHandlers() {
+        statusBarController?.setEventHandler { [weak self] nodeId, event in
+            self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+        }
+    }
+
     private func startSocketServer() {
         // Get socket path from environment or use default
-        let socketPath = ProcessInfo.processInfo.environment["NIB_SOCKET"]
+        let socketPath =
+            ProcessInfo.processInfo.environment["NIB_SOCKET"]
             ?? "/tmp/nib-\(ProcessInfo.processInfo.processIdentifier).sock"
 
         // Start socket server
@@ -106,12 +105,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             self?.handleMessage(message)
         }
 
-        // Wire up event handler
-        statusBarController?.setEventHandler { [weak self] nodeId, event in
-            self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
-        }
+        wireHandlers()
 
         socketServer?.start()
+        print("Nib runtime version: \(NibRuntimeInfo.version)")
         print("Nib runtime started, socket: \(socketPath)")
     }
 
@@ -215,7 +212,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 errorPipe.fileHandleForReading.readabilityHandler = nil
 
                 if exitCode != 0 {
-                    self?.showLaunchError("Python exited with error code: \(exitCode)\nCheck /tmp/nib.log for details")
+                    self?.showLaunchError(
+                        "Python exited with error code: \(exitCode)\nCheck /tmp/nib.log for details"
+                    )
                 }
 
                 // Exit the app when Python exits
@@ -274,8 +273,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             case .fileDialog(let payload):
                 debugPrint("FileDialog - action:", payload.action)
-                FileDialogHandler.handle(payload) { nodeId, event in
-                    self?.socketServer?.sendEvent(nodeId: nodeId, event: event)
+                FileDialogHandler.handle(payload) { response in
+                    self?.socketServer?.sendFileDialogResponse(response)
                 }
 
             case .userDefaults(let payload):
@@ -290,7 +289,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             case .action(let payload):
                 debugPrint("Action - nodeId:", payload.nodeId, "action:", payload.action)
-                self?.statusBarController?.handleAction(nodeId: payload.nodeId, action: payload.action, params: payload.params)
+                self?.statusBarController?.handleAction(
+                    nodeId: payload.nodeId, action: payload.action, params: payload.params)
 
             case .settingsRender(let payload):
                 debugPrint("Settings render - tabs:", payload.tabs.count)
@@ -315,7 +315,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     private func handleRender(_ payload: NibMessage.RenderPayload) {
-        debugPrint("Rendering - icon:", payload.statusBar?.icon ?? "nil", "title:", payload.statusBar?.title ?? "nil")
+        debugPrint(
+            "Rendering - icon:", payload.statusBar?.icon ?? "nil", "title:",
+            payload.statusBar?.title ?? "nil")
 
         // Register custom fonts before rendering
         if let fonts = payload.fonts {
@@ -396,7 +398,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Legacy setup for old notification API
         guard isRunningFromAppBundle else {
-            debugPrint("Skipping legacy notification setup (not running from .app bundle - dev mode)")
+            debugPrint(
+                "Skipping legacy notification setup (not running from .app bundle - dev mode)")
             return
         }
 
@@ -468,7 +471,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             }
         }
 
-        private func encodeValue(_ value: Any, forKey key: DynamicCodingKey, in container: inout KeyedEncodingContainer<DynamicCodingKey>) throws {
+        private func encodeValue(
+            _ value: Any, forKey key: DynamicCodingKey,
+            in container: inout KeyedEncodingContainer<DynamicCodingKey>
+        ) throws {
             switch value {
             case let str as String:
                 try container.encode(str, forKey: key)
@@ -574,7 +580,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) ->
+            Void
     ) {
         // Show notification even when app is in foreground
         completionHandler([.banner, .sound])
@@ -592,7 +599,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             BatteryService.handle(payload, sendResponse: sendResponse)
         case "connectivity":
             if payload.action == "status" {
-                ConnectivityService.handleStatus(requestId: payload.requestId, sendResponse: sendResponse)
+                ConnectivityService.handleStatus(
+                    requestId: payload.requestId, sendResponse: sendResponse)
             } else {
                 debugPrint("Unknown connectivity action:", payload.action)
             }
@@ -620,8 +628,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         editMenu.addItem(NSMenuItem.separator())
         editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editMenu.addItem(
+            withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(
+            withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
 
         let editMenuItem = NSMenuItem(title: "Edit", action: nil, keyEquivalent: "")
         editMenuItem.submenu = editMenu

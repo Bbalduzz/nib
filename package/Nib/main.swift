@@ -2,7 +2,7 @@ import AppKit
 
 // Handle --version flag
 if CommandLine.arguments.contains("--version") || CommandLine.arguments.contains("-v") {
-    print("nib-runtime \(NibVersion.version)")
+    print("nib-runtime \(NibRuntimeInfo.version)")
     exit(0)
 }
 

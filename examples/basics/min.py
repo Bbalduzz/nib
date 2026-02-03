@@ -1,4 +1,3 @@
-from django.utils.termcolors import background
 import nib
 
 
@@ -25,7 +24,9 @@ def main(app):
                                 "Upgrade now",
                                 style=nib.TextStyle(
                                     color=nib.Color.SECONDARY,
-                                    font=nib.Font.system(10, weight=nib.FontWeight.LIGHT),
+                                    font=nib.Font.system(
+                                        10, weight=nib.FontWeight.LIGHT
+                                    ),
                                 ),
                             ),
                         ],
@@ -48,7 +49,11 @@ def main(app):
                 nib.MenuItem(
                     "Even More",
                     menu=[
-                        nib.MenuItem("Nested Item", badge="99+"),
+                        nib.MenuItem(
+                            "Nested Item",
+                            badge="99+",
+                            action=lambda: print("Nested Item clicked"),
+                        ),
                     ],
                 ),
             ],
@@ -62,13 +67,15 @@ def main(app):
         nib.MenuItem("Quit", shortcut="cmd+Q", action=app.quit),
     ]
 
-    settings = nib.Settings({
-        "dark_mode": False,
-        "accent_color": "BLUE",
-        "notifications": True,
-        "volume": 0.0,
-        "username": "guest",
-    })
+    settings = nib.Settings(
+        {
+            "dark_mode": False,
+            "accent_color": "BLUE",
+            "notifications": True,
+            "volume": 0.0,
+            "username": "guest",
+        }
+    )
     app.register_settings(settings)
 
     dark_mode_value = nib.Text(settings.dark_mode)
@@ -80,13 +87,13 @@ def main(app):
     status_stack = nib.Form(
         controls=[
             nib.HStack([nib.Text("Hello!"), nib.Spacer(), username_value]),
-            nib.HStack([nib.Text("Dark Mode:"),nib.Spacer(), dark_mode_value]),
-            nib.HStack([nib.Text("Accent Color:"), nib.Spacer(),accent_color_value]),
-            nib.HStack([nib.Text("Notifications:"),nib.Spacer(), notifications_value]),
-            nib.HStack([nib.Text("Volume:"),nib.Spacer(), volume_value]),
+            nib.HStack([nib.Text("Dark Mode:"), nib.Spacer(), dark_mode_value]),
+            nib.HStack([nib.Text("Accent Color:"), nib.Spacer(), accent_color_value]),
+            nib.HStack([nib.Text("Notifications:"), nib.Spacer(), notifications_value]),
+            nib.HStack([nib.Text("Volume:"), nib.Spacer(), volume_value]),
         ],
         style=nib.FormStyle.GROUPED,
-        #alignment=nib.Alignment.LEADING,
+        # alignment=nib.Alignment.LEADING,
     )
 
     def update_status():
@@ -150,19 +157,21 @@ def main(app):
                                         update_status(),
                                     ),
                                 ),
-                                nib.HStack([
-                                    nib.Text("Volume"),
-                                    nib.Slider(
-                                        label="Volume",
-                                        value=50,
-                                        min_value=0,
-                                        max_value=100,
-                                        on_change=lambda v: (
-                                            setattr(settings, "volume", v),
-                                            update_status(),
+                                nib.HStack(
+                                    [
+                                        nib.Text("Volume"),
+                                        nib.Slider(
+                                            label="Volume",
+                                            value=50,
+                                            min_value=0,
+                                            max_value=100,
+                                            on_change=lambda v: (
+                                                setattr(settings, "volume", v),
+                                                update_status(),
+                                            ),
                                         ),
-                                    ),
-                                ]),
+                                    ]
+                                ),
                             ],
                             header="Notifications",
                         ),
@@ -186,12 +195,12 @@ def main(app):
                                         update_status(),
                                     ),
                                 ),
-                            ]
+                            ],
                         )
                     ],
                     style=nib.FormStyle.GROUPED,
-                )
-            )
+                ),
+            ),
         ],
     )
 
@@ -229,26 +238,39 @@ def main(app):
                             ),
                         ),
                         nib.Spacer(),
-                        nib.ZStack([
-                            nib.Text(
-                                "S",
-                                style=nib.TextStyle(
-                                    color=nib.Color.WHITE.with_opacity(0.6),
-                                    font=nib.Font.custom("SF Pro Rounded", size=11),
+                        nib.ZStack(
+                            [
+                                nib.Text(
+                                    "S",
+                                    style=nib.TextStyle(
+                                        color=nib.Color.WHITE.with_opacity(0.6),
+                                        font=nib.Font.custom("SF Pro Rounded", size=11),
+                                    ),
                                 ),
-                            ),
-                            nib.Rectangle(
-                                fill=nib.Color.SECONDARY.with_opacity(0.2),
-                                stroke_color=nib.Color.GRAY,
-                                stroke_width=1,
-                                corner_radius=nib.CornerRadius.all(5),
-                                width=20,
-                                height=20,
-                            ),
-                        ]),
+                                nib.Rectangle(
+                                    fill=nib.Color.SECONDARY.with_opacity(0.2),
+                                    stroke_color=nib.Color.GRAY,
+                                    stroke_width=1,
+                                    corner_radius=nib.CornerRadius.all(5),
+                                    width=20,
+                                    height=20,
+                                ),
+                            ]
+                        ),
                     ],
                     margin={"leading": 12, "trailing": 12},
-                    on_hover=lambda is_hovered: setattr(settings_button, "background", nib.Rectangle(fill=nib.Color.BLACK.with_opacity(0.2), height=30, margin={"leading": 6, "trailing": 6}, corner_radius=nib.CornerRadius.all(5))) if is_hovered else setattr(settings_button, "background",None),
+                    on_hover=lambda is_hovered: setattr(
+                        settings_button,
+                        "background",
+                        nib.Rectangle(
+                            fill=nib.Color.BLACK.with_opacity(0.2),
+                            height=30,
+                            margin={"leading": 6, "trailing": 6},
+                            corner_radius=nib.CornerRadius.all(5),
+                        ),
+                    )
+                    if is_hovered
+                    else setattr(settings_button, "background", None),
                     on_click=lambda: app.settings.open(),
                     animation=nib.Animation.easeIn(0.1),
                 ),
@@ -262,23 +284,25 @@ def main(app):
                             ),
                         ),
                         nib.Spacer(),
-                        nib.ZStack([
-                            nib.Text(
-                                "Q",
-                                style=nib.TextStyle(
-                                    color=nib.Color.WHITE.with_opacity(0.6),
-                                    font=nib.Font.custom("SF Pro Rounded", size=11),
+                        nib.ZStack(
+                            [
+                                nib.Text(
+                                    "Q",
+                                    style=nib.TextStyle(
+                                        color=nib.Color.WHITE.with_opacity(0.6),
+                                        font=nib.Font.custom("SF Pro Rounded", size=11),
+                                    ),
                                 ),
-                            ),
-                            nib.Rectangle(
-                                fill=nib.Color.SECONDARY.with_opacity(0.2),
-                                stroke_color=nib.Color.GRAY,
-                                stroke_width=1,
-                                corner_radius=nib.CornerRadius.all(5),
-                                width=20,
-                                height=20,
-                            ),
-                        ]),
+                                nib.Rectangle(
+                                    fill=nib.Color.SECONDARY.with_opacity(0.2),
+                                    stroke_color=nib.Color.GRAY,
+                                    stroke_width=1,
+                                    corner_radius=nib.CornerRadius.all(5),
+                                    width=20,
+                                    height=20,
+                                ),
+                            ]
+                        ),
                     ],
                     margin={"leading": 12, "trailing": 12, "bottom": 12},
                 ),

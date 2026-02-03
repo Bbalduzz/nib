@@ -117,13 +117,51 @@ enum NibMessage {
     }
 
     struct FileDialogPayload: Codable {
-        let action: String  // "open" or "save"
-        let title: String?
-        let types: [String]?
-        let multiple: Bool?
-        let directory: String?
-        let defaultName: String?
+        let action: String  // "pickFiles", "pickDirectory", "saveFile"
         let requestId: String
+        // Common options
+        let title: String?
+        let message: String?
+        let buttonLabel: String?
+        let directory: String?
+        let showsHiddenFiles: Bool?
+        let resolvesAliases: Bool?
+        // File picker options
+        let multiple: Bool?
+        let extensions: [String]?
+        let uttypes: [String]?
+        let allowsOtherFileTypes: Bool?
+        let treatsPackagesAsDirectories: Bool?
+        // Directory picker options
+        let canCreateDirectories: Bool?
+        // Save dialog options
+        let filename: String?
+        let nameFieldLabel: String?
+        let showsTagField: Bool?
+    }
+
+    // MARK: - File Dialog Response Types
+
+    struct FileDialogResponse: Codable {
+        let type: String  // "fileDialogResponse"
+        let requestId: String
+        let cancelled: Bool
+        let files: [PickedFileInfo]?
+        let directories: [String]?
+        let saveResult: SaveResultInfo?
+    }
+
+    struct PickedFileInfo: Codable {
+        let name: String
+        let path: String
+        let size: Int64
+        let uti: String?
+        let tags: [String]
+    }
+
+    struct SaveResultInfo: Codable {
+        let path: String
+        let tags: [String]
     }
 
     struct UserDefaultsPayload: Codable {
@@ -423,10 +461,20 @@ struct RawMessage: Codable {
         let content: String?
         let requestId: String?
         // For fileDialog
-        let types: [String]?
-        let multiple: Bool?
+        let message: String?
+        let buttonLabel: String?
         let directory: String?
-        let defaultName: String?
+        let showsHiddenFiles: Bool?
+        let resolvesAliases: Bool?
+        let multiple: Bool?
+        let extensions: [String]?
+        let uttypes: [String]?
+        let allowsOtherFileTypes: Bool?
+        let treatsPackagesAsDirectories: Bool?
+        let canCreateDirectories: Bool?
+        let filename: String?
+        let nameFieldLabel: String?
+        let showsTagField: Bool?
         // For userDefaults
         let key: String?
         let value: AnyCodable?
@@ -565,12 +613,22 @@ extension NibMessage {
             }
             let payload = FileDialogPayload(
                 action: action,
+                requestId: requestId,
                 title: raw.payload?.title,
-                types: raw.payload?.types,
-                multiple: raw.payload?.multiple,
+                message: raw.payload?.message,
+                buttonLabel: raw.payload?.buttonLabel,
                 directory: raw.payload?.directory,
-                defaultName: raw.payload?.defaultName,
-                requestId: requestId
+                showsHiddenFiles: raw.payload?.showsHiddenFiles,
+                resolvesAliases: raw.payload?.resolvesAliases,
+                multiple: raw.payload?.multiple,
+                extensions: raw.payload?.extensions,
+                uttypes: raw.payload?.uttypes,
+                allowsOtherFileTypes: raw.payload?.allowsOtherFileTypes,
+                treatsPackagesAsDirectories: raw.payload?.treatsPackagesAsDirectories,
+                canCreateDirectories: raw.payload?.canCreateDirectories,
+                filename: raw.payload?.filename,
+                nameFieldLabel: raw.payload?.nameFieldLabel,
+                showsTagField: raw.payload?.showsTagField
             )
             return .fileDialog(payload)
         case "userDefaults":

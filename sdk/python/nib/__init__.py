@@ -67,6 +67,7 @@ https://nib.readthedocs.io/
 
 from . import draw
 from .core import App, MenuDivider, MenuItem, Settings, SFSymbol, State, UserDefaults, run
+from .file_picker import FilePicker, PickedFile, SaveResult
 from .views.settings_page import SettingsPage, SettingsTab
 from .services import (
     Battery,
@@ -245,6 +246,10 @@ __all__ = [
     "Settings",
     "SettingsPage",
     "SettingsTab",
+    # File Picker
+    "FilePicker",
+    "PickedFile",
+    "SaveResult",
     # Base
     "View",
     # Layout

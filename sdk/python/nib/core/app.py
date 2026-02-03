@@ -246,8 +246,6 @@ class App:
         self._menu_action_map: Dict[str, Callable] = {}
         # Hotkeys
         self._hotkey_map: Dict[str, Callable] = {}
-        # File dialog callbacks
-        self._file_dialog_callbacks: Dict[str, Callable] = {}
         # Clipboard read callbacks
         self._clipboard_callbacks: Dict[str, Callable] = {}
         # Drop handlers
@@ -795,66 +793,6 @@ class App:
             return func
         return decorator
 
-    def open_file_dialog(
-        self,
-        callback: Callable[[List[str]], None],
-        title: Optional[str] = None,
-        types: Optional[List[str]] = None,
-        multiple: bool = False,
-        directory: Optional[str] = None,
-    ) -> None:
-        """
-        Show an open file dialog.
-
-        Args:
-            callback: Called with list of selected file paths (empty if cancelled).
-            title: Dialog title.
-            types: Allowed file extensions (e.g., ["txt", "md"]).
-            multiple: Allow selecting multiple files.
-            directory: Starting directory.
-        """
-        if self._connection:
-            request_id = str(uuid.uuid4())
-            self._file_dialog_callbacks[request_id] = callback
-            self._connection.send_file_dialog(
-                action="open",
-                request_id=request_id,
-                title=title,
-                types=types,
-                multiple=multiple,
-                directory=directory,
-            )
-
-    def save_file_dialog(
-        self,
-        callback: Callable[[str], None],
-        title: Optional[str] = None,
-        types: Optional[List[str]] = None,
-        default_name: Optional[str] = None,
-        directory: Optional[str] = None,
-    ) -> None:
-        """
-        Show a save file dialog.
-
-        Args:
-            callback: Called with selected file path (empty if cancelled).
-            title: Dialog title.
-            types: Allowed file extensions.
-            default_name: Default filename.
-            directory: Starting directory.
-        """
-        if self._connection:
-            request_id = str(uuid.uuid4())
-            self._file_dialog_callbacks[request_id] = lambda paths: callback(paths[0] if paths else "")
-            self._connection.send_file_dialog(
-                action="save",
-                request_id=request_id,
-                title=title,
-                types=types,
-                directory=directory,
-                default_name=default_name,
-            )
-
     def quit(self) -> None:
         """Quit the application."""
         self._running = False
@@ -1333,12 +1271,18 @@ class App:
                 logger.error("Error in action handler", exc=e, node_id=node_id)
 
         # Handle menu tap events
-        elif event == "menu:tap" and node_id in self._menu_action_map:
-            action = self._menu_action_map[node_id]
-            try:
-                action()
-            except Exception as e:
-                logger.error("Error in menu action handler", exc=e)
+        elif event == "menu:tap":
+            logger.info("menu:tap received", node_id=node_id, registered_ids=list(self._menu_action_map.keys()))
+            if node_id in self._menu_action_map:
+                logger.info("Found menu action, calling it")
+                action = self._menu_action_map[node_id]
+                try:
+                    action()
+                    logger.info("Menu action completed")
+                except Exception as e:
+                    logger.error("Error in menu action handler", exc=e)
+            else:
+                logger.warn("Menu action not found", node_id=node_id)
 
         # Handle hotkey events
         elif event.startswith("hotkey:"):
@@ -1358,17 +1302,6 @@ class App:
                     callback(content)
                 except Exception as e:
                     logger.error("Error in clipboard callback", exc=e)
-
-        # Handle file dialog response
-        elif event.startswith("fileDialog:"):
-            paths_str = event[11:]  # Remove "fileDialog:" prefix
-            if node_id in self._file_dialog_callbacks:
-                callback = self._file_dialog_callbacks.pop(node_id)
-                paths = [p for p in paths_str.split("\n") if p] if paths_str else []
-                try:
-                    callback(paths)
-                except Exception as e:
-                    logger.error("Error in file dialog callback", exc=e)
 
         # Handle userDefaults response
         elif event.startswith("userDefaults:"):

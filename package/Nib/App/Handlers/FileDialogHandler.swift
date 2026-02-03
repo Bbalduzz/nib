@@ -1,67 +1,242 @@
 import AppKit
 import UniformTypeIdentifiers
 
-/// Handles open/save file dialog operations
+/// Handles file picker and save dialog operations
 struct FileDialogHandler {
-    static func handle(_ payload: NibMessage.FileDialogPayload, sendEvent: @escaping (String, String) -> Void) {
+    typealias SendResponse = (NibMessage.FileDialogResponse) -> Void
+
+    static func handle(_ payload: NibMessage.FileDialogPayload, sendResponse: @escaping SendResponse) {
         switch payload.action {
-        case "open":
-            handleOpenDialog(payload, sendEvent: sendEvent)
-        case "save":
-            handleSaveDialog(payload, sendEvent: sendEvent)
+        case "pickFiles":
+            handlePickFiles(payload, sendResponse: sendResponse)
+        case "pickDirectory":
+            handlePickDirectory(payload, sendResponse: sendResponse)
+        case "saveFile":
+            handleSaveFile(payload, sendResponse: sendResponse)
         default:
             debugPrint("Unknown fileDialog action:", payload.action)
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: true,
+                files: nil,
+                directories: nil,
+                saveResult: nil
+            ))
         }
     }
 
-    private static func handleOpenDialog(_ payload: NibMessage.FileDialogPayload, sendEvent: @escaping (String, String) -> Void) {
-        let panel = NSOpenPanel()
-        panel.title = payload.title ?? "Open File"
-        panel.allowsMultipleSelection = payload.multiple ?? false
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
+    // MARK: - Pick Files
 
-        if let directory = payload.directory {
-            panel.directoryURL = URL(fileURLWithPath: directory)
+    private static func handlePickFiles(_ payload: NibMessage.FileDialogPayload, sendResponse: @escaping SendResponse) {
+        let panel = NSOpenPanel()
+
+        // Common configuration
+        configureCommon(panel: panel, payload: payload)
+
+        // File picker specific
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = payload.multiple ?? false
+
+        // File type filtering
+        if let extensions = payload.extensions, !extensions.isEmpty {
+            panel.allowedContentTypes = extensions.compactMap { UTType(filenameExtension: $0) }
+        } else if let uttypes = payload.uttypes, !uttypes.isEmpty {
+            panel.allowedContentTypes = uttypes.compactMap { UTType($0) }
         }
 
-        if let types = payload.types, !types.isEmpty {
-            panel.allowedContentTypes = types.compactMap { ext in
-                UTType(filenameExtension: ext)
-            }
+        if let allowsOther = payload.allowsOtherFileTypes {
+            panel.allowsOtherFileTypes = allowsOther
+        }
+
+        if let treatsPackages = payload.treatsPackagesAsDirectories {
+            panel.treatsFilePackagesAsDirectories = treatsPackages
         }
 
         let response = panel.runModal()
         if response == .OK {
-            let paths = panel.urls.map { $0.path }.joined(separator: "\n")
-            sendEvent(payload.requestId, "fileDialog:\(paths)")
+            let files = panel.urls.map { getFileInfo(url: $0) }
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: false,
+                files: files,
+                directories: nil,
+                saveResult: nil
+            ))
         } else {
-            sendEvent(payload.requestId, "fileDialog:")
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: true,
+                files: nil,
+                directories: nil,
+                saveResult: nil
+            ))
         }
     }
 
-    private static func handleSaveDialog(_ payload: NibMessage.FileDialogPayload, sendEvent: @escaping (String, String) -> Void) {
+    // MARK: - Pick Directory
+
+    private static func handlePickDirectory(_ payload: NibMessage.FileDialogPayload, sendResponse: @escaping SendResponse) {
+        let panel = NSOpenPanel()
+
+        // Common configuration
+        configureCommon(panel: panel, payload: payload)
+
+        // Directory picker specific
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = payload.multiple ?? false
+
+        if let canCreate = payload.canCreateDirectories {
+            panel.canCreateDirectories = canCreate
+        }
+
+        let response = panel.runModal()
+        if response == .OK {
+            let directories = panel.urls.map { $0.path }
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: false,
+                files: nil,
+                directories: directories,
+                saveResult: nil
+            ))
+        } else {
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: true,
+                files: nil,
+                directories: nil,
+                saveResult: nil
+            ))
+        }
+    }
+
+    // MARK: - Save File
+
+    private static func handleSaveFile(_ payload: NibMessage.FileDialogPayload, sendResponse: @escaping SendResponse) {
         let panel = NSSavePanel()
-        panel.title = payload.title ?? "Save File"
 
-        if let directory = payload.directory {
-            panel.directoryURL = URL(fileURLWithPath: directory)
-        }
-        if let defaultName = payload.defaultName {
-            panel.nameFieldStringValue = defaultName
+        // Common configuration
+        configureCommon(panel: panel, payload: payload)
+
+        // Save dialog specific
+        if let filename = payload.filename {
+            panel.nameFieldStringValue = filename
         }
 
-        if let types = payload.types, !types.isEmpty {
-            panel.allowedContentTypes = types.compactMap { ext in
-                UTType(filenameExtension: ext)
-            }
+        if let nameFieldLabel = payload.nameFieldLabel {
+            panel.nameFieldLabel = nameFieldLabel
+        }
+
+        if let showsTagField = payload.showsTagField {
+            panel.showsTagField = showsTagField
+        }
+
+        if let canCreate = payload.canCreateDirectories {
+            panel.canCreateDirectories = canCreate
+        }
+
+        // File type filtering
+        if let extensions = payload.extensions, !extensions.isEmpty {
+            panel.allowedContentTypes = extensions.compactMap { UTType(filenameExtension: $0) }
+        } else if let uttypes = payload.uttypes, !uttypes.isEmpty {
+            panel.allowedContentTypes = uttypes.compactMap { UTType($0) }
+        }
+
+        if let allowsOther = payload.allowsOtherFileTypes {
+            panel.allowsOtherFileTypes = allowsOther
         }
 
         let response = panel.runModal()
         if response == .OK, let url = panel.url {
-            sendEvent(payload.requestId, "fileDialog:\(url.path)")
+            // Get tags from panel
+            let tags = panel.tagNames ?? []
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: false,
+                files: nil,
+                directories: nil,
+                saveResult: NibMessage.SaveResultInfo(path: url.path, tags: tags)
+            ))
         } else {
-            sendEvent(payload.requestId, "fileDialog:")
+            sendResponse(NibMessage.FileDialogResponse(
+                type: "fileDialogResponse",
+                requestId: payload.requestId,
+                cancelled: true,
+                files: nil,
+                directories: nil,
+                saveResult: nil
+            ))
         }
+    }
+
+    // MARK: - Common Configuration
+
+    private static func configureCommon(panel: NSSavePanel, payload: NibMessage.FileDialogPayload) {
+        if let title = payload.title {
+            panel.title = title
+        }
+
+        if let message = payload.message {
+            panel.message = message
+        }
+
+        if let buttonLabel = payload.buttonLabel {
+            panel.prompt = buttonLabel
+        }
+
+        if let directory = payload.directory {
+            panel.directoryURL = URL(fileURLWithPath: directory)
+        }
+
+        if let showsHidden = payload.showsHiddenFiles {
+            panel.showsHiddenFiles = showsHidden
+        }
+
+        // resolvesAliases is only available on NSOpenPanel
+        if let panel = panel as? NSOpenPanel, let resolvesAliases = payload.resolvesAliases {
+            panel.resolvesAliases = resolvesAliases
+        }
+    }
+
+    // MARK: - File Info Helpers
+
+    private static func getFileInfo(url: URL) -> NibMessage.PickedFileInfo {
+        let name = url.lastPathComponent
+        let path = url.path
+
+        // Get file size
+        var size: Int64 = 0
+        if let attrs = try? FileManager.default.attributesOfItem(atPath: path),
+           let fileSize = attrs[.size] as? Int64 {
+            size = fileSize
+        }
+
+        // Get UTI
+        var uti: String? = nil
+        if let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier {
+            uti = typeIdentifier
+        }
+
+        // Get Finder tags
+        var tags: [String] = []
+        if let tagNames = try? url.resourceValues(forKeys: [.tagNamesKey]).tagNames {
+            tags = tagNames
+        }
+
+        return NibMessage.PickedFileInfo(
+            name: name,
+            path: path,
+            size: size,
+            uti: uti,
+            tags: tags
+        )
     }
 }

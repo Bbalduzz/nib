@@ -56,7 +56,6 @@ Requirements:
         - https://github.com/astral-sh/python-build-standalone
 """
 
-import logging
 import os
 import platform
 import plistlib
@@ -70,8 +69,7 @@ from pathlib import Path
 from typing import Literal, Optional
 
 from .deps import detect_imports, extract_metadata, resolve_packages
-
-logger = logging.getLogger("nib.build")
+from ..core.logging import logger
 
 # python-build-standalone configuration
 PBS_VERSION = "20241219"
@@ -219,7 +217,7 @@ def vendor_dependencies(
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            logger.warning(f"pip install had issues: {result.stderr}")
+            logger.warn(f"pip install had issues: {result.stderr}")
             # don't fail - some packages might still have installed
 
     nib_src = Path(__file__).parent.parent.resolve()  # python/nib
@@ -362,14 +360,14 @@ def obfuscate_python_code(app_dir: Path) -> bool:
     pyc_files = list(app_dir.rglob("*.pyc"))
 
     if not pyc_files:
-        logger.warning("No .pyc files to obfuscate")
+        logger.warn("No .pyc files to obfuscate")
         return True
 
     for pyc_file in pyc_files:
         try:
             obfuscate_pyc(pyc_file)
         except Exception as e:
-            logger.warning(f"Failed to obfuscate {pyc_file.name}: {e}")
+            logger.warn(f"Failed to obfuscate {pyc_file.name}: {e}")
             return False
 
     logger.info(f"Obfuscated {len(pyc_files)} bytecode files")
@@ -652,7 +650,7 @@ def convert_icon_to_icns(icon_path: Path, output_dir: Path) -> Optional[Path]:
         return icns_path
 
     except subprocess.CalledProcessError as e:
-        logger.warning(f"Failed to convert icon: {e}")
+        logger.warn(f"Failed to convert icon: {e}")
         return None
 
 
@@ -826,7 +824,7 @@ def build_app(
         elif arch in ("x86_64", "AMD64"):
             arch = "x86_64"
         else:
-            logger.warning(f"Unknown architecture {arch}, defaulting to arm64")
+            logger.warn(f"Unknown architecture {arch}, defaulting to arm64")
             arch = "arm64"
 
     logger.info(f"Target architecture: {arch}")
@@ -959,7 +957,7 @@ def build_app(
         if obfuscate:
             logger.info("Obfuscating Python bytecode...")
             if not obfuscate_python_code(paths["app_dir"]):
-                logger.warning("Obfuscation failed, continuing with compiled bytecode")
+                logger.warn("Obfuscation failed, continuing with compiled bytecode")
 
     # Copy Swift runtime as main executable
     logger.info("Installing Swift runtime...")
@@ -976,7 +974,7 @@ def build_app(
             if icns:
                 icon_filename = icns.name
         else:
-            logger.warning(f"Icon not found: {icon}")
+            logger.warn(f"Icon not found: {icon}")
 
     # Generate Info.plist
     logger.info("Generating Info.plist...")
@@ -1011,7 +1009,7 @@ def build_app(
     if codesign_app(paths["app"]):
         logger.info("App signed with ad-hoc signature")
     else:
-        logger.warning("Code signing failed (some features may not work)")
+        logger.warn("Code signing failed (some features may not work)")
 
     logger.success(f"App bundle created at: {paths['app']}")
     logger.success(f"Bundle size: {get_dir_size(paths['app']):.1f} MB")

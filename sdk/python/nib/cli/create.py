@@ -52,12 +52,11 @@ See Also:
     - :mod:`nib.cli`: Main CLI module for command handling
 """
 
-import logging
 import os
 from pathlib import Path
 from typing import Optional
 
-logger = logging.getLogger("nib.create")
+from ..core.logging import logger
 
 MAIN_PY_TEMPLATE = '''"""
 {name} - A nib application

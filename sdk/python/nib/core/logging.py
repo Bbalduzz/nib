@@ -118,34 +118,53 @@ class NibLogger:
         self._file_enabled = path is not None
 
     def _format_timestamp(self) -> str:
-        """Format current time in ISO8601 format (matches Swift)."""
-        return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        """Format current time in loguru style."""
+        now = datetime.now()
+        return now.strftime("%Y-%m-%d %H:%M:%S.") + f"{now.microsecond // 1000:03d}"
 
     def _format_message(
-        self, level: LogLevel, message: str, **kwargs: Any
+        self, level: LogLevel, message: str, caller_info: tuple = None, **kwargs: Any
     ) -> str:
         """Format a log message with timestamp and level.
 
         Args:
             level: Log level
             message: Main message
+            caller_info: Optional (module, func, line) tuple
             **kwargs: Additional key-value pairs to include
 
         Returns:
             Formatted log line
         """
         timestamp = self._format_timestamp()
-        level_name = _LEVEL_NAMES[level]
+        level_name = _LEVEL_NAMES[level].ljust(8)
+
+        # Get caller info if not provided
+        if caller_info is None:
+            import inspect
+            # Go up the stack to find the actual caller
+            # Stack: _format_message -> _write -> info/debug/etc -> actual caller
+            frame = inspect.currentframe()
+            for _ in range(3):  # Skip 3 frames to get to actual caller
+                if frame is not None:
+                    frame = frame.f_back
+            if frame:
+                module = Path(frame.f_code.co_filename).stem
+                func = frame.f_code.co_name
+                lineno = frame.f_lineno
+                caller_info = (module, func, lineno)
+            else:
+                caller_info = ("unknown", "unknown", 0)
+
+        module, func, lineno = caller_info
+        location = f"{module}:{func}:{lineno}"
 
         # Build the log line
-        line = f"[{timestamp}] [{level_name}] [Python] {message}"
-
-        # Append key-value pairs if provided
         if kwargs:
             pairs = " ".join(f"{k}={v}" for k, v in kwargs.items())
-            line = f"{line} ({pairs})"
+            message = f"{message} ({pairs})"
 
-        return line
+        return f"{timestamp} | {level_name} | python | {location} - {message}"
 
     def _write(self, level: LogLevel, message: str, **kwargs: Any) -> None:
         """Write a log message if level is enabled.
@@ -201,6 +220,18 @@ class NibLogger:
         """
         self._write(LogLevel.WARN, message, **kwargs)
 
+    # Alias for compatibility with Python's logging module
+    warning = warn
+
+    def success(self, message: str, **kwargs: Any) -> None:
+        """Log a success message (logs at INFO level).
+
+        Args:
+            message: Success message
+            **kwargs: Additional context
+        """
+        self._write(LogLevel.INFO, message, **kwargs)
+
     def error(self, message: str, exc: Optional[Exception] = None, **kwargs: Any) -> None:
         """Log an error message, optionally with exception details.
 
@@ -226,4 +257,6 @@ logger = NibLogger()
 debug = logger.debug
 info = logger.info
 warn = logger.warn
+warning = logger.warning  # Alias for Python logging compatibility
+success = logger.success
 error = logger.error

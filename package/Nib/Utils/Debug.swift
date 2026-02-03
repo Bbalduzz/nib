@@ -29,7 +29,7 @@ enum LogLevel: Int, Comparable {
 final class LogConfig {
     static let shared = LogConfig()
 
-    var minLevel: LogLevel = .info
+    var minLevel: LogLevel = .debug
     var fileEnabled: Bool = true
     var consoleEnabled: Bool = false  // Disabled by default for Swift (uses file)
 
@@ -61,19 +61,22 @@ final class LogConfig {
 final class Logger {
     static let shared = Logger()
 
-    private let dateFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
         return formatter
     }()
 
     private init() {}
 
-    private func log(_ level: LogLevel, _ message: String, file: String = #file, function: String = #function) {
+    private func log(_ level: LogLevel, _ message: String, file: String = #file, function: String = #function, line lineNum: Int = #line) {
         guard level >= LogConfig.shared.minLevel else { return }
 
         let timestamp = dateFormatter.string(from: Date())
-        let line = "[\(timestamp)] [\(level.name)] [Swift] \(message)\n"
+        let levelName = level.name.padding(toLength: 8, withPad: " ", startingAt: 0)
+        let fileName = (file as NSString).lastPathComponent.replacingOccurrences(of: ".swift", with: "")
+        let location = "\(fileName):\(function):\(lineNum)"
+        let line = "\(timestamp) | \(levelName) | swift  | \(location) - \(message)\n"
 
         // Write to file
         if LogConfig.shared.fileEnabled {
@@ -95,20 +98,20 @@ final class Logger {
         }
     }
 
-    func debug(_ message: String, file: String = #file, function: String = #function) {
-        log(.debug, message, file: file, function: function)
+    func debug(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
+        log(.debug, message, file: file, function: function, line: line)
     }
 
-    func info(_ message: String, file: String = #file, function: String = #function) {
-        log(.info, message, file: file, function: function)
+    func info(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
+        log(.info, message, file: file, function: function, line: line)
     }
 
-    func warn(_ message: String, file: String = #file, function: String = #function) {
-        log(.warn, message, file: file, function: function)
+    func warn(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
+        log(.warn, message, file: file, function: function, line: line)
     }
 
-    func error(_ message: String, file: String = #file, function: String = #function) {
-        log(.error, message, file: file, function: function)
+    func error(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
+        log(.error, message, file: file, function: function, line: line)
     }
 }
 
@@ -118,9 +121,9 @@ final class Logger {
 let log = Logger.shared
 
 /// Legacy debugPrint - now routes through structured logger at DEBUG level
-func debugPrint(_ items: Any..., separator: String = " ", terminator: String = "") {
+func debugPrint(_ items: Any..., separator: String = " ", terminator: String = "", file: String = #file, function: String = #function, line: Int = #line) {
     let message = items.map { String(describing: $0) }.joined(separator: separator)
-    log.debug(message)
+    log.debug(message, file: file, function: function, line: line)
 }
 
 /// Clear the log file

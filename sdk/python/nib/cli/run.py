@@ -4,7 +4,6 @@ This module provides the `nib run` command which watches for file changes
 and automatically reloads the application while keeping the Swift runtime alive.
 """
 
-import logging
 import os
 import signal
 import subprocess
@@ -19,8 +18,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
 from ..core.connection import Connection
-
-logger = logging.getLogger("nib.run")
+from ..core.logging import logger
 
 
 # Directories to exclude from watching
@@ -275,7 +273,7 @@ class HotReloadRunner:
             elif app_class:
                 self._run_class_based(app_class)
             else:
-                logger.warning("No nib.run() call or App subclass found")
+                logger.warn("No nib.run() call or App subclass found")
 
         except SyntaxError as e:
             self._handle_syntax_error(e)
@@ -448,6 +446,10 @@ class HotReloadRunner:
                 # Check if runtime is still alive
                 if self._runtime_process and self._runtime_process.poll() is not None:
                     logger.info("Swift runtime exited")
+                    self._running = False
+                # Check if app requested quit
+                if self._current_app and not self._current_app._running:
+                    logger.info("App requested quit")
                     self._running = False
             except KeyboardInterrupt:
                 break
