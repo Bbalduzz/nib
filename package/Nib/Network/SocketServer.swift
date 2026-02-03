@@ -290,6 +290,7 @@ class SocketServer {
                 action: raw.payload?.action ?? "get",
                 key: raw.payload?.key,
                 value: raw.payload?.value,
+                valueJson: raw.payload?.valueJson,
                 prefix: raw.payload?.prefix,
                 requestId: raw.payload?.requestId
             )

@@ -103,6 +103,9 @@ def main(app):
         volume_value.content = settings.volume
         username_value.content = settings.username
 
+    # Update UI when settings are loaded from UserDefaults
+    settings.on_load = update_status
+
     app.settings = nib.SettingsPage(
         title="Preferences",
         width=450,

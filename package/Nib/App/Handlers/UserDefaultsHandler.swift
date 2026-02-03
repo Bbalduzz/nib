@@ -5,6 +5,19 @@ struct UserDefaultsHandler {
     /// Background queue for UserDefaults operations to avoid blocking the main thread
     private static let queue = DispatchQueue(label: "nib.userdefaults", qos: .userInitiated)
 
+    /// Get the UserDefaults instance for the current app.
+    /// Uses NIB_BUNDLE_ID env var (dev mode) or Bundle.main.bundleIdentifier (bundled mode).
+    private static func getDefaults() -> UserDefaults {
+        // In dev mode, NIB_BUNDLE_ID is passed from Python
+        // In bundled mode, use the app's actual bundle identifier
+        let bundleId = ProcessInfo.processInfo.environment["NIB_BUNDLE_ID"]
+            ?? Bundle.main.bundleIdentifier
+            ?? "com.nib.app"
+
+        // Use suite name to ensure each app has its own storage
+        return UserDefaults(suiteName: bundleId) ?? UserDefaults.standard
+    }
+
     static func handle(_ payload: NibMessage.UserDefaultsPayload, sendEvent: @escaping (String, String) -> Void) {
         // Handle on background queue to avoid blocking UI
         queue.async {
@@ -13,7 +26,7 @@ struct UserDefaultsHandler {
     }
 
     private static func handleSync(_ payload: NibMessage.UserDefaultsPayload, sendEvent: @escaping (String, String) -> Void) {
-        let defaults = UserDefaults.standard
+        let defaults = getDefaults()
         let requestId = payload.requestId ?? ""
 
         switch payload.action {
@@ -32,12 +45,24 @@ struct UserDefaultsHandler {
                 debugPrint("UserDefaults set: key required")
                 return
             }
-            if let value = payload.value?.value {
-                defaults.set(value, forKey: key)
-                debugPrint("UserDefaults set:", key, "=", value)
+            // Prefer valueJson (JSON-encoded string) over value (AnyCodable, unreliable with MessagePack)
+            if let jsonString = payload.valueJson {
+                if let jsonData = jsonString.data(using: .utf8),
+                   let jsonValue = try? JSONSerialization.jsonObject(with: jsonData, options: .fragmentsAllowed) {
+                    defaults.set(jsonValue, forKey: key)
+                    debugPrint("UserDefaults set:", key, "=", jsonValue)
+                } else {
+                    // If JSON parsing fails, store as string
+                    defaults.set(jsonString, forKey: key)
+                    debugPrint("UserDefaults set (string):", key, "=", jsonString)
+                }
+            } else if let anyCodable = payload.value {
+                // Fallback to legacy AnyCodable
+                defaults.set(anyCodable.value, forKey: key)
+                debugPrint("UserDefaults set (legacy):", key, "=", anyCodable.value)
             } else {
                 defaults.removeObject(forKey: key)
-                debugPrint("UserDefaults set nil for:", key)
+                debugPrint("UserDefaults removed:", key)
             }
 
         case "remove":
@@ -49,10 +74,12 @@ struct UserDefaultsHandler {
             debugPrint("UserDefaults removed:", key)
 
         case "clear":
-            // Clear all keys with the app's bundle identifier prefix
-            let domain = Bundle.main.bundleIdentifier ?? "nib"
-            defaults.removePersistentDomain(forName: domain)
-            debugPrint("UserDefaults cleared for domain:", domain)
+            // Clear all keys for this app's UserDefaults suite
+            let bundleId = ProcessInfo.processInfo.environment["NIB_BUNDLE_ID"]
+                ?? Bundle.main.bundleIdentifier
+                ?? "com.nib.app"
+            defaults.removePersistentDomain(forName: bundleId)
+            debugPrint("UserDefaults cleared for domain:", bundleId)
 
         case "containsKey":
             guard let key = payload.key else {

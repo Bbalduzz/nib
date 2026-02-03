@@ -167,7 +167,8 @@ enum NibMessage {
     struct UserDefaultsPayload: Codable {
         let action: String  // "get", "set", "remove", "clear", "containsKey", "getKeys"
         let key: String?
-        let value: AnyCodable?
+        let value: AnyCodable?  // Legacy, may not work with MessagePack
+        let valueJson: String?  // JSON-encoded value (preferred for set operations)
         let prefix: String?
         let requestId: String?
     }
@@ -478,6 +479,7 @@ struct RawMessage: Codable {
         // For userDefaults
         let key: String?
         let value: AnyCodable?
+        let valueJson: String?  // JSON-encoded value (preferred)
         let prefix: String?
         // For service
         let service: String?
@@ -639,6 +641,7 @@ extension NibMessage {
                 action: action,
                 key: raw.payload?.key,
                 value: raw.payload?.value,
+                valueJson: raw.payload?.valueJson,
                 prefix: raw.payload?.prefix,
                 requestId: raw.payload?.requestId
             )

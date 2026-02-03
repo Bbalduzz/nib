@@ -222,9 +222,11 @@ class App:
         self,
         title: Optional[str] = None,
         icon: Optional[Union[str, "SFSymbol"]] = None,
+        identifier: Optional[str] = None,
     ):
         self._title = title
         self._icon: Optional[Union[str, "SFSymbol"]] = icon  # Keep full object for serialization
+        self._identifier = identifier  # Bundle identifier for UserDefaults
         self._root_view: Optional[View] = None
         self._show_quit_item = False
         self._width: Optional[float] = None
@@ -512,6 +514,9 @@ class App:
         self._settings = settings
         if self._connection:
             settings._set_connection(self._connection)
+            # Wait for settings to load from UserDefaults before returning
+            # This ensures persisted values are available when user code reads settings
+            settings.wait_for_load(timeout=2.0)
 
     def open_settings(self) -> None:
         """Open the settings window.
@@ -653,6 +658,25 @@ class App:
         # Set app reference on icon if it's a View
         if hasattr(value, "_set_app"):
             value._set_app(self)
+
+    @property
+    def identifier(self) -> str:
+        """Get the app bundle identifier (used for UserDefaults storage).
+
+        If not explicitly set, defaults to 'com.nib.<normalized_title>'.
+        """
+        if self._identifier:
+            return self._identifier
+        # Derive from title
+        if self._title:
+            normalized = self._title.lower().replace(" ", "-").replace("_", "-")
+            return f"com.nib.{normalized}"
+        return "com.nib.app"
+
+    @identifier.setter
+    def identifier(self, value: str) -> None:
+        """Set the app bundle identifier."""
+        self._identifier = value
 
     def _serialize_icon(self) -> Optional[Union[str, dict]]:
         """Serialize app icon to string or config dict for Swift."""
@@ -991,9 +1015,10 @@ class App:
                     "  cd swift && swift build -c release"
                 )
 
-            # Launch runtime with socket path
+            # Launch runtime with socket path and bundle ID
             env = os.environ.copy()
             env["NIB_SOCKET"] = self._socket_path
+            env["NIB_BUNDLE_ID"] = self.identifier  # For UserDefaults storage
 
             self._runtime_process = subprocess.Popen(
                 [str(runtime_path)],
@@ -1017,6 +1042,8 @@ class App:
         # Register settings if already set
         if self._settings:
             self._settings._set_connection(self._connection)
+            # Wait for settings to load from UserDefaults
+            self._settings.wait_for_load(timeout=2.0)
 
         # Handle signals
         signal.signal(signal.SIGINT, self._signal_handler)

@@ -413,12 +413,18 @@ class Connection:
             prefix: Key prefix filter (getKeys operation only).
             request_id: Unique ID for async response matching.
         """
+        import json
+        # Encode value as JSON string to avoid MessagePack/Swift Codable issues
+        value_json = None
+        if value is not None:
+            value_json = json.dumps(value)
+
         message = {
             "type": "userDefaults",
             "payload": {
                 "action": action,
                 "key": key,
-                "value": value,
+                "valueJson": value_json,  # JSON-encoded string (preferred)
                 "prefix": prefix,
                 "requestId": request_id,
             },

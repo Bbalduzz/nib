@@ -40,7 +40,7 @@ Example:
 
 import threading
 import uuid
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .connection import Connection
@@ -98,17 +98,19 @@ class Settings:
             settings.volume = 75         # Instant update + background save
     """
 
-    def __init__(self, defaults: Dict[str, Any]):
+    def __init__(self, defaults: Dict[str, Any], on_load: Optional[Callable[[], None]] = None):
         """Initialize Settings with default values.
 
         Args:
             defaults: Dictionary mapping setting names to their default values.
+            on_load: Optional callback invoked when settings finish loading from UserDefaults.
         """
         object.__setattr__(self, "_defaults", defaults)
         object.__setattr__(self, "_cache", dict(defaults))
         object.__setattr__(self, "_connection", None)
         object.__setattr__(self, "_loaded", threading.Event())
         object.__setattr__(self, "_loading", False)
+        object.__setattr__(self, "_on_load", on_load)
 
     def _set_connection(self, connection: "Connection") -> None:
         """Set the connection for persistence operations.
@@ -119,9 +121,25 @@ class Settings:
             connection: The Connection instance for Swift communication.
         """
         object.__setattr__(self, "_connection", connection)
-        # Don't auto-load here - it causes race conditions during startup.
-        # Loading will happen on first access if needed, or can be triggered
-        # manually with load() method.
+        # Trigger load when connection becomes available
+        if connection is not None:
+            self._load_initial()
+
+    def _ensure_loaded(self) -> None:
+        """Ensure settings have been loaded from UserDefaults.
+
+        Called automatically on first settings access. Uses lazy loading
+        to avoid race conditions during startup.
+        """
+        if object.__getattribute__(self, "_loaded").is_set():
+            return  # Already loaded
+        if object.__getattribute__(self, "_loading"):
+            return  # Load in progress
+        connection = object.__getattribute__(self, "_connection")
+        if not connection:
+            return  # No connection yet, use defaults
+
+        self._load_initial()
 
     def _load_initial(self) -> None:
         """Load saved values from UserDefaults.
@@ -151,6 +169,13 @@ class Settings:
                     pass  # Use default on error
             object.__getattribute__(self, "_loaded").set()
             object.__setattr__(self, "_loading", False)
+            # Call on_load callback if provided
+            on_load = object.__getattribute__(self, "_on_load")
+            if on_load:
+                try:
+                    on_load()
+                except Exception:
+                    pass  # Don't crash on callback errors
 
         thread = threading.Thread(target=load_settings, daemon=True)
         thread.start()
@@ -187,7 +212,6 @@ class Settings:
         """
         connection = object.__getattribute__(self, "_connection")
         if connection:
-            # Use send_user_defaults which is fire-and-forget for "set" action
             connection.send_user_defaults(
                 action="set",
                 key=key,
@@ -198,18 +222,27 @@ class Settings:
         """Get a setting value from the cache.
 
         Provides instant access to settings via dot notation.
+        Triggers lazy loading from UserDefaults on first access.
 
         Args:
             name: The setting name.
 
         Returns:
-            The setting value from cache.
+            The setting value from cache (or persisted value after load).
 
         Raises:
             AttributeError: If the setting is not defined.
         """
         if name.startswith("_"):
             return object.__getattribute__(self, name)
+
+        # Check if this is a property on the class (like on_load)
+        cls_attr = getattr(type(self), name, None)
+        if isinstance(cls_attr, property):
+            return cls_attr.fget(self)
+
+        # Trigger load on first access
+        self._ensure_loaded()
 
         cache = object.__getattribute__(self, "_cache")
         if name in cache:
@@ -229,6 +262,12 @@ class Settings:
         """
         if name.startswith("_"):
             object.__setattr__(self, name, value)
+            return
+
+        # Check if this is a property on the class (like on_load)
+        cls_attr = getattr(type(self), name, None)
+        if isinstance(cls_attr, property):
+            cls_attr.fset(self, value)
             return
 
         cache = object.__getattribute__(self, "_cache")
@@ -277,6 +316,29 @@ class Settings:
         loaded = object.__getattribute__(self, "_loaded")
         return loaded.wait(timeout=timeout)
 
+    def load(self, blocking: bool = False, timeout: float = 2.0) -> None:
+        """Load settings from UserDefaults.
+
+        Triggers loading of persisted values from UserDefaults.
+        This is called automatically on first settings access, but
+        can be called explicitly for more control.
+
+        Args:
+            blocking: If True, wait for load to complete before returning.
+            timeout: Maximum wait time in seconds if blocking.
+
+        Example:
+            Explicit blocking load::
+
+                settings = nib.Settings({"theme": "light"})
+                app.register_settings(settings)
+                settings.load(blocking=True)  # Wait for persisted values
+                print(settings.theme)  # Guaranteed to be persisted value
+        """
+        self._ensure_loaded()
+        if blocking:
+            self.wait_for_load(timeout=timeout)
+
     def to_dict(self) -> Dict[str, Any]:
         """Get all settings as a dictionary.
 
@@ -303,3 +365,34 @@ class Settings:
             for key, value in defaults.items():
                 cache[key] = value
                 self._persist_async(key, value)
+
+    @property
+    def on_load(self) -> Optional[Callable[[], None]]:
+        """Get the on_load callback."""
+        return object.__getattribute__(self, "_on_load")
+
+    @on_load.setter
+    def on_load(self, callback: Optional[Callable[[], None]]) -> None:
+        """Set the on_load callback.
+
+        If settings have already loaded, the callback is invoked immediately.
+
+        Args:
+            callback: Function to call when settings finish loading.
+
+        Example:
+            settings = nib.Settings({"theme": "light"})
+            app.register_settings(settings)
+
+            def update_ui():
+                theme_label.content = settings.theme
+
+            settings.on_load = update_ui  # Called when loading completes
+        """
+        object.__setattr__(self, "_on_load", callback)
+        # If already loaded, call immediately
+        if callback and object.__getattribute__(self, "_loaded").is_set():
+            try:
+                callback()
+            except Exception:
+                pass
