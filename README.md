@@ -14,7 +14,7 @@
 
 
 ## Example
-> <p align="right"> <img width="40%" src="media/demo-app.png"/> <br> <img width="40%" src="media/demo-right-click.png"/> </p>
+<img width="40%" src="media/demo-column.png" align="right"/>
         
 ```python
 import nib
