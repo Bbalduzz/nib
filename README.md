@@ -1,29 +1,67 @@
-# Nib
+<h1 align="center">
+  <span>
+      <img width="8%" align="center" src="media/nib-logo-white.svg" alt="logo">
+      <p>nib</p>
+  </span>
+</h1>
 
-Build native macOS menu bar apps in Python.
+<p align="center">
+  <b>Build native macOS menu bar apps in Python.</b>
+</p>
+<p align="center">
+  Write your app logic in Python with a declarative, SwiftUI-inspired API. Nib compiles to a native macOS app with real SwiftUI rendering.
+</p>
 
-Write your app logic in Python with a declarative, SwiftUI-inspired API. Nib compiles to a native macOS app with real SwiftUI rendering—no Electron, no web views.
 
 ## Example
 
+<table>
+  <tr>
+    <td valign="top">
+        
 ```python
 import nib
 
 def main(app: nib.App):
-    app.title = "Counter"
-    app.icon = nib.SFSymbol("number.circle.fill")
+    app.icon = nib.SFSymbol(
+        "apple.meditate",
+        rendering_mode=nib.SymbolRenderingMode.HIERARCHICAL
+    )
+    app.title = "Your Nib app"
+    app.menu = [
+        nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
+    ]
 
-    count = nib.Text("0", font=nib.Font.LARGE_TITLE)
+    count = nib.Text("0", font=nib.Font.TITLE2)
+
+    def increment():
+        count.content = str(int(count.content) + 1)
+
+    def decrement():
+        count.content = str(int(count.content) - 1)
 
     app.build(
-        nib.VStack([
-            count,
-            nib.Button("Add", action=lambda: setattr(count, "content", str(int(count.content) + 1))),
-        ], spacing=12, padding=20)
+        nib.HStack(
+            controls=[
+                nib.Button(
+                    content=nib.SFSymbol("minus"),
+                    action=decrement
+                ),
+                count,
+                nib.Button(
+                    content=nib.SFSymbol("plus"),
+                    action=increment
+                ),
+            ]
+        )
     )
 
 nib.run(main)
 ```
+</td>
+    <td valign="top"><img width="100%" align="center" src="media/demo.png" alt="logo"></td>
+  </tr>
+</table>
 
 ## Why Nib?
 
