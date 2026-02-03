@@ -7,6 +7,21 @@ def main(app: nib.App):
     )
     app.title = "Your Nib app"
     app.menu = [
+        nib.MenuItem(
+            content=nib.VStack(
+                controls=[
+                    nib.Text("Custom Item"),
+                    nib.Text(
+                        "You can place any control you want!",
+                        font=nib.Font.CAPTION,
+                        foreground_color=nib.Color.WHITE.with_opacity(0.5),
+                    ),
+                ],
+                alignment=nib.Alignment.LEADING,
+            ),
+            height=35,
+        ),
+        nib.MenuDivider(),
         nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
     ]
 

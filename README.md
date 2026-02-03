@@ -14,21 +14,32 @@
 
 
 ## Example
-
-<table>
-  <tr>
-    <td valign="top">
+> <p align="right"> <img width="40%" src="media/demo-app.png"/> <br> <img width="40%" src="media/demo-right-click.png"/> </p>
         
 ```python
 import nib
 
 def main(app: nib.App):
     app.icon = nib.SFSymbol(
-        "apple.meditate",
-        rendering_mode=nib.SymbolRenderingMode.HIERARCHICAL
+        "apple.meditate", rendering_mode=nib.SymbolRenderingMode.HIERARCHICAL
     )
     app.title = "Your Nib app"
     app.menu = [
+        nib.MenuItem(
+            content=nib.VStack(
+                controls=[
+                    nib.Text("Custom Item"),
+                    nib.Text(
+                        "You can place any control you want!",
+                        font=nib.Font.CAPTION,
+                        foreground_color=nib.Color.WHITE.with_opacity(0.5),
+                    ),
+                ],
+                alignment=nib.Alignment.LEADING,
+            ),
+            height=35,
+        ),
+        nib.MenuDivider(),
         nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
     ]
 
@@ -36,7 +47,6 @@ def main(app: nib.App):
 
     def increment():
         count.content = str(int(count.content) + 1)
-
     def decrement():
         count.content = str(int(count.content) - 1)
 
@@ -44,7 +54,7 @@ def main(app: nib.App):
         nib.HStack(
             controls=[
                 nib.Button(
-                    content=nib.SFSymbol("minus"),
+                    content=nib.SFSymbol("minus"), 
                     action=decrement
                 ),
                 count,
@@ -58,10 +68,6 @@ def main(app: nib.App):
 
 nib.run(main)
 ```
-</td>
-    <td valign="top"><img width="100%" align="center" src="media/demo.png" alt="logo"></td>
-  </tr>
-</table>
 
 ## Why Nib?
 
