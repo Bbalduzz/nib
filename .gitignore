@@ -10,3 +10,4 @@ examples/tests/*/dist/
 *.pyc
 __pycache__/
 media/demo.mov
+architecture.md

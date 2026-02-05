@@ -70,6 +70,9 @@ nib.run(main)
 ```
 
 ## Why Nib?
+Nib was born to fill a void in the Python ecosystem. Until now, the only way to create native macOS status bar apps was [rumps](https://github.com/jaredks/rumps), great for very simple apps, but limited in system integration and customization, with restrictive layout options.
+
+Nib fills this gap:
 
 - **Native performance** — Real SwiftUI rendering, smooth 60fps animations
 - **Pythonic API** — Declarative syntax that feels natural, not a Swift wrapper
@@ -78,20 +81,9 @@ nib.run(main)
 - **Build & distribute** — Compile to a standalone `.app` bundle with `nib build`
 
 ## How It Works
+<img width="40%" src="media/architecture.svg" align="right"/>
 
-```
-┌─────────────────┐                        ┌─────────────────┐
-│   Python App    │   Unix Socket + MsgPack│  Swift Runtime  │
-│                 │ ◄─────────────────────►│                 │
-│  Your code      │                        │  SwiftUI        │
-│  View tree      │        render ───────► │  Status bar     │
-│  Event handlers │ ◄─────── events        │  Native APIs    │
-└─────────────────┘                        └─────────────────┘
-```
-
-Your Python code defines the UI as a tree of views. Nib serializes this tree and sends it to a Swift runtime process that renders native SwiftUI. User interactions flow back as events, triggering your Python callbacks.
-
-The result: you write Python, users see a native Mac app.
+You write your UI in Python. Nib serializes the view tree, sends it to a Swift runtime over a Unix socket, and renders native SwiftUI. User interactions flow back as events to your Python code.
 
 ## Features
 
@@ -118,7 +110,7 @@ pip install nib
 Or build from source:
 
 ```bash
-git clone https://github.com/nicebyte/nib.git
+git clone https://github.com/Bbalduzz/nib.git
 cd nib
 make install
 ```
@@ -132,9 +124,51 @@ cd myapp
 
 # Run in development mode (hot reload)
 nib run main.py
+```
 
-# Build a distributable .app
-nib build
+## Building
+
+Once you are satisfied with your project, nib lets you compile it into a standalone macOS `.app` bundle:
+
+```bash
+nib build main.py
+```
+
+The output is a self-contained app in `dist/`, it bundles a portable Python runtime, your code, and all dependencies. No Python installation needed on the target machine.
+
+### Build options
+
+| Flag | Description |
+|------|-------------|
+| `--native` | Compile Python to native `.so` modules via Cython (requires `pip install cython`) |
+| `--obfuscate` | Strip debug info from `.pyc` bytecode (function names, filenames, line numbers) |
+| `--no-compile` | Keep `.py` source files instead of compiling to `.pyc` |
+| `--icon icon.png` | Custom app icon (`.png` or `.icns`) |
+| `--name "My App"` | Override the app display name |
+| `--arch arm64` | Target architecture (`arm64` or `x86_64`) |
+
+```bash
+# Native compilation — .py files become .so shared libraries
+nib build main.py --native
+
+# Obfuscated bytecode
+nib build main.py --obfuscate
+
+# Custom name and icon
+nib build main.py --name "My App" --icon assets/icon.png
+```
+
+Build options can also be set in `pyproject.toml`:
+
+```toml
+[tool.nib]
+entry = "src/main.py"
+
+[tool.nib.build]
+name = "My App"
+icon = "assets/icon.png"
+identifier = "com.example.myapp"
+native = true
 ```
 
 ## License

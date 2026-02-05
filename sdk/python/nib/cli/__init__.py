@@ -266,6 +266,11 @@ def main() -> int:
         action="store_true",
         help="Apply real obfuscation via pyc-zipper (implies compilation)",
     )
+    build_parser.add_argument(
+        "--native",
+        action="store_true",
+        help="Compile Python to native .so modules with Cython (requires cython)",
+    )
 
     # Run command
     run_parser = subparsers.add_parser(
@@ -353,9 +358,20 @@ def main() -> int:
         # Obfuscation setting (default: False, can be enabled via CLI or config)
         obfuscate = args.obfuscate or build_config.get("obfuscate", False)
 
+        # Native compilation setting (default: False)
+        native = args.native or build_config.get("native", False)
+
         # Validate: can't obfuscate without compiling
         if obfuscate and no_compile:
             logger.error("Cannot use --obfuscate with --no-compile")
+            return 1
+
+        # Validate: native is incompatible with no-compile and obfuscate
+        if native and no_compile:
+            logger.error("Cannot use --native with --no-compile")
+            return 1
+        if native and obfuscate:
+            logger.error("Cannot use --native with --obfuscate (native code is already opaque)")
             return 1
 
         return build_app(
@@ -374,6 +390,7 @@ def main() -> int:
             launch_at_login=launch_at_login,
             no_compile=no_compile,
             obfuscate=obfuscate,
+            native=native,
         )
 
     elif args.command == "run":

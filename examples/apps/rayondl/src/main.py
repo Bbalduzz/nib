@@ -140,7 +140,7 @@ def main(app: nib.App):
             ),
             nib.ZStack(
                 controls=[
-                    nib.RoundedRectangle(
+                    nib.Rectangle(
                         fill=nib.Color.SECONDARY.with_opacity(0.1),
                         stroke_color=nib.Color.GRAY.with_opacity(0.3),
                         stroke_width=1,

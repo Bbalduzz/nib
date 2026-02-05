@@ -68,8 +68,8 @@ import urllib.request
 from pathlib import Path
 from typing import Literal, Optional
 
-from .deps import detect_imports, extract_metadata, resolve_packages
 from ..core.logging import logger
+from .deps import detect_imports, extract_metadata, resolve_packages
 
 # python-build-standalone configuration
 PBS_VERSION = "20241219"
@@ -193,7 +193,7 @@ def vendor_dependencies(
         vendor_dir: Directory to install packages to.
         packages: List of package names to install.
     """
-    core_deps = ["msgpack"] # used by nib so dep is mandatory
+    core_deps = ["msgpack"]  # used by nib so dep is mandatory
     all_packages = list(set(packages + core_deps))
 
     if not all_packages:
@@ -307,7 +307,6 @@ def cleanup_python_distribution(python_dir: Path) -> None:
             pass
 
 
-
 def compile_python_code(app_dir: Path) -> None:
     """Compile Python files to bytecode and remove source files.
 
@@ -374,6 +373,154 @@ def obfuscate_python_code(app_dir: Path) -> bool:
     return True
 
 
+def compile_python_native(app_dir: Path, python_dir: Path) -> bool:
+    """Compile Python files to native .so modules using Cython.
+
+    Converts .py files to C via Cython, then compiles to shared libraries
+    with clang, optimized for size (-Os). Files that fail Cython compilation
+    fall back to bytecode (.pyc).
+
+    Args:
+        app_dir: Path to the app directory containing Python files.
+        python_dir: Path to the bundled python-build-standalone directory.
+
+    Returns:
+        bool: True if compilation succeeded (at least partially), False on fatal error.
+    """
+    try:
+        from Cython.Compiler import Options as CythonGlobalOptions
+        from Cython.Compiler.Main import compile as cython_compile
+        from Cython.Compiler.Options import CompilationOptions
+    except ImportError:
+        logger.error(
+            "Cython is required for --native. Install with: pip install cython"
+        )
+        return False
+
+    import compileall
+    import platform
+
+    # Cython 3.x treats Python type hints as C type declarations by default,
+    # which breaks code using Union types (e.g. Color where str is hinted).
+    # Disable this via compiler directive.
+    compiler_directives = {"annotation_typing": False}
+
+    include_dir = python_dir / "include" / f"python{PYTHON_VERSION}"
+    if not include_dir.exists():
+        candidates = list((python_dir / "include").glob("python3.*"))
+        if candidates:
+            include_dir = candidates[0]
+        else:
+            logger.error(f"Python headers not found in {python_dir / 'include'}")
+            return False
+
+    python_bin = python_dir / "bin" / "python3"
+    try:
+        result = subprocess.run(
+            [
+                str(python_bin),
+                "-c",
+                "import importlib.machinery; print(importlib.machinery.EXTENSION_SUFFIXES[0])",
+            ],
+            capture_output=True,
+            text=True,
+            env={"PYTHONHOME": str(python_dir), "PATH": os.environ.get("PATH", "")},
+        )
+        so_suffix = result.stdout.strip()  # ".cpython-312-darwin.so"
+    except Exception:
+        so_suffix = f".cpython-{PYTHON_VERSION.replace('.', '')}-darwin.so"
+
+    machine = platform.machine()
+    arch = "arm64" if machine == "arm64" else "x86_64"
+    arch_flags = ["-arch", arch]
+
+    py_files = list(app_dir.rglob("*.py"))
+    if not py_files:
+        logger.warn("No .py files found to compile")
+        return True
+
+    # Handle main.py entry point: Swift runtime expects main.py or main.pyc,
+    # so we rename it to _nib_app.py, compile that to .so, and create a tiny
+    # main.py bootstrap that imports the compiled module.
+    main_py = app_dir / "main.py"
+    app_module = app_dir / "_nib_app.py"
+    if main_py.exists():
+        main_py.rename(app_module)
+        py_files = [app_module if f == main_py else f for f in py_files]
+
+    compiled = 0
+    fell_back = 0
+    total = len(py_files)
+
+    for i, py_file in enumerate(py_files, 1):
+        rel = py_file.relative_to(app_dir)
+        c_file = py_file.with_suffix(".c")
+        logger.progress(i, total, "Compiling")
+
+        # 1 - cythonize .py → .c
+        try:
+            options = CompilationOptions(defaults=None)
+            options.output_file = str(c_file)
+            options.language_level = 3
+            options.compiler_directives = compiler_directives
+            result = cython_compile(str(py_file), options)
+            if result.num_errors > 0:
+                raise RuntimeError(f"Cython reported {result.num_errors} error(s)")
+        except Exception as e:
+            logger.debug(f"Cython failed for {rel}, falling back to .pyc: {e}")
+            compileall.compile_file(str(py_file), optimize=2, quiet=1, legacy=True)
+            pyc_file = py_file.with_suffix(".pyc")
+            if pyc_file.exists():
+                py_file.unlink()
+            fell_back += 1
+            continue
+
+        if py_file.name == "__init__.py":
+            so_file = py_file.parent / f"__init__{so_suffix}"
+        else:
+            so_file = py_file.with_suffix(so_suffix)
+
+        # 2 - compile .c → .so (single step with clang)
+        try:
+            result = subprocess.run(
+                [
+                    "clang",
+                    "-shared",
+                    "-Os",
+                    "-fPIC",
+                    "-undefined",
+                    "dynamic_lookup",
+                    *arch_flags,
+                    f"-I{include_dir}",
+                    "-o",
+                    str(so_file),
+                    str(c_file),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode != 0:
+                raise RuntimeError(result.stderr.strip())
+        except Exception as e:
+            logger.debug(f"clang failed for {rel}, falling back to .pyc: {e}")
+            c_file.unlink(missing_ok=True)
+            compileall.compile_file(str(py_file), optimize=2, quiet=1, legacy=True)
+            pyc_file = py_file.with_suffix(".pyc")
+            if pyc_file.exists():
+                py_file.unlink()
+            fell_back += 1
+            continue
+
+        py_file.unlink()
+        c_file.unlink()
+        compiled += 1
+
+    main_py.write_text("import _nib_app\n")
+
+    logger.info(f"Native compiled {compiled} file(s), {fell_back} fell back to .pyc")
+    return True
+
+
 def create_bundle_structure(output_dir: Path, name: str) -> dict[str, Path]:
     """Create the .app bundle directory structure.
 
@@ -398,7 +545,7 @@ def create_bundle_structure(output_dir: Path, name: str) -> dict[str, Path]:
     resources = contents / "Resources"
     app_dir = resources / "app"
     vendor_dir = app_dir / "vendor"
-    python_dir = resources / "python"  # Changed from macos to resources
+    python_dir = resources / "python"
 
     for d in [macos, resources, app_dir, vendor_dir, python_dir]:
         d.mkdir(parents=True, exist_ok=True)
@@ -529,31 +676,26 @@ def build_plist_dict(
         "CFBundleIdentifier": identifier,
         "CFBundleVersion": version,
         "CFBundleShortVersionString": version,
-        "CFBundleExecutable": name,  # Must match binary in MacOS/
+        "CFBundleExecutable": name,  # must match binary in MacOS/
         "CFBundlePackageType": "APPL",
         "CFBundleSignature": "????",
-        "LSUIElement": True,  # Menu bar app - no Dock icon
+        "LSUIElement": True,  # menu bar app - no Dock icon (maybe let user choose (?))
         "NSHighResolutionCapable": True,
         "LSMinimumSystemVersion": min_macos,
     }
 
-    # Register fonts directory if fonts are present
     if fonts_path:
         plist["ATSApplicationFontsPath"] = fonts_path
 
-    # Copyright
     if plist_options.get("copyright"):
         plist["NSHumanReadableCopyright"] = plist_options["copyright"]
 
-    # App category
     if plist_options.get("category"):
         plist["LSApplicationCategoryType"] = plist_options["category"]
 
-    # Notification style
     if plist_options.get("notification_style"):
         plist["NSUserNotificationAlertStyle"] = plist_options["notification_style"]
 
-    # Usage descriptions (privacy permissions)
     usage = plist_options.get("usage", {})
     if usage.get("microphone"):
         plist["NSMicrophoneUsageDescription"] = usage["microphone"]
@@ -564,7 +706,6 @@ def build_plist_dict(
     if usage.get("apple_events"):
         plist["NSAppleEventsUsageDescription"] = usage["apple_events"]
 
-    # URL schemes
     if plist_options.get("url_schemes"):
         plist["CFBundleURLTypes"] = [
             {
@@ -573,11 +714,9 @@ def build_plist_dict(
             }
         ]
 
-    # Custom plist keys
     custom = plist_options.get("custom", {})
     plist.update(custom)
 
-    # Launch at login
     if launch_at_login:
         plist["NibLaunchAtLogin"] = True
 
@@ -713,7 +852,15 @@ def codesign_app(app_path: Path) -> bool:
         main_signed = False
         if main_executable.exists():
             result = subprocess.run(
-                ["codesign", "--force", "--options", "runtime", "--sign", "-", str(main_executable)],
+                [
+                    "codesign",
+                    "--force",
+                    "--options",
+                    "runtime",
+                    "--sign",
+                    "-",
+                    str(main_executable),
+                ],
                 capture_output=True,
                 check=False,
             )
@@ -765,6 +912,7 @@ def build_app(
     launch_at_login: bool = False,
     no_compile: bool = False,
     obfuscate: bool = False,
+    native: bool = False,
 ) -> int:
     """Build a standalone macOS .app bundle from a Nib script.
 
@@ -791,13 +939,11 @@ def build_app(
     Returns:
         int: Exit code (0 = success, 1 = failure).
     """
-    # Validate script exists
     script = script.resolve()
     if not script.exists():
         logger.error(f"Script not found: {script}")
         return 1
 
-    # Find nib-runtime
     runtime = find_nib_runtime()
     if not runtime:
         logger.error("nib-runtime not found.")
@@ -807,16 +953,13 @@ def build_app(
 
     logger.info(f"Using nib-runtime: {runtime}")
 
-    # Extract metadata from script
     metadata = extract_metadata(script)
 
-    # Determine app name
     if not name:
         name = metadata.get("title") or script.stem.replace("_", " ").title()
 
     logger.info(f"Building: {name}")
 
-    # Determine target architecture
     if arch is None:
         arch = platform.machine()
         if arch == "arm64":
@@ -829,7 +972,6 @@ def build_app(
 
     logger.info(f"Target architecture: {arch}")
 
-    # Determine dependencies
     if explicit_deps:
         logger.info("Using dependencies from pyproject.toml...")
         packages = list(explicit_deps)
@@ -841,7 +983,6 @@ def build_app(
         imports = detect_imports(script, project_dir)
         packages = resolve_packages(imports)
 
-    # Add extra deps if provided
     if extra_deps:
         extra = [dep.strip() for dep in extra_deps.split(",") if dep.strip()]
         packages.extend(extra)
@@ -851,15 +992,12 @@ def build_app(
     else:
         logger.info("No third-party dependencies")
 
-    # Create output directory
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
-    # Create bundle structure
     logger.info("Creating bundle structure...")
     paths = create_bundle_structure(output, name)
 
-    # Download and extract Python
     logger.info("Setting up Python runtime...")
     try:
         python_archive = download_python_standalone(arch)
@@ -867,7 +1005,6 @@ def build_app(
         logger.error(str(e))
         return 1
 
-    # Extract to a temp location first, then move
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
         python_extracted = extract_python_standalone(python_archive, tmpdir)
@@ -879,16 +1016,13 @@ def build_app(
 
     python_bin = paths["python_dir"] / "bin" / "python3"
 
-    # Vendor dependencies
     logger.info("Installing dependencies...")
     vendor_dependencies(python_bin, paths["vendor_dir"], packages)
 
-    # Copy user code
-    logger.info("Copying application code...")
+    logger.info("Copying application code...")  # user code
     main_dest = paths["app_dir"] / "main.py"
     shutil.copy2(script, main_dest)
 
-    # Copy any sibling Python files and packages
     script_dir = script.parent
     for item in script_dir.iterdir():
         if item == script:
@@ -896,11 +1030,10 @@ def build_app(
         if item.name.startswith((".", "__")):
             continue
         if item.name == "assets":
-            continue  # Assets are handled separately
+            continue
         if item.is_file() and item.suffix == ".py":
             shutil.copy2(item, paths["app_dir"] / item.name)
         elif item.is_dir():
-            # Copy if it's a package (__init__.py) or contains any Python files
             is_package = (item / "__init__.py").exists()
             has_py_files = any(item.glob("*.py"))
             if is_package or has_py_files:
@@ -911,7 +1044,6 @@ def build_app(
                     item, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
                 )
 
-    # Copy assets
     assets_src = None
     for assets_path in [
         script_dir / "assets",
@@ -922,7 +1054,7 @@ def build_app(
             assets_src = assets_path
             break
 
-    # Track fonts path for Info.plist registration
+    # fonts path for Info.plist registration
     fonts_plist_path = None
 
     if assets_src:
@@ -930,12 +1062,8 @@ def build_app(
         shutil.copytree(assets_src, assets_dest, dirs_exist_ok=True)
         logger.info(f"Copied assets from {assets_src}")
 
-        # Detect fonts in assets for Info.plist registration
         fonts = detect_fonts_in_assets(assets_dest)
         if fonts:
-            # Find the common font directory
-            # If all fonts are in assets/fonts/, use "assets/fonts"
-            # Otherwise use "assets" as the base
             font_dirs = set()
             for font in fonts:
                 font_path = Path(font)
@@ -949,23 +1077,27 @@ def build_app(
 
             logger.info(f"Registered {len(fonts)} font(s) in {fonts_plist_path}")
 
-    # Compile and/or obfuscate Python code
+    # compile (native .so, bytecode .pyc, or keep source)
     if not no_compile:
-        logger.info("Compiling Python bytecode...")
-        compile_python_code(paths["app_dir"])
+        if native:
+            logger.info("Compiling Python to native code with Cython...")
+            if not compile_python_native(paths["app_dir"], paths["python_dir"]):
+                logger.warn("Native compilation failed, falling back to bytecode")
+                compile_python_code(paths["app_dir"])
+        else:
+            logger.info("Compiling Python bytecode...")
+            compile_python_code(paths["app_dir"])
 
-        if obfuscate:
-            logger.info("Obfuscating Python bytecode...")
-            if not obfuscate_python_code(paths["app_dir"]):
-                logger.warn("Obfuscation failed, continuing with compiled bytecode")
+            if obfuscate:
+                logger.info("Obfuscating Python bytecode...")
+                if not obfuscate_python_code(paths["app_dir"]):
+                    logger.warn("Obfuscation failed, continuing with compiled bytecode")
 
-    # Copy Swift runtime as main executable
     logger.info("Installing Swift runtime...")
     swift_dest = paths["macos"] / name
     shutil.copy2(runtime, swift_dest)
     os.chmod(swift_dest, 0o755)
 
-    # Handle icon
     icon_filename = None
     if icon:
         icon = icon.resolve()
@@ -976,7 +1108,6 @@ def build_app(
         else:
             logger.warn(f"Icon not found: {icon}")
 
-    # Generate Info.plist
     logger.info("Generating Info.plist...")
     plist = build_plist_dict(
         name=name,

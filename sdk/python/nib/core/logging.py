@@ -232,6 +232,45 @@ class NibLogger:
         """
         self._write(LogLevel.INFO, message, **kwargs)
 
+    def progress(self, current: int, total: int, message: str = "") -> None:
+        """Print an inline progress bar (overwrites current line).
+
+        Uses the standard log format prefix for consistency.
+
+        Args:
+            current: Current step (1-based).
+            total: Total steps.
+            message: Optional label to show before the bar.
+        """
+        self._ensure_initialized()
+        if not self._console_enabled or self._level > LogLevel.INFO:
+            return
+
+        import inspect
+        frame = inspect.currentframe()
+        if frame and frame.f_back:
+            f = frame.f_back
+            caller_info = (Path(f.f_code.co_filename).stem, f.f_code.co_name, f.f_lineno)
+        else:
+            caller_info = ("unknown", "unknown", 0)
+
+        timestamp = self._format_timestamp()
+        level_name = _LEVEL_NAMES[LogLevel.INFO].ljust(8)
+        module, func, lineno = caller_info
+        location = f"{module}:{func}:{lineno}"
+        prefix = f"{timestamp} | {level_name} | python | {location} - "
+
+        width = 25
+        filled = int(width * current / total) if total > 0 else 0
+        bar = "\u2588" * filled + "\u2591" * (width - filled)
+        pct = int(100 * current / total) if total > 0 else 0
+        line = f"\r{prefix}{message} [{bar}] {current}/{total} ({pct}%)"
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        if current >= total:
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+
     def error(self, message: str, exc: Optional[Exception] = None, **kwargs: Any) -> None:
         """Log an error message, optionally with exception details.
 
