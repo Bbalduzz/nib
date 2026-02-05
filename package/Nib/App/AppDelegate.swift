@@ -405,15 +405,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         let center = UNUserNotificationCenter.current()
         center.delegate = notificationService
-
-        // Request authorization for notifications
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error = error {
-                debugPrint("Notification authorization error: \(error)")
-            } else {
-                debugPrint("Notification authorization granted: \(granted)")
-            }
-        }
     }
 
     private func sendNotificationResponse(_ response: NotificationService.NotificationResponse) {
@@ -613,6 +604,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         case "launchAtLogin":
             log.info("Routing to LaunchAtLoginService: \(payload.action)")
             LaunchAtLoginService.handle(payload, sendResponse: sendResponse)
+        case "permissions":
+            PermissionService.handle(payload, sendResponse: sendResponse)
         default:
             debugPrint("Unknown service:", payload.service)
         }

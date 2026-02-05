@@ -648,6 +648,38 @@ def detect_fonts_in_assets(assets_dir: Path) -> list[str]:
     return fonts
 
 
+def detect_permission_usage(app_dir: Path) -> dict:
+    """Scan Python source files for Permission.* usage and return required plist keys.
+
+    Returns a dict mapping Info.plist key names to default usage description strings.
+    Only Camera and Microphone require plist keys; Notifications does not.
+    """
+    import re
+
+    pattern = re.compile(r"Permission\.(CAMERA|MICROPHONE)")
+    plist_map = {
+        "CAMERA": ("NSCameraUsageDescription", "This app requires camera access."),
+        "MICROPHONE": (
+            "NSMicrophoneUsageDescription",
+            "This app requires microphone access.",
+        ),
+    }
+
+    detected = {}
+    for py_file in app_dir.rglob("*.py"):
+        try:
+            content = py_file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for match in pattern.finditer(content):
+            perm = match.group(1)
+            if perm in plist_map:
+                key, desc = plist_map[perm]
+                detected[key] = desc
+
+    return detected
+
+
 def build_plist_dict(
     name: str,
     identifier: str,
@@ -1077,6 +1109,9 @@ def build_app(
 
             logger.info(f"Registered {len(fonts)} font(s) in {fonts_plist_path}")
 
+    # Auto-detect permission usage before compilation removes .py files
+    detected_permissions = detect_permission_usage(paths["app_dir"])
+
     # compile (native .so, bytecode .pyc, or keep source)
     if not no_compile:
         if native:
@@ -1121,6 +1156,12 @@ def build_app(
 
     if icon_filename:
         plist["CFBundleIconFile"] = icon_filename
+
+    # Inject auto-detected permission plist keys
+    for plist_key, default_desc in detected_permissions.items():
+        if plist_key not in plist:
+            plist[plist_key] = default_desc
+            logger.info(f"Auto-detected permission: {plist_key}")
 
     plist_path = paths["contents"] / "Info.plist"
     with open(plist_path, "wb") as f:

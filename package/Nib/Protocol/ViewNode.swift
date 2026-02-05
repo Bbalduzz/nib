@@ -363,6 +363,8 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         var tint: String?
 
         // TextEditor
+        var textEditorStyles: TextEditorStyles?
+        // Legacy TextEditor props (deprecated — use textEditorStyles)
         var lineLimit: Int?
         var scrollsDisabled: Bool?
         var contentBackgroundHidden: Bool?

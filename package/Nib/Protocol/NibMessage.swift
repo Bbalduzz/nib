@@ -401,6 +401,9 @@ struct NibServiceResponse: Codable {
         // LaunchAtLogin
         var enabled: Bool?
 
+        // Permissions
+        var permissionStatus: String?
+
         // Camera
         var devices: [CameraDevice]?
         var imageData: Data?
@@ -433,6 +436,7 @@ struct NibServiceResponse: Codable {
             case success, errorMessage
             case password, exists
             case enabled
+            case permissionStatus
             case devices, imageData, imageWidth, imageHeight, imageFormat, isStreaming, isStreamFrame
         }
     }

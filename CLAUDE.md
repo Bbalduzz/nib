@@ -2,69 +2,85 @@
 
 A Python framework for building native macOS menu bar applications using SwiftUI.
 
-## Overview
-
-Nib lets you write macOS menu bar apps in Python with a declarative, SwiftUI-inspired API. Python code communicates with a Swift runtime over Unix sockets using MessagePack serialization.
-
 ## Architecture
 
-```
-┌─────────────────┐     Unix Socket      ┌─────────────────┐
-│   Python App    │ ←───────────────────→│  Swift Runtime  │
-│                 │     (MessagePack)    │                 │
-│  - View tree    │                      │  - Status bar   │
-│  - Event logic  │                      │  - SwiftUI      │
-│  - State        │                      │  - Notifications│
-└─────────────────┘                      └─────────────────┘
-```
+Two processes, one socket. Python owns the logic, Swift owns the screen. They communicate over a Unix socket using MessagePack. In dev mode Python spawns Swift; in a built `.app` Swift spawns Python.
 
-### Communication Protocol
+- `render` — full view tree, sent once at startup
+- `patch` — only what changed, sent on every update
+- `event` — user interaction (tap, change, hover), sent from Swift to Python
 
-**Python → Swift messages:**
-- `render` - Full UI tree (initial render or major changes)
-- `patch` - Incremental updates (props, modifiers, insert, remove)
-- `notify` - System notifications
-- `quit` - Shutdown
-
-**Swift → Python messages:**
-- `event` - User interactions (tap, change:value)
+See `architecture.md` for a detailed overview.
 
 ## Project Structure
 
 ```
 nib/
-├── sdk/python/nib/       # Python SDK
+├── sdk/python/nib/           # Python SDK
 │   ├── core/
-│   │   ├── app.py        # App class, SFSymbol, run()
-│   │   ├── connection.py # Unix socket client, MessagePack
-│   │   └── diff.py       # View tree diffing
+│   │   ├── app.py            # App class, SFSymbol, MenuItem, run()
+│   │   ├── connection.py     # Unix socket client, MessagePack
+│   │   ├── diff.py           # View tree diffing, patch generation
+│   │   ├── settings.py       # Settings with UserDefaults persistence
+│   │   ├── user_defaults.py  # Low-level UserDefaults access
+│   │   ├── state.py          # Reactive State and Binding
+│   │   ├── logging.py        # Logger with progress bar support
+│   │   └── file_picker.py   # Open/save file dialogs
 │   ├── views/
-│   │   ├── base.py       # Base View class with modifiers
-│   │   ├── controls/     # Button, Text, TextField, Toggle, etc.
-│   │   ├── layout/       # VStack, HStack, ZStack, ScrollView, etc.
-│   │   └── shapes/       # Rectangle, Circle, Capsule, etc.
-│   └── types.py          # Color, Font, Animation, etc.
+│   │   ├── controls/         # Text, Button, TextField, Toggle, Slider, Picker,
+│   │   │                     # DatePicker, ColorPicker, Image, Video, Label, Link,
+│   │   │                     # ProgressView, Gauge, Markdown, Table, SecureField,
+│   │   │                     # TextEditor, Map, WebView, ShareLink, CameraPreview
+│   │   ├── layout/           # VStack, HStack, ZStack, ScrollView, List, Section,
+│   │   │                     # Form, Spacer, Divider, Group, NavigationStack,
+│   │   │                     # NavigationLink, DisclosureGroup, Grid, LazyVGrid, LazyHGrid
+│   │   ├── shapes/           # Rectangle, RoundedRectangle, Circle, Ellipse, Capsule
+│   │   ├── charts/           # Chart, LineMark, BarMark, AreaMark, PointMark,
+│   │   │                     # RuleMark, RectMark, SectorMark
+│   │   ├── effects/          # VisualEffectBlur
+│   │   ├── canvas.py         # Canvas (Core Graphics drawing)
+│   │   └── settings_page.py  # SettingsPage, SettingsTab
+│   ├── cli/
+│   │   ├── build.py          # nib build — .app bundling, compilation, signing
+│   │   ├── run.py            # nib run — dev mode with hot reload
+│   │   ├── create.py         # nib create — project scaffolding
+│   │   └── obfuscate.py      # Bytecode obfuscation
+│   ├── services/             # Battery, Connectivity, Screen, Keychain, Camera, LaunchAtLogin
+│   ├── notifications/        # Notification, NotificationManager, scheduling, actions
+│   ├── draw/                 # Canvas drawing primitives
+│   ├── modifiers/            # Layout, appearance, typography, effects
+│   └── types.py              # Color, Font, Animation, TextStyle, enums
 │
-├── package/Nib/          # Swift runtime (nib-runtime)
+├── package/Nib/              # Swift runtime
 │   ├── App/
-│   │   └── AppDelegate.swift    # Entry point, message routing
+│   │   ├── AppDelegate.swift       # Entry point, message routing, bundled mode
+│   │   ├── Handlers/               # ClipboardHandler, FileDialogHandler, UserDefaultsHandler
+│   │   ├── Managers/               # HotkeyManager
+│   │   └── Services/               # Battery, Camera, Connectivity, Keychain,
+│   │                               # LaunchAtLogin, Notification, Screen
+│   ├── Core/
+│   │   ├── Plugins/                # PluginLoader, PluginProtocol
+│   │   └── Registries/             # ViewBuilderRegistry, ModifierRegistry
 │   ├── Network/
-│   │   └── SocketServer.swift   # Unix socket server
+│   │   └── SocketServer.swift      # Unix socket server, MessagePack parsing
 │   ├── Protocol/
-│   │   ├── NibMessage.swift     # Message types
-│   │   └── ViewNode.swift       # View tree structure
+│   │   ├── NibMessage.swift        # Message types
+│   │   ├── ViewNode.swift          # View tree structure
+│   │   ├── ViewModifier.swift      # Modifier types
+│   │   ├── ViewProps.swift         # View property definitions
+│   │   ├── DrawCommand.swift       # Canvas drawing commands
+│   │   └── Types/                  # ChartTypes, LayoutTypes, MapTypes, etc.
 │   └── UI/
-│       ├── StatusBarController.swift  # Menu bar integration
-│       ├── ViewStore.swift            # Observable state
+│       ├── StatusBarController.swift       # Menu bar icon, popover, context menu
+│       ├── SettingsWindowController.swift  # Settings window
+│       ├── ViewStore.swift                 # Observable state for SwiftUI
+│       ├── FontManager.swift               # Font loading
 │       └── Rendering/
-│           ├── DynamicView.swift      # SwiftUI renderer
-│           ├── Builders/              # View builders
-│           └── Modifiers/             # Modifier appliers
+│           ├── DynamicView.swift     # Main SwiftUI renderer
+│           ├── Builders/             # 18 builder files (per view type)
+│           └── Modifiers/            # Appearance, layout, animation, transition, font
 │
-└── examples/             # Example apps
-    ├── showcase.py       # Feature showcase
-    ├── yt_downloader.py  # YouTube downloader
-    └── didyouknow.py     # Music info popover
+└── examples/
 ```
 
 ## Building
@@ -72,11 +88,10 @@ nib/
 ### Swift Runtime
 
 ```bash
-cd package
-swift build -c release
+cd package && swift build -c release
 ```
 
-The binary is at `package/.build/release/nib-runtime`.
+Binary: `package/.build/release/nib-runtime`
 
 ### Using Makefile
 
@@ -85,9 +100,18 @@ make build-runtime  # Build and copy runtime to SDK
 make install        # Build and install in dev mode
 ```
 
-### Python SDK
+## CLI
 
-No build step required. Just ensure the Swift runtime is built.
+```bash
+nib create myapp        # Scaffold a new project
+nib run main.py         # Dev mode with hot reload (-r for recursive watch)
+nib build main.py       # Build standalone .app bundle
+nib build --native      # Compile to native .so via Cython
+nib build --obfuscate   # Strip debug info from .pyc
+nib build --no-compile  # Keep .py source files
+```
+
+Build config can go in `pyproject.toml` under `[tool.nib]` and `[tool.nib.build]`.
 
 ## API
 
@@ -109,10 +133,7 @@ def main(app: nib.App):
 
     app.build(
         nib.VStack(
-            controls=[
-                counter,
-                nib.Button("Add", action=increment),
-            ],
+            controls=[counter, nib.Button("Add", action=increment)],
             spacing=8,
             padding=16,
         )
@@ -123,196 +144,73 @@ nib.run(main)
 
 ### Key Concepts
 
-**Views** - All UI elements inherit from `View`. Styling via constructor params (no method chaining):
+**Views** — All UI elements inherit from `View`. Styling via constructor params:
 
 ```python
-nib.Text(
-    "Hello",
-    font=nib.Font.title,
-    foreground_color=nib.Color.blue,
-    padding=16,
-)
+nib.Text("Hello", font=nib.Font.TITLE, foreground_color=nib.Color.BLUE, padding=16)
 ```
 
-**Layouts** - Use `controls=` parameter for children:
+**Layouts** — Use `controls=` for children:
 
 ```python
 nib.VStack(controls=[...], spacing=8)
-nib.HStack(controls=[...], alignment=nib.VerticalAlignment.top)
-nib.ZStack(controls=[...])
+nib.HStack(controls=[...], alignment=nib.VerticalAlignment.TOP)
 ```
 
-**Reactivity** - Mutate view properties to trigger re-renders:
+**Reactivity** — Mutate view properties to trigger re-renders:
 
 ```python
-text = nib.Text("Hello")
-text.content = "World"  # Triggers re-render
-
-field = nib.TextField(value="")
-field.value = "new value"  # Triggers re-render
+text.content = "Updated"  # Triggers diff + patch
 ```
 
-**Background views** - Any view can be a background:
+**Settings** — Persistent settings with UserDefaults:
 
 ```python
-nib.VStack(
-    controls=[...],
-    background=nib.RoundedRectangle(
-        corner_radius=10,
-        fill="#262626",
-        stroke_color="#383837",
-        stroke_width=1,
-    ),
-)
+settings = nib.Settings({"dark_mode": False, "volume": 50})
+app.register_settings(settings)
+settings.dark_mode = True  # Persists in background
 ```
 
-**Overlay views** - Any view can be an overlay (rendered on top):
-
-```python
-nib.VStack(
-    controls=[...],
-    overlay=nib.Circle(
-        stroke="#FF0000",
-        stroke_width=2,
-    ),
-)
-```
-
-**Notifications** - macOS system notifications:
-
-```python
-app.notify("Title", "Body text")
-app.notify(
-    title="Download Complete",
-    body="File saved",
-    subtitle="Downloader",
-    sound=True,
-)
-```
-
-**Right-click menu** - Menu bar context menu:
+**Context menu** — Right-click on status bar icon:
 
 ```python
 app.menu = [
     nib.MenuItem("Settings", action=open_settings, icon="gear"),
-    nib.MenuItem("Check for Updates", action=check_updates),
     nib.MenuDivider(),
     nib.MenuItem("Quit", action=app.quit),
 ]
 ```
 
-**Keyboard shortcuts** - Global hotkeys:
-
-```python
-app.on_hotkey("cmd+shift+n", show_window)
-
-@app.hotkey("cmd+k")
-def quick_action():
-    pass
-```
-
-**Clipboard** - Read/write system clipboard:
-
-```python
-app.clipboard = "Hello World"  # Write
-
-app.get_clipboard(lambda text: print(f"Clipboard: {text}"))  # Async read
-```
-
-**File dialogs** - Open/save file pickers:
-
-```python
-def on_files(paths: list[str]):
-    print(f"Selected: {paths}")
-
-app.open_file_dialog(
-    callback=on_files,
-    title="Select files",
-    types=["txt", "md"],
-    multiple=True,
-)
-
-app.save_file_dialog(
-    callback=lambda path: print(f"Save to: {path}"),
-    title="Save as",
-    default_name="untitled.txt",
-)
-```
-
-**Drag and drop** - Accept dropped files on views:
-
-```python
-def on_drop(files: list[str]):
-    print(f"Dropped: {files}")
-
-nib.VStack(
-    controls=[...],
-    on_drop=on_drop,
-)
-```
-
-## Available Views
-
-### Layout
-- `VStack`, `HStack`, `ZStack`
-- `ScrollView`, `List`, `Section`
-- `Spacer`, `Divider`, `Group`
-- `NavigationStack`, `NavigationLink`, `DisclosureGroup`
-
-### Controls
-- `Text`, `TextField`, `SecureField`
-- `Button`, `Toggle`, `Slider`, `Stepper`
-- `Picker`, `DatePicker`, `ColorPicker`
-- `Image`, `Label`, `Link`
-- `ProgressView`
-
-### Shapes
-- `Rectangle`, `RoundedRectangle`
-- `Circle`, `Ellipse`, `Capsule`
-
-### Special
-- `SFSymbol` - Apple SF Symbols with weight, scale, rendering mode
+**Notifications** — `app.notify("Title", "Body")`
+**Hotkeys** — `app.on_hotkey("cmd+shift+n", callback)`
+**Clipboard** — `app.clipboard = "text"` / `app.get_clipboard(callback)`
+**File dialogs** — `app.open_file_dialog(callback=..., types=["txt"])` / `app.save_file_dialog(...)`
+**Drag & drop** — `nib.VStack(controls=[...], on_drop=callback)`
 
 ## Modifiers (constructor params)
-
-All views support these modifiers:
 
 ```python
 # Layout
 width, height, min_width, min_height, max_width, max_height
-padding  # float or dict with top/bottom/leading/trailing/horizontal/vertical
+padding  # float or dict: {"top": 8, "horizontal": 16}
 
 # Appearance
-background  # Color or View
-foreground_color
-fill, stroke, stroke_width  # For shapes
-opacity
-corner_radius
-clip_shape  # "capsule", "circle", or shape View
+background, foreground_color, fill, stroke, stroke_width
+opacity, corner_radius, clip_shape
 
-# Shadow
+# Shadow & Border
 shadow_color, shadow_radius, shadow_x, shadow_y
-
-# Border
 border_color, border_width
 
 # Typography
-font  # Font.title, Font.system(size, weight), etc.
-font_weight
+font, font_weight
 
 # Animation
-animation  # Animation.spring(), Animation.easeInOut(0.3), etc.
-content_transition, transition
+animation, content_transition, transition
 
 # Transform
 scale, blend_mode
 ```
-
-## View IDs
-
-Views get position-based IDs during render (e.g., "0", "0.1", "0.1.2"). These are used for:
-- Event routing (tap, change)
-- Incremental updates (patching)
 
 ## Adding New Features
 
@@ -320,13 +218,13 @@ Views get position-based IDs during render (e.g., "0", "0.1", "0.1.2"). These ar
 
 1. **Python**: Create class in `sdk/python/nib/views/` inheriting from `View`
 2. **Swift**: Add case to `ViewNode.ViewType` enum
-3. **Swift**: Add builder in `DynamicView` or `Builders/`
+3. **Swift**: Add builder in `Rendering/Builders/`
 
 ### New Modifier
 
 1. **Python**: Add parameter to `View.__init__` and `_apply_modifiers`
 2. **Swift**: Add to `ViewNode.ViewModifier.ModifierType`
-3. **Swift**: Add applier in `Modifiers/`
+3. **Swift**: Add applier in `Rendering/Modifiers/`
 
 ### New Message Type
 
@@ -335,66 +233,22 @@ Views get position-based IDs during render (e.g., "0", "0.1", "0.1.2"). These ar
 3. **Swift**: Handle in `SocketServer.parseMessage`
 4. **Swift**: Process in `AppDelegate.handleMessage`
 
+### New System Service
+
+1. **Swift**: Create service in `App/Services/`
+2. **Swift**: Wire in `AppDelegate` message handler
+3. **Python**: Create module in `sdk/python/nib/services/`
+
 ## Swift Compilation Performance
 
-The Swift type checker can get stuck for hours on certain code patterns. Avoid these:
+The Swift type checker can get stuck on certain patterns. Avoid:
 
-### Patterns to Avoid
+- Repeated conditional `AnyView` wrapping (causes type explosion)
+- Recursive generic `@ViewBuilder` functions
 
-**1. Repeated `AnyView` wrapping in a loop:**
-```swift
-// BAD - exponential type complexity
-var view = AnyView(content)
-if condition1 { view = AnyView(view.modifier1()) }
-if condition2 { view = AnyView(view.modifier2()) }
-```
-
-**2. Recursive generic `@ViewBuilder` functions:**
-```swift
-// BAD - exponential nested types
-@ViewBuilder
-func apply<V: View>(to view: V, at index: Int) -> some View {
-    apply(to: view.modifier(), at: index + 1)
-}
-```
-
-### Correct Patterns
-
-**For conditional modifiers, use separate `@ViewBuilder` helpers:**
-```swift
-// GOOD
-content
-    .applyModifier1(condition1)
-    .applyModifier2(condition2)
-
-@ViewBuilder
-func applyModifier1(_ condition: Bool) -> some View {
-    if condition { self.modifier1() } else { self }
-}
-```
-
-**For dynamic modifier chains, use iterative `AnyView`:**
-```swift
-// GOOD - type erasure is appropriate here
-var result = AnyView(content)
-for modifier in modifiers {
-    result = AnyView(result.apply(modifier))
-}
-```
-
-The key insight: `AnyView` is bad when used conditionally in static code (causes type explosion), but fine for truly dynamic iteration where types can't be known at compile time.
-
-## Running Examples
-
-```bash
-cd examples
-python showcase.py
-python yt_downloader.py
-python didyouknow.py
-```
+Use `AnyView` only for truly dynamic iteration. For conditional modifiers, use separate `@ViewBuilder` helpers.
 
 ## Debugging
 
 Swift runtime logs to `/tmp/nib.log`. Use `debugPrint()` in Swift code.
-
 Python prints connection/render info to stdout.

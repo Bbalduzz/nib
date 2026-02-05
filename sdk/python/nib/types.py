@@ -280,6 +280,17 @@ class TextFieldStyle(str, Enum):
     squareBorder = "squareBorder"
 
 
+class EditorStyle(str, Enum):
+    """TextEditor visual styles matching SwiftUI TextEditorStyle (macOS 14+)."""
+
+    AUTOMATIC = "automatic"
+    PLAIN = "plain"
+
+    # Backwards-compatible aliases
+    automatic = "automatic"
+    plain = "plain"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Picker Enums
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1334,6 +1345,83 @@ TextStyle.CALLOUT = TextStyle(font=Font.CALLOUT)
 TextStyle.CAPTION = TextStyle(font=Font.CAPTION)
 TextStyle.CAPTION2 = TextStyle(font=Font.CAPTION2)
 TextStyle.FOOTNOTE = TextStyle(font=Font.FOOTNOTE)
+
+
+@dataclass
+class TextEditorStyle:
+    """Style configuration for TextEditor views.
+
+    Groups all TextEditor-specific styling into a single object.
+
+    Example:
+        nib.TextEditor(
+            text="",
+            style=nib.TextEditorStyle(
+                font=nib.Font.custom("Iosevka", size=14),
+                foreground_color=nib.Color.PRIMARY,
+                background_color=nib.Color(hex="#1E1E1E"),
+                line_spacing=6,
+                text_alignment=nib.Alignment.LEADING,
+            ),
+        )
+    """
+
+    # Typography
+    font: Optional[Font] = None
+    foreground_color: Optional[Union[str, "Color"]] = None
+
+    # Colors
+    background_color: Optional[Union[str, "Color"]] = None
+
+    # Layout
+    line_spacing: Optional[float] = None
+    text_alignment: Optional[Union["Alignment", str]] = None
+    line_limit: Optional[int] = None
+
+    # Behavior
+    autocorrection_disabled: bool = False
+    scrolls_disabled: bool = False
+
+    # macOS 14+ TextEditorStyle
+    editor_style: Optional[Union[EditorStyle, str]] = None
+
+    # macOS 13+ Find Navigator
+    find_navigator_enabled: bool = False
+
+    def to_dict(self) -> dict:
+        """Serialize the style for transmission to Swift."""
+        result = {}
+
+        if self.font is not None:
+            result["font"] = self.font.to_dict()
+        if self.foreground_color is not None:
+            result["foregroundColor"] = (
+                self.foreground_color.to_dict()
+                if isinstance(self.foreground_color, Color)
+                else self.foreground_color
+            )
+        if self.background_color is not None:
+            result["backgroundColor"] = (
+                self.background_color.to_dict()
+                if isinstance(self.background_color, Color)
+                else self.background_color
+            )
+        if self.line_spacing is not None:
+            result["lineSpacing"] = float(self.line_spacing)
+        if self.text_alignment is not None:
+            result["textAlignment"] = resolve_enum(self.text_alignment)
+        if self.line_limit is not None:
+            result["lineLimit"] = self.line_limit
+        if self.autocorrection_disabled:
+            result["autocorrectionDisabled"] = True
+        if self.scrolls_disabled:
+            result["scrollsDisabled"] = True
+        if self.editor_style is not None:
+            result["editorStyle"] = resolve_enum(self.editor_style)
+        if self.find_navigator_enabled:
+            result["findNavigatorEnabled"] = True
+
+        return result
 
 
 @dataclass

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Optional, Union
 from ..base import View
 
 if TYPE_CHECKING:
-    from ...types import Color, Font, TextStyle
+    from ...types import Color, Font, TextEditorStyle
 
 
 class TextEditor(View):
@@ -20,11 +20,12 @@ class TextEditor(View):
         text: Initial text content.
         placeholder: Placeholder text when empty (macOS 14+).
         on_change: Callback when text changes, receives new text.
-        style: TextStyle for font, color, and text decorations.
+        style: TextEditorStyle for comprehensive styling.
         font: Text font (alternative to style).
         foreground_color: Text color (alternative to style).
-        line_limit: Maximum number of lines (None for unlimited).
-        scrolls_disabled: Disable scrolling within the editor.
+        line_limit: Maximum number of lines (deprecated, use style).
+        scrolls_disabled: Disable scrolling (deprecated, use style).
+        content_background: Background color (deprecated, use style).
         **kwargs: Additional view modifiers.
 
     Example:
@@ -36,22 +37,18 @@ class TextEditor(View):
                 on_change=lambda text: print(f"Text: {text}"),
             )
 
-        Using TextStyle::
+        Using TextEditorStyle::
 
             nib.TextEditor(
                 text=content,
-                style=nib.TextStyle(
-                    font=nib.Font.system(14),
-                    color=nib.Color.PRIMARY,
-                    monospaced=True,
+                style=nib.TextEditorStyle(
+                    font=nib.Font.custom("Iosevka", size=14),
+                    foreground_color=nib.Color.PRIMARY,
+                    background_color=nib.Color(hex="#1E1E1E"),
+                    line_spacing=6,
+                    text_alignment=nib.Alignment.LEADING,
+                    editor_style=nib.EditorStyle.PLAIN,
                 ),
-            )
-
-        Using preset style::
-
-            nib.TextEditor(
-                text=content,
-                style=nib.TextStyle.BODY,
             )
     """
 
@@ -62,47 +59,27 @@ class TextEditor(View):
         text: str = "",
         placeholder: Optional[str] = None,
         on_change: Optional[Callable[[str], None]] = None,
-        style: Optional["TextStyle"] = None,
+        style: Optional["TextEditorStyle"] = None,
         font: Optional["Font"] = None,
         foreground_color: Optional[Union[str, "Color"]] = None,
+        # Legacy params (deprecated — use style instead)
         line_limit: Optional[int] = None,
         scrolls_disabled: bool = False,
         content_background: Optional[Union[str, "Color", bool]] = None,
         **kwargs,
     ):
-        """Initialize a TextEditor.
-
-        Args:
-            text: Initial text content.
-            placeholder: Placeholder text when empty (macOS 14+).
-            on_change: Callback when text changes.
-            style: TextStyle for font, color, and formatting.
-            font: Text font (alternative to style).
-            foreground_color: Text color (alternative to style).
-            line_limit: Maximum number of lines.
-            scrolls_disabled: Disable scrolling.
-            content_background: Background color for the text area.
-                - None: Use system default background
-                - False or "hidden": Hide the default background (transparent)
-                - Color/string: Use specified color as background
-            **kwargs: Additional view modifiers (including background for outer view).
-        """
         super().__init__(**kwargs)
         self._text = text
         self._placeholder = placeholder
         self._on_change = on_change
         self._style = style
-        self._line_limit = line_limit
-        self._scrolls_disabled = scrolls_disabled
-        self._content_background = content_background
+        self._font = font
+        self._foreground_color = foreground_color
 
-        # Style takes precedence, then individual font/color params
-        if style is not None:
-            self._font = style.font if style.font else font
-            self._foreground_color = style.color if style.color else foreground_color
-        else:
-            self._font = font
-            self._foreground_color = foreground_color
+        # Legacy params
+        self._legacy_line_limit = line_limit
+        self._legacy_scrolls_disabled = scrolls_disabled
+        self._legacy_content_background = content_background
 
     @property
     def text(self) -> str:
@@ -112,7 +89,7 @@ class TextEditor(View):
     @text.setter
     def text(self, val: str) -> None:
         self._text = val
-        self._mark_dirty()
+        self._trigger_update()
 
     @property
     def placeholder(self) -> Optional[str]:
@@ -122,7 +99,7 @@ class TextEditor(View):
     @placeholder.setter
     def placeholder(self, val: Optional[str]) -> None:
         self._placeholder = val
-        self._mark_dirty()
+        self._trigger_update()
 
     @property
     def on_change(self) -> Optional[Callable[[str], None]]:
@@ -134,96 +111,61 @@ class TextEditor(View):
         self._on_change = val
 
     @property
-    def style(self) -> Optional["TextStyle"]:
-        """Text style configuration."""
+    def style(self) -> Optional["TextEditorStyle"]:
+        """Text editor style configuration."""
         return self._style
 
     @style.setter
-    def style(self, val: Optional["TextStyle"]) -> None:
+    def style(self, val: Optional["TextEditorStyle"]) -> None:
         self._style = val
-        if val is not None:
-            if val.font:
-                self._font = val.font
-            if val.color:
-                self._foreground_color = val.color
-        self._mark_dirty()
-
-    @property
-    def line_limit(self) -> Optional[int]:
-        """Maximum number of lines."""
-        return self._line_limit
-
-    @line_limit.setter
-    def line_limit(self, val: Optional[int]) -> None:
-        self._line_limit = val
-        self._mark_dirty()
-
-    @property
-    def content_background(self) -> Optional[Union[str, "Color", bool]]:
-        """Content background color."""
-        return self._content_background
-
-    @content_background.setter
-    def content_background(self, val: Optional[Union[str, "Color", bool]]) -> None:
-        self._content_background = val
-        self._mark_dirty()
+        self._trigger_update()
 
     def _get_props(self) -> dict:
-        from ...types import Color
+        from ...types import Color, Font
 
         props = {
             "text": self._text,
         }
         if self._placeholder is not None:
             props["placeholder"] = self._placeholder
-        if self._line_limit is not None:
-            props["lineLimit"] = self._line_limit
-        if self._scrolls_disabled:
-            props["scrollsDisabled"] = True
 
-        # Handle content background
-        if self._content_background is not None:
-            if self._content_background is False or self._content_background == "hidden":
-                props["contentBackgroundHidden"] = True
-            elif isinstance(self._content_background, Color):
-                props["contentBackground"] = self._content_background.to_dict()
-            else:
-                props["contentBackground"] = self._content_background
+        # Build textEditorStyles from style + standalone params + legacy params
+        editor_styles = {}
 
-        # Include text styles from TextStyle
+        # Style object takes highest precedence
         if self._style is not None:
-            text_styles = {}
-            style_dict = self._style.to_dict()
-            # Copy relevant text style keys
-            for key in ["bold", "italic", "strikethrough", "strikethroughColor",
-                        "underline", "underlineColor", "monospaced", "monospacedDigit",
-                        "kerning", "tracking", "baselineOffset"]:
-                if key in style_dict:
-                    text_styles[key] = style_dict[key]
-            if text_styles:
-                props["textStyles"] = text_styles
+            editor_styles = self._style.to_dict()
+
+        # Standalone font/foreground_color (lower priority than style)
+        if self._font is not None and "font" not in editor_styles:
+            if isinstance(self._font, Font):
+                editor_styles["font"] = self._font.to_dict()
+            else:
+                editor_styles["font"] = {"fontName": self._font}
+
+        if self._foreground_color is not None and "foregroundColor" not in editor_styles:
+            if isinstance(self._foreground_color, Color):
+                editor_styles["foregroundColor"] = self._foreground_color.to_dict()
+            else:
+                editor_styles["foregroundColor"] = self._foreground_color
+
+        # Legacy params (lowest priority)
+        if self._legacy_line_limit is not None and "lineLimit" not in editor_styles:
+            editor_styles["lineLimit"] = self._legacy_line_limit
+        if self._legacy_scrolls_disabled and "scrollsDisabled" not in editor_styles:
+            editor_styles["scrollsDisabled"] = True
+        if self._legacy_content_background is not None and "backgroundColor" not in editor_styles:
+            if self._legacy_content_background is False or self._legacy_content_background == "hidden":
+                editor_styles["contentBackgroundHidden"] = True
+            elif isinstance(self._legacy_content_background, Color):
+                editor_styles["backgroundColor"] = self._legacy_content_background.to_dict()
+            else:
+                editor_styles["backgroundColor"] = self._legacy_content_background
+
+        if editor_styles:
+            props["textEditorStyles"] = editor_styles
 
         return props
-
-    def _apply_modifiers(self) -> list:
-        from ...types import Color, Font
-
-        modifiers = super()._apply_modifiers()
-
-        if self._font is not None:
-            modifiers.append({
-                "type": "font",
-                "args": self._font._to_dict() if isinstance(self._font, Font) else {"fontName": self._font},
-            })
-
-        if self._foreground_color is not None:
-            color_str = self._foreground_color.to_dict() if isinstance(self._foreground_color, Color) else self._foreground_color
-            modifiers.append({
-                "type": "foregroundColor",
-                "args": {"color": color_str},
-            })
-
-        return modifiers
 
     def _handle_event(self, event: str) -> None:
         if event.startswith("change:") and self._on_change:

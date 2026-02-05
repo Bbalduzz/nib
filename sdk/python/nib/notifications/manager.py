@@ -59,10 +59,15 @@ class NotificationManager:
         self._connection: Optional["Connection"] = None
         self._action_handlers: List[Callable[[str, str, Optional[str]], None]] = []
         self._pending_callbacks: Dict[str, Callable] = {}
+        self._queued_actions: List[Callable] = []
 
     def _set_connection(self, connection: "Connection") -> None:
         """Set the connection (called internally by App)."""
         self._connection = connection
+        # Flush any actions that were queued before connection was ready
+        for action in self._queued_actions:
+            action()
+        self._queued_actions.clear()
 
     # MARK: - Permission
 
@@ -86,19 +91,20 @@ class NotificationManager:
 
             app.notifications.request_permission(on_permission)
         """
-        if not self._connection:
+        def _do_request():
+            request_id = str(uuid.uuid4())
             if callback:
-                callback(False)
+                self._pending_callbacks[request_id] = callback
+            self._connection.send_notification_action(
+                action="requestPermission",
+                request_id=request_id,
+            )
+
+        if not self._connection:
+            self._queued_actions.append(_do_request)
             return
 
-        request_id = str(uuid.uuid4())
-        if callback:
-            self._pending_callbacks[request_id] = callback
-
-        self._connection.send_notification_action(
-            action="requestPermission",
-            request_id=request_id,
-        )
+        _do_request()
 
     # MARK: - Query
 

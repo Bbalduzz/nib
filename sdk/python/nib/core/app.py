@@ -117,7 +117,15 @@ class App:
             path: Path to assets directory, or None to auto-detect.
         """
         if path is not None:
-            cls._assets_dir = Path(path)
+            p = Path(path)
+            # Resolve relative paths to absolute (relative to script dir or CWD)
+            if not p.is_absolute():
+                main_module = sys.modules.get("__main__")
+                if main_module and hasattr(main_module, "__file__") and main_module.__file__:
+                    p = Path(main_module.__file__).parent / p
+                else:
+                    p = p.resolve()
+            cls._assets_dir = p
         else:
             cls._assets_dir = None
         cls._assets_dir_initialized = True
@@ -372,8 +380,24 @@ class App:
         all_fonts = self._detect_fonts_in_assets()
 
         # Merge user-specified fonts (they override auto-detected)
+        # Resolve relative paths to absolute so Swift can find them
         if self._fonts:
-            all_fonts.update(self._fonts)
+            for name, source in self._fonts.items():
+                if source.startswith(("/", "http://", "https://")):
+                    all_fonts[name] = source
+                else:
+                    resolved = self.resolve_asset(source)
+                    if resolved:
+                        all_fonts[name] = resolved
+                    else:
+                        # Fallback: resolve relative to script directory
+                        main_module = sys.modules.get("__main__")
+                        if main_module and hasattr(main_module, "__file__") and main_module.__file__:
+                            script_path = Path(main_module.__file__).parent / source
+                            if script_path.exists():
+                                all_fonts[name] = str(script_path.resolve())
+                                continue
+                        all_fonts[name] = source
 
         return all_fonts if all_fonts else None
 
@@ -635,6 +659,23 @@ class App:
             from ..services.launch_at_login import LaunchAtLogin
             self._launch_at_login = LaunchAtLogin(self)
         return self._launch_at_login
+
+    @property
+    def permissions(self) -> "Permissions":
+        """Access the permissions service.
+
+        Provides a unified API to check and request Camera, Microphone,
+        and Notification permissions.
+
+        Example:
+            status = app.permissions.check(nib.Permission.CAMERA)
+            if status == nib.PermissionStatus.NOT_DETERMINED:
+                granted = app.permissions.request(nib.Permission.CAMERA)
+        """
+        if not hasattr(self, "_permissions"):
+            from ..services.permissions import Permissions
+            self._permissions = Permissions(self)
+        return self._permissions
 
     @property
     def title(self) -> Optional[str]:

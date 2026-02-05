@@ -148,21 +148,23 @@ extension DynamicView {
     func buildTextEditor() -> some View {
         let text = node.props.text ?? ""
         let placeholder = node.props.placeholder
-        let lineLimit = node.props.lineLimit
-        let scrollsDisabled = node.props.scrollsDisabled ?? false
-        let textStyles = node.props.textStyles
-        let contentBackgroundHidden = node.props.contentBackgroundHidden ?? false
-        let contentBackground = node.props.contentBackground
+        let styles = node.props.textEditorStyles
+
+        // Legacy fallback props
+        let legacyLineLimit = node.props.lineLimit
+        let legacyScrollsDisabled = node.props.scrollsDisabled ?? false
+        let legacyContentBackgroundHidden = node.props.contentBackgroundHidden ?? false
+        let legacyContentBackground = node.props.contentBackground
 
         TextEditorWrapper(
             nodeId: node.id,
             text: text,
             placeholder: placeholder,
-            lineLimit: lineLimit,
-            scrollsDisabled: scrollsDisabled,
-            textStyles: textStyles,
-            contentBackgroundHidden: contentBackgroundHidden,
-            contentBackground: contentBackground,
+            styles: styles,
+            legacyLineLimit: legacyLineLimit,
+            legacyScrollsDisabled: legacyScrollsDisabled,
+            legacyContentBackgroundHidden: legacyContentBackgroundHidden,
+            legacyContentBackground: legacyContentBackground,
             onEvent: onEvent
         )
     }
@@ -174,50 +176,106 @@ struct TextEditorWrapper: View {
     let nodeId: String
     let text: String
     let placeholder: String?
-    let lineLimit: Int?
-    let scrollsDisabled: Bool
-    let textStyles: ViewNode.TextStyles?
-    let contentBackgroundHidden: Bool
-    let contentBackground: String?
+    let styles: ViewNode.TextEditorStyles?
+    let legacyLineLimit: Int?
+    let legacyScrollsDisabled: Bool
+    let legacyContentBackgroundHidden: Bool
+    let legacyContentBackground: String?
     let onEvent: (String, String) -> Void
 
     @State private var localText: String
 
-    init(nodeId: String, text: String, placeholder: String?, lineLimit: Int?, scrollsDisabled: Bool, textStyles: ViewNode.TextStyles?, contentBackgroundHidden: Bool, contentBackground: String?, onEvent: @escaping (String, String) -> Void) {
+    init(nodeId: String, text: String, placeholder: String?, styles: ViewNode.TextEditorStyles?, legacyLineLimit: Int?, legacyScrollsDisabled: Bool, legacyContentBackgroundHidden: Bool, legacyContentBackground: String?, onEvent: @escaping (String, String) -> Void) {
         self.nodeId = nodeId
         self.text = text
         self.placeholder = placeholder
-        self.lineLimit = lineLimit
-        self.scrollsDisabled = scrollsDisabled
-        self.textStyles = textStyles
-        self.contentBackgroundHidden = contentBackgroundHidden
-        self.contentBackground = contentBackground
+        self.styles = styles
+        self.legacyLineLimit = legacyLineLimit
+        self.legacyScrollsDisabled = legacyScrollsDisabled
+        self.legacyContentBackgroundHidden = legacyContentBackgroundHidden
+        self.legacyContentBackground = legacyContentBackground
         self.onEvent = onEvent
         self._localText = State(initialValue: text)
     }
 
     var body: some View {
-        let editor = TextEditor(text: $localText)
+        let base = TextEditor(text: $localText)
             .onChange(of: localText) { _, newValue in
                 onEvent(nodeId, "change:\(newValue)")
             }
 
-        // Apply modifiers and return
-        return applyAllModifiers(to: editor)
+        let v1 = applyFont(to: base)
+        let v2 = applyForegroundColor(to: v1)
+        let v3 = applyLineSpacing(to: v2)
+        let v4 = applyTextAlignment(to: v3)
+        let v5 = applyLineLimit(to: v4)
+        let v6 = applyScrollDisabled(to: v5)
+        let v7 = applyAutocorrectionDisabled(to: v6)
+        let v8 = applyBackground(to: v7)
+        let v9 = applyEditorStyle(to: v8)
+        let v10 = applyFindNavigator(to: v9)
+
+        return v10
+    }
+
+    // MARK: - Style Appliers
+
+    @ViewBuilder
+    private func applyFont(to view: some View) -> some View {
+        if let fontSpec = styles?.font, let fontName = fontSpec.fontName {
+            view.font(Font.nib(name: fontName, size: fontSpec.fontSize, weight: fontSpec.fontWeight, path: fontSpec.fontPath))
+        } else {
+            view
+        }
     }
 
     @ViewBuilder
-    private func applyAllModifiers(to editor: some View) -> some View {
-        // Start with base modifiers
-        let withScroll = applyScrollModifier(to: editor)
-        let withBackground = applyBackgroundModifier(to: withScroll)
-        let withStyle = applyStyleModifier(to: withBackground)
-        withStyle
+    private func applyForegroundColor(to view: some View) -> some View {
+        if let colorStr = styles?.foregroundColor {
+            view.foregroundStyle(Color(nibColor: colorStr))
+        } else {
+            view
+        }
     }
 
     @ViewBuilder
-    private func applyScrollModifier(to view: some View) -> some View {
-        if scrollsDisabled {
+    private func applyLineSpacing(to view: some View) -> some View {
+        if let spacing = styles?.lineSpacing {
+            view.lineSpacing(spacing)
+        } else {
+            view
+        }
+    }
+
+    @ViewBuilder
+    private func applyTextAlignment(to view: some View) -> some View {
+        if let alignment = styles?.textAlignment {
+            switch alignment.lowercased() {
+            case "center":
+                view.multilineTextAlignment(.center)
+            case "trailing":
+                view.multilineTextAlignment(.trailing)
+            default:
+                view.multilineTextAlignment(.leading)
+            }
+        } else {
+            view
+        }
+    }
+
+    @ViewBuilder
+    private func applyLineLimit(to view: some View) -> some View {
+        if let limit = styles?.lineLimit ?? legacyLineLimit {
+            view.lineLimit(limit)
+        } else {
+            view
+        }
+    }
+
+    @ViewBuilder
+    private func applyScrollDisabled(to view: some View) -> some View {
+        let disabled = styles?.scrollsDisabled ?? legacyScrollsDisabled
+        if disabled {
             view.scrollDisabled(true)
         } else {
             view
@@ -225,36 +283,51 @@ struct TextEditorWrapper: View {
     }
 
     @ViewBuilder
-    private func applyBackgroundModifier(to view: some View) -> some View {
-        if #available(macOS 14.0, *) {
-            if contentBackgroundHidden {
-                // Hide default background, make transparent
-                view.scrollContentBackground(.hidden)
-            } else if let bgColor = contentBackground {
-                // Hide default and apply custom color
-                view
-                    .scrollContentBackground(.hidden)
-                    .background(Color(nibColor: bgColor))
-            } else {
-                view
-            }
+    private func applyAutocorrectionDisabled(to view: some View) -> some View {
+        if styles?.autocorrectionDisabled == true {
+            view.autocorrectionDisabled(true)
         } else {
-            // Fallback for older macOS - can't easily hide TextEditor background
             view
         }
     }
 
     @ViewBuilder
-    private func applyStyleModifier(to view: some View) -> some View {
-        if let styles = textStyles, styles.monospaced == true {
-            if #available(macOS 13.3, *) {
-                view.monospaced()
+    private func applyBackground(to view: some View) -> some View {
+        if #available(macOS 14.0, *) {
+            let bgHidden = styles?.contentBackgroundHidden ?? legacyContentBackgroundHidden
+            let bgColor = styles?.backgroundColor ?? legacyContentBackground
+
+            if bgHidden {
+                view.scrollContentBackground(.hidden)
+            } else if let color = bgColor {
+                view
+                    .scrollContentBackground(.hidden)
+                    .background(Color(nibColor: color))
             } else {
                 view
             }
         } else {
             view
         }
+    }
+
+    @ViewBuilder
+    private func applyEditorStyle(to view: some View) -> some View {
+        if #available(macOS 14.0, *) {
+            if let style = styles?.editorStyle, style.lowercased() == "plain" {
+                view.textEditorStyle(.plain)
+            } else {
+                view
+            }
+        } else {
+            view
+        }
+    }
+
+    @ViewBuilder
+    private func applyFindNavigator(to view: some View) -> some View {
+        // findNavigator is not available on macOS — pass through
+        view
     }
 }
 

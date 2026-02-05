@@ -266,10 +266,10 @@ class HotReloadRunner:
             self._clear_user_modules()
 
             # Execute the script
-            main_func, app_class = self._exec_script()
+            main_func, app_class, assets_dir = self._exec_script()
 
             if main_func:
-                self._run_function_based(main_func)
+                self._run_function_based(main_func, assets_dir=assets_dir)
             elif app_class:
                 self._run_class_based(app_class)
             else:
@@ -284,6 +284,8 @@ class HotReloadRunner:
         """Clear user modules from sys.modules for fresh import."""
         to_remove = []
         for name, module in sys.modules.items():
+            if name == "__main__":
+                continue  # Never remove __main__ — it breaks asset auto-detection
             if not hasattr(module, "__file__") or module.__file__ is None:
                 continue
             try:
@@ -326,12 +328,14 @@ class HotReloadRunner:
         if str(self.script_dir) not in sys.path:
             sys.path.insert(0, str(self.script_dir))
 
-        # Intercept nib.run() to capture the main function
+        # Intercept nib.run() to capture the main function and kwargs
         captured_main = [None]
+        captured_assets_dir = [None]
         original_run = None
 
         def capture_run(main_func, **kwargs):
             captured_main[0] = main_func
+            captured_assets_dir[0] = kwargs.get("assets_dir")
 
         # Temporarily patch nib.run
         import nib
@@ -346,7 +350,7 @@ class HotReloadRunner:
 
         # Check for function-based
         if captured_main[0]:
-            return captured_main[0], None
+            return captured_main[0], None, captured_assets_dir[0]
 
         # Check for class-based (look for App subclass)
         from nib import App
@@ -357,11 +361,11 @@ class HotReloadRunner:
                 and issubclass(value, App)
                 and value is not App
             ):
-                return None, value
+                return None, value, None
 
-        return None, None
+        return None, None, None
 
-    def _run_function_based(self, main_func: Callable):
+    def _run_function_based(self, main_func: Callable, assets_dir=None):
         """Run function-based app."""
         from nib import App
         from nib.core.user_defaults import _set_current_app
@@ -369,6 +373,10 @@ class HotReloadRunner:
         # Reset assets directory detection for fresh detection
         App._assets_dir_initialized = False
         App._assets_dir = None
+
+        # Apply explicit assets_dir if provided via nib.run(main, assets_dir=...)
+        if assets_dir is not None:
+            App.set_assets_dir(assets_dir)
 
         # Create new App with existing connection
         app = App()

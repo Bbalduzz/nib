@@ -67,7 +67,7 @@ https://nib.readthedocs.io/
 
 from . import draw
 from .core import App, MenuDivider, MenuItem, Settings, SFSymbol, State, UserDefaults, run
-from .file_picker import FilePicker, PickedFile, SaveResult
+from .core.file_picker import FilePicker, PickedFile, SaveResult
 from .views.settings_page import SettingsPage, SettingsTab
 from .services import (
     Battery,
@@ -81,6 +81,9 @@ from .services import (
     Connectivity,
     ConnectivityInfo,
     Keychain,
+    Permission,
+    PermissionStatus,
+    Permissions,
     Screen,
     ScreenInfo,
 )
@@ -128,8 +131,10 @@ from .types import (
     SymbolRenderingMode,
     SymbolScale,
     TextCase,
+    TextEditorStyle,
     TextFieldStyle,
     TextStyle,
+    EditorStyle,
     # Control style enums
     ToggleStyle,
     Transition,
@@ -358,6 +363,8 @@ __all__ = [
     # Control Style Enums
     "ToggleStyle",
     "TextFieldStyle",
+    "TextEditorStyle",
+    "EditorStyle",
     "PickerStyle",
     "ProgressStyle",
     # Text Enums
@@ -395,6 +402,10 @@ __all__ = [
     "Screen",
     "ScreenInfo",
     "Keychain",
+    # Permissions
+    "Permission",
+    "PermissionStatus",
+    "Permissions",
     # Notifications
     "Notification",
     "NotificationManager",

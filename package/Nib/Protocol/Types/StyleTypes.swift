@@ -102,4 +102,38 @@ extension ViewNode {
         // Case transformation
         var textCase: String?
     }
+
+    /// TextEditor-specific styling options
+    struct TextEditorStyles: Codable, Equatable {
+        // Typography
+        var font: FontSpec?
+        var foregroundColor: String?
+
+        // Colors
+        var backgroundColor: String?
+        var contentBackgroundHidden: Bool?  // legacy compat
+
+        // Layout
+        var lineSpacing: CGFloat?
+        var textAlignment: String?  // "leading", "center", "trailing"
+        var lineLimit: Int?
+
+        // Behavior
+        var autocorrectionDisabled: Bool?
+        var scrollsDisabled: Bool?
+
+        // macOS 14+ TextEditorStyle
+        var editorStyle: String?  // "automatic", "plain"
+
+        // macOS 13+ Find Navigator
+        var findNavigatorEnabled: Bool?
+
+        /// Font specification embedded in styles
+        struct FontSpec: Codable, Equatable {
+            var fontName: String?
+            var fontSize: CGFloat?
+            var fontWeight: String?
+            var fontPath: String?
+        }
+    }
 }

@@ -667,7 +667,7 @@ class Connection:
 
     def _handle_file_dialog_response(self, message: dict) -> None:
         """Handle a file dialog response."""
-        from ..file_picker import _handle_file_dialog_response
+        from .file_picker import _handle_file_dialog_response
         _handle_file_dialog_response(message)
 
     def _dispatch_event(self, node_id: str, event: str) -> None:

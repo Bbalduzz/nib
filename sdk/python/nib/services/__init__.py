@@ -54,6 +54,7 @@ from .screen import Screen, ScreenInfo
 from .keychain import Keychain
 from .camera import Camera, CameraDevice, CameraFrame, CameraPosition
 from .launch_at_login import LaunchAtLogin
+from .permissions import Permission, PermissionStatus, Permissions
 
 __all__ = [
     # Battery
@@ -76,4 +77,8 @@ __all__ = [
     "CameraPosition",
     # Launch at Login
     "LaunchAtLogin",
+    # Permissions
+    "Permission",
+    "PermissionStatus",
+    "Permissions",
 ]
