@@ -81,9 +81,11 @@ Nib fills this gap:
 - **Build & distribute** — Compile to a standalone `.app` bundle with `nib build`
 
 ## How It Works
-<img width="40%" src="media/architecture.svg" align="right"/>
+<img width="30%" src="media/architecture.svg" align="left"/>
 
-Nib runs as two processes connected by a Unix socket. Your Python code builds a tree of view objects (`VStack`, `Text`, `Button`, etc.) and sends it to a Swift runtime, which renders it as real SwiftUI inside a menu bar popover. When the user interacts with the UI, Swift sends events back to Python, your callbacks run, and only the changed properties are patched through — never the full tree.
+Nib runs as two processes connected by a Unix socket. Your Python code builds a tree of view objects (`VStack`, `Text`, `Button`, etc.) and sends it to a Swift runtime, which renders it as real SwiftUI inside a menu bar popover. When the user interacts with the UI, Swift sends events back to Python, your callbacks run, and only the changed properties are patched.
+
+<br clear="left"/>
 
 ## Features
 
