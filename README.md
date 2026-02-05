@@ -83,7 +83,7 @@ Nib fills this gap:
 ## How It Works
 <img width="40%" src="media/architecture.svg" align="right"/>
 
-You write your UI in Python. Nib serializes the view tree, sends it to a Swift runtime over a Unix socket, and renders native SwiftUI. User interactions flow back as events to your Python code.
+Nib runs as two processes connected by a Unix socket. Your Python code builds a tree of view objects (`VStack`, `Text`, `Button`, etc.) and sends it to a Swift runtime, which renders it as real SwiftUI inside a menu bar popover. When the user interacts with the UI, Swift sends events back to Python, your callbacks run, and only the changed properties are patched through — never the full tree.
 
 ## Features
 
