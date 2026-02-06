@@ -31,9 +31,126 @@ def main(app: nib.App):
             height=35,
         ),
         nib.MenuDivider(),
-        nib.MenuItem("Settings", shortcut="cmd+,", action=lambda: print("Settings")),
+        nib.MenuItem(
+            "Settings",
+            shortcut="cmd+,",
+            action=lambda: app.settings.open(),
+        ),
         nib.MenuItem("Quit", shortcut="cmd+q", action=app.quit),
     ]
+
+    settings = nib.Settings(
+        {
+            "width": 280,
+            "height": 200,
+            "font": "Iosevka",
+            "font_size": 14,
+            "accent_color": "#ED9516",
+        }
+    )
+    app.register_settings(settings)
+
+    def update_status():
+        app.width = settings.width
+        app.height = settings.height
+        app.update()
+
+    app.settings = nib.SettingsPage(
+        title="Preferences",
+        width=450,
+        height=350,
+        tabs=[
+            nib.SettingsTab(
+                "General",
+                icon="gear",
+                content=nib.Form(
+                    controls=[
+                        nib.Section(
+                            controls=[
+                                nib.HStack(
+                                    [
+                                        nib.Text("Popup width"),
+                                        nib.Slider(
+                                            label="width",
+                                            value=280,
+                                            min_value=0,
+                                            max_value=600,
+                                            on_change=lambda v: (
+                                                setattr(settings, "width", v),
+                                                update_status(),
+                                            ),
+                                        ),
+                                    ]
+                                ),
+                                nib.HStack(
+                                    [
+                                        nib.Text("Popup height"),
+                                        nib.Slider(
+                                            label="height",
+                                            value=300,
+                                            min_value=0,
+                                            max_value=600,
+                                            on_change=lambda v: (
+                                                setattr(settings, "height", v),
+                                                update_status(),
+                                            ),
+                                        ),
+                                    ]
+                                ),
+                                nib.TextField(
+                                    "Accent Color",
+                                    value=settings.accent_color,
+                                    on_submit=lambda v: (
+                                        setattr(settings, "accent_color", v),
+                                        update_status(),
+                                    ),
+                                ),
+                            ],
+                            header="Appearance",
+                        )
+                    ],
+                    style=nib.FormStyle.GROUPED,
+                ),
+            ),
+            nib.SettingsTab(
+                "Text",
+                icon="textformat.size",
+                content=nib.Form(
+                    style=nib.FormStyle.GROUPED,
+                    controls=[
+                        nib.Section(
+                            header="Text Appearance",
+                            controls=[
+                                nib.HStack(
+                                    [
+                                        nib.Text("Font size"),
+                                        nib.Slider(
+                                            label="size",
+                                            value=14,
+                                            min_value=5,
+                                            max_value=24,
+                                            on_change=lambda v: (
+                                                setattr(settings, "width", v),
+                                                update_status(),
+                                            ),
+                                        ),
+                                    ]
+                                ),
+                                nib.Picker(
+                                    label="Font",
+                                    options=["Arial", "Helvetica", "Times New Roman"],
+                                    on_change=lambda v: (
+                                        setattr(settings, "font", v),
+                                        update_status(),
+                                    ),
+                                ),
+                            ],
+                        )
+                    ],
+                ),
+            ),
+        ],
+    )
 
     word_count = nib.Text(
         "0",
@@ -50,7 +167,7 @@ def main(app: nib.App):
         on_change=lambda text: setattr(word_count, "content", str(len(text.split()))),
     )
 
-    @app.hotkey("ctrl+s")
+    @app.hotkey("ctrl+p")
     def save_note():
         with open("notes.txt", "w") as file:
             file.write(text_editor.text)

@@ -273,6 +273,7 @@ class App:
         self._on_appear: Optional[Callable[[], None]] = None
         self._on_disappear: Optional[Callable[[], None]] = None
         self._on_quit: Optional[Callable[[], None]] = None
+        self._quit_callback: Optional[Callable[[], None]] = None
         # Settings
         self._settings_page: Optional[SettingsPage] = None
         self._settings: Optional[Settings] = None
@@ -861,6 +862,8 @@ class App:
     def quit(self) -> None:
         """Quit the application."""
         self._running = False
+        if self._quit_callback:
+            self._quit_callback()
 
     def notify(
         self,

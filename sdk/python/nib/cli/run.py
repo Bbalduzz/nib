@@ -9,7 +9,6 @@ import signal
 import subprocess
 import sys
 import threading
-import time
 import traceback
 from pathlib import Path
 from typing import Callable, Optional, Set
@@ -91,10 +90,13 @@ class HotReloadRunner:
         self._connection: Optional[Connection] = None
         self._runtime_process: Optional[subprocess.Popen] = None
         self._socket_path: Optional[str] = None
-        self._running = False
 
         # File watching
         self._observer: Optional[Observer] = None
+
+        # Reload protection
+        self._reload_lock = threading.Lock()
+        self._stop_event = threading.Event()
 
         # Current app state
         self._current_app = None
@@ -108,7 +110,6 @@ class HotReloadRunner:
         try:
             self._setup_runtime()
             self._setup_watcher()
-            self._running = True
 
             # Initial load
             self._reload()
@@ -200,6 +201,10 @@ class HotReloadRunner:
         # Generate socket path
         self._socket_path = f"/tmp/nib-{os.getpid()}.sock"
 
+        # Remove stale socket from a previous crashed run
+        if os.path.exists(self._socket_path):
+            os.unlink(self._socket_path)
+
         # Find runtime
         runtime_path = self._find_runtime()
         if not runtime_path:
@@ -220,8 +225,8 @@ class HotReloadRunner:
         self._runtime_process = subprocess.Popen(
             [str(runtime_path)],
             env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         # Connect to runtime
@@ -230,6 +235,12 @@ class HotReloadRunner:
             raise RuntimeError("Failed to connect to nib-runtime")
 
         logger.info("Connected to Swift runtime")
+
+        # Monitor runtime process in a daemon thread (like Flet)
+        # so the main loop doesn't need to poll
+        threading.Thread(
+            target=self._monitor_runtime, daemon=True
+        ).start()
 
         # Handle signals
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -259,9 +270,20 @@ class HotReloadRunner:
 
     def _reload(self):
         """Reload the user's application."""
+        if not self._reload_lock.acquire(blocking=False):
+            logger.info("Reload already in progress, skipping")
+            return
+
         logger.info("Reloading...")
 
         try:
+            # Stop old app's render loop before creating a new one
+            if self._current_app:
+                old_app = self._current_app
+                self._current_app = None
+                old_app._running = False
+                old_app._render_requested.set()
+
             # Clear cached modules
             self._clear_user_modules()
 
@@ -279,6 +301,8 @@ class HotReloadRunner:
             self._handle_syntax_error(e)
         except Exception as e:
             self._handle_runtime_error(e)
+        finally:
+            self._reload_lock.release()
 
     def _clear_user_modules(self):
         """Clear user modules from sys.modules for fresh import."""
@@ -365,70 +389,48 @@ class HotReloadRunner:
 
         return None, None, None
 
-    def _run_function_based(self, main_func: Callable, assets_dir=None):
-        """Run function-based app."""
-        from nib import App
+    def _setup_and_run_app(self, app, main_func=None):
+        """Wire up an App instance and render the UI."""
         from nib.core.user_defaults import _set_current_app
 
-        # Reset assets directory detection for fresh detection
-        App._assets_dir_initialized = False
-        App._assets_dir = None
-
-        # Apply explicit assets_dir if provided via nib.run(main, assets_dir=...)
-        if assets_dir is not None:
-            App.set_assets_dir(assets_dir)
-
-        # Create new App with existing connection
-        app = App()
         app._connection = self._connection
         app._socket_path = self._socket_path
         app._runtime_process = self._runtime_process
         app._running = True
 
-        # Start the render loop for reactive updates
+        # When the app calls quit(), signal the main loop directly
+        app._quit_callback = lambda: self._stop_event.set()
+
         app._start_render_loop()
-
-        # Set event handler for this app
         self._connection.set_event_handler(app._handle_event)
-
         _set_current_app(app)
 
-        # Run user's main function
-        main_func(app)
+        if main_func:
+            main_func(app)
 
-        # Render the UI
         app._render()
-
         self._current_app = app
+
+    def _run_function_based(self, main_func: Callable, assets_dir=None):
+        """Run function-based app."""
+        from nib import App
+
+        App._assets_dir_initialized = False
+        App._assets_dir = None
+
+        if assets_dir is not None:
+            App.set_assets_dir(assets_dir)
+
+        self._setup_and_run_app(App(), main_func=main_func)
 
     def _run_class_based(self, app_class):
         """Run class-based app."""
         from nib import App
-        from nib.core.user_defaults import _set_current_app
 
-        # Reset assets directory detection for fresh detection
         App._assets_dir_initialized = False
         App._assets_dir = None
 
-        # Create instance with existing connection
-        app = app_class()
-        app._connection = self._connection
-        app._socket_path = self._socket_path
-        app._runtime_process = self._runtime_process
-        app._running = True
-
-        # Start the render loop for reactive updates
-        app._start_render_loop()
-
-        # Set event handler for this app
-        self._connection.set_event_handler(app._handle_event)
-
-        _set_current_app(app)
-
-        # Render the UI
-        app._render()
-
-        self._current_app = app
+        self._setup_and_run_app(app_class())
 
     def _handle_syntax_error(self, error: SyntaxError):
         """Display syntax error to user."""
@@ -446,29 +448,22 @@ class HotReloadRunner:
         traceback.print_exc()
         logger.info("Fix the error and save to reload...")
 
+    def _monitor_runtime(self):
+        """Wait for the runtime process to exit, then signal the main loop."""
+        self._runtime_process.wait()
+        logger.info("Swift runtime exited")
+        self._stop_event.set()
+
     def _main_loop(self):
-        """Main event loop."""
-        while self._running:
-            try:
-                time.sleep(0.1)
-                # Check if runtime is still alive
-                if self._runtime_process and self._runtime_process.poll() is not None:
-                    logger.info("Swift runtime exited")
-                    self._running = False
-                # Check if app requested quit
-                if self._current_app and not self._current_app._running:
-                    logger.info("App requested quit")
-                    self._running = False
-            except KeyboardInterrupt:
-                break
+        """Main event loop — all exit conditions funnel through _stop_event."""
+        self._stop_event.wait()
 
     def _signal_handler(self, signum, frame):
         """Handle termination signals."""
-        self._running = False
+        self._stop_event.set()
 
     def _teardown(self):
         """Clean up resources."""
-        self._running = False
 
         if self._observer:
             self._observer.stop()
