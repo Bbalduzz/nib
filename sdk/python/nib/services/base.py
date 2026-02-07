@@ -1,11 +1,15 @@
 """Base service class with synchronous request/response handling."""
 
-import threading
 import uuid
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Optional
+
+from ..core.pending import PendingRequests
 
 if TYPE_CHECKING:
     from ..core.app import App
+
+# Shared thread-safe storage for all service requests
+_requests = PendingRequests()
 
 
 class Service:
@@ -14,10 +18,6 @@ class Service:
     Provides synchronous request/response handling by blocking until
     the response arrives.
     """
-
-    # Class-level storage for pending responses
-    _pending: Dict[str, threading.Event] = {}
-    _responses: Dict[str, dict] = {}
 
     def __init__(self, app: "App"):
         self._app = app
@@ -44,28 +44,19 @@ class Service:
             TimeoutError: If response doesn't arrive within timeout
         """
         request_id = str(uuid.uuid4())
-        event = threading.Event()
-
-        # Register pending request
-        Service._pending[request_id] = event
+        _requests.create(request_id)
 
         # Send request
         self._app._connection.send_service_query(service, action, request_id, params)
 
         # Wait for response
-        if not event.wait(timeout=timeout):
-            Service._pending.pop(request_id, None)
+        result = _requests.wait(request_id, timeout)
+        if result is None:
             raise TimeoutError(f"Service request timed out: {service}.{action}")
 
-        # Get and return response
-        response = Service._responses.pop(request_id, {})
-        Service._pending.pop(request_id, None)
-
-        return response
+        return result
 
     @classmethod
     def _handle_response(cls, request_id: str, data: dict) -> None:
         """Handle response from Swift runtime (called by connection)."""
-        if request_id in cls._pending:
-            cls._responses[request_id] = data
-            cls._pending[request_id].set()
+        _requests.resolve(request_id, data)

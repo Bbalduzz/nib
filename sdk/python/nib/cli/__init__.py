@@ -52,7 +52,6 @@ from pathlib import Path
 from typing import Any, Optional
 
 from ..core.logging import logger
-
 from .build import build_app
 from .create import create_project
 from .deps import detect_imports, resolve_packages
@@ -131,7 +130,14 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
         parsed_deps = []
         for dep in project_deps:
             # Handle "package>=1.0" or "package[extra]>=1.0" formats
-            name = dep.split("[")[0].split("<")[0].split(">")[0].split("=")[0].split("!")[0].strip()
+            name = (
+                dep.split("[")[0]
+                .split("<")[0]
+                .split(">")[0]
+                .split("=")[0]
+                .split("!")[0]
+                .strip()
+            )
             if name and name.lower() != "nib":  # Exclude nib itself
                 parsed_deps.append(name)
         nib_config["_project_dependencies"] = parsed_deps
@@ -188,7 +194,8 @@ def main() -> int:
         description="Nib - Build macOS menu bar apps with Python",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose output",
     )
@@ -218,16 +225,19 @@ def main() -> int:
         help="Python script to bundle (default: from pyproject.toml)",
     )
     build_parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=Path,
         help="Output directory (default: ./dist/)",
     )
     build_parser.add_argument(
-        "-n", "--name",
+        "-n",
+        "--name",
         help="App name (default: from pyproject.toml or script name)",
     )
     build_parser.add_argument(
-        "-i", "--icon",
+        "-i",
+        "--icon",
         type=Path,
         help="Icon file (.icns or .png)",
     )
@@ -293,10 +303,13 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    # Configure log level based on verbose flag
+    # Configure log level: quiet by default, verbose with -v
     from ..core.logging import LogLevel
+
     if getattr(args, "verbose", False):
         logger.set_level(LogLevel.DEBUG)
+    else:
+        logger.set_level(LogLevel.WARN)
 
     if args.command == "create":
         return create_project(name=args.name)
@@ -313,7 +326,9 @@ def main() -> int:
             script = Path(entry)
             if not script.exists():
                 logger.error(f"Entry point not found: {script}")
-                logger.error("Specify a script or create pyproject.toml with [tool.nib] entry")
+                logger.error(
+                    "Specify a script or create pyproject.toml with [tool.nib] entry"
+                )
                 return 1
 
         # Merge CLI args with config (CLI takes precedence)
@@ -371,7 +386,9 @@ def main() -> int:
             logger.error("Cannot use --native with --no-compile")
             return 1
         if native and obfuscate:
-            logger.error("Cannot use --native with --obfuscate (native code is already opaque)")
+            logger.error(
+                "Cannot use --native with --obfuscate (native code is already opaque)"
+            )
             return 1
 
         return build_app(
@@ -404,7 +421,9 @@ def main() -> int:
             script = Path(entry)
             if not script.exists():
                 logger.error(f"Entry point not found: {script}")
-                logger.error("Specify a script or create pyproject.toml with [tool.nib] entry")
+                logger.error(
+                    "Specify a script or create pyproject.toml with [tool.nib] entry"
+                )
                 return 1
 
         if not script.exists():

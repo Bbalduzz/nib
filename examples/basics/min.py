@@ -1,5 +1,15 @@
 import nib
 
+'''
+def main(app: nib.App):
+    app.title = "ciao"
+
+    app.build(...)
+
+nib.run(main)
+
+
+'''
 
 def main(app):
     app.title = "Minimal"
@@ -60,7 +70,7 @@ def main(app):
         ),
         nib.MenuDivider(),
         nib.MenuItem(
-            "Settings",
+            "Preferences",
             shortcut="cmd+,",
             action=lambda: app.settings.open(),
         ),
@@ -266,7 +276,7 @@ def main(app):
                         settings_button,
                         "background",
                         nib.Rectangle(
-                            fill=nib.Color.BLACK.with_opacity(0.2),
+                            fill=nib.Color.RED,
                             height=30,
                             margin={"leading": 6, "trailing": 6},
                             corner_radius=nib.CornerRadius.all(5),

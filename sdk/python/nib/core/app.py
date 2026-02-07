@@ -244,6 +244,7 @@ class App:
         self._socket_path: Optional[str] = None
         self._action_map: Dict[str, Callable] = {}
         self._change_map: Dict[str, Callable] = {}
+        self._view_event_map: Dict[str, Callable] = {}
         self._submit_map: Dict[str, Callable] = {}
         self._running = False
         self._previous_tree: Optional[dict] = None  # For diffing
@@ -1175,6 +1176,7 @@ class App:
         # Clear action maps
         self._action_map.clear()
         self._change_map.clear()
+        self._view_event_map.clear()
         self._submit_map.clear()
         self._drop_map.clear()
         self._pan_start_map.clear()
@@ -1216,7 +1218,8 @@ class App:
 
         # Send patches or full render
         # NOTE: Incremental patching disabled - Swift-side handling has bugs
-        if self._previous_tree is None or len(patches) > 5 or True:  # Always full render
+        #       Always use send_render so menu/hotkey changes are included
+        if self._previous_tree is None or len(patches) >= 0:
             # First render or too many changes - send full tree
             # Build menu config
             menu_config = None
@@ -1271,6 +1274,11 @@ class App:
         # Collect change handlers (TextField, Toggle, Slider, Picker)
         if hasattr(view, "_on_change") and view._on_change is not None:
             self._change_map[view._id] = view._on_change
+
+        # Store view._handle_event for views that need internal state sync
+        # (e.g. TextEditor updates _text before calling _on_change)
+        if hasattr(view, "_handle_event") and hasattr(view, "_on_change") and view._on_change is not None:
+            self._view_event_map[view._id] = view._handle_event
 
         # Collect submit handlers (TextField, SecureField)
         if hasattr(view, "_on_submit") and view._on_submit is not None:
@@ -1423,23 +1431,32 @@ class App:
 
         # Handle change events (change:value)
         elif event.startswith("change:") and node_id in self._change_map:
-            value_str = event[7:]  # Remove "change:" prefix
-            handler = self._change_map[node_id]
-            try:
-                # Try to parse as appropriate type
-                if value_str.lower() in ("true", "false"):
-                    value = value_str.lower() == "true"
-                else:
-                    try:
-                        value = float(value_str)
-                        # Keep as int if it's a whole number
-                        if value.is_integer():
-                            value = int(value)
-                    except ValueError:
-                        value = value_str
-                handler(value)
-            except Exception as e:
-                logger.error("Error in change handler", exc=e, node_id=node_id)
+            # If the view has _handle_event, delegate to it so internal state
+            # (e.g. TextEditor._text) is synced. _handle_event calls _on_change
+            # internally, so we skip the normal parsing flow.
+            if node_id in self._view_event_map:
+                try:
+                    self._view_event_map[node_id](event)
+                except Exception as e:
+                    logger.error("Error in view event handler", exc=e, node_id=node_id)
+            else:
+                value_str = event[7:]  # Remove "change:" prefix
+                handler = self._change_map[node_id]
+                try:
+                    # Try to parse as appropriate type
+                    if value_str.lower() in ("true", "false"):
+                        value = value_str.lower() == "true"
+                    else:
+                        try:
+                            value = float(value_str)
+                            # Keep as int if it's a whole number
+                            if value.is_integer():
+                                value = int(value)
+                        except ValueError:
+                            value = value_str
+                    handler(value)
+                except Exception as e:
+                    logger.error("Error in change handler", exc=e, node_id=node_id)
 
         # Handle submit events (submit:value) - TextField, SecureField
         elif event.startswith("submit:") and node_id in self._submit_map:

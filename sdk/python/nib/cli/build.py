@@ -224,7 +224,12 @@ def vendor_dependencies(
     nib_dest = vendor_dir / "nib"
     if nib_dest.exists():
         shutil.rmtree(nib_dest)
-    shutil.copytree(nib_src, nib_dest)
+    # Exclude bin/ (nib-runtime already in MacOS/), cli/ (dev-only), and __pycache__
+    shutil.copytree(
+        nib_src,
+        nib_dest,
+        ignore=shutil.ignore_patterns("bin", "cli", "__pycache__"),
+    )
 
     logger.info(f"Vendored: {', '.join(all_packages)} + nib")
 
@@ -246,6 +251,15 @@ def cleanup_python_distribution(python_dir: Path) -> None:
         "lib/python*/lib-dynload/_test*.so",
         "share",
         "include",
+        # Stdlib modules not needed at runtime in a menu bar app
+        "lib/python*/idlelib",
+        "lib/python*/pydoc_data",
+        "lib/python*/lib2to3",
+        "lib/python*/tkinter",
+        "lib/python*/turtledemo",
+        "lib/python*/ensurepip",
+        "lib/python*/site-packages/pip",
+        "lib/python*/site-packages/pip-*",
     ]
 
     for pattern in remove_patterns:

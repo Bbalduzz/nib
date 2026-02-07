@@ -46,9 +46,10 @@ Note:
 """
 
 import json
-import threading
 import uuid
 from typing import Any, List, Optional, TYPE_CHECKING
+
+from .pending import PendingRequests
 
 if TYPE_CHECKING:
     from .app import App
@@ -56,9 +57,8 @@ if TYPE_CHECKING:
 # Module-level reference to the current running app
 _current_app: Optional["App"] = None
 
-# Storage for blocking responses
-_pending_responses: dict = {}
-_response_events: dict = {}
+# Thread-safe storage for blocking responses
+_pending = PendingRequests()
 
 
 def _set_current_app(app: Optional["App"]) -> None:
@@ -94,9 +94,7 @@ def _handle_user_defaults_response(request_id: str, action: str, value: str) -> 
         action: The action that was performed ("get", "containsKey", etc.).
         value: The encoded response value.
     """
-    if request_id in _response_events:
-        _pending_responses[request_id] = (action, value)
-        _response_events[request_id].set()
+    _pending.resolve(request_id, (action, value))
 
 
 class UserDefaults:
@@ -143,15 +141,7 @@ class UserDefaults:
 
     def _wait_for_response(self, request_id: str, timeout: float = 5.0) -> Optional[tuple]:
         """Wait for a response from Swift."""
-        event = _response_events.get(request_id)
-        if event and event.wait(timeout=timeout):
-            result = _pending_responses.pop(request_id, None)
-            _response_events.pop(request_id, None)
-            return result
-        # Cleanup on timeout
-        _response_events.pop(request_id, None)
-        _pending_responses.pop(request_id, None)
-        return None
+        return _pending.wait(request_id, timeout)
 
     def set(self, key: str, value: Any) -> None:
         """
@@ -196,7 +186,7 @@ class UserDefaults:
             return default
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
         app._connection.send_user_defaults(
             action="get",
@@ -260,7 +250,7 @@ class UserDefaults:
             return False
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
         app._connection.send_user_defaults(
             action="containsKey",
@@ -298,7 +288,7 @@ class UserDefaults:
             return []
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
         app._connection.send_user_defaults(
             action="getKeys",

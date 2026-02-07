@@ -38,17 +38,17 @@ Example:
 """
 
 from dataclasses import dataclass
-import threading
 import uuid
 from typing import TYPE_CHECKING, Callable, Optional
 
+from .pending import PendingRequests
+
 if TYPE_CHECKING:
-    from .core.app import App
+    from .app import App
 
 
-# Storage for blocking responses
-_pending_responses: dict = {}
-_response_events: dict = {}
+# Thread-safe storage for blocking responses
+_pending = PendingRequests()
 
 
 @dataclass
@@ -87,9 +87,7 @@ def _handle_file_dialog_response(response: dict) -> None:
     Called by Connection when a fileDialogResponse message is received.
     """
     request_id = response.get("requestId", "")
-    if request_id in _response_events:
-        _pending_responses[request_id] = response
-        _response_events[request_id].set()
+    _pending.resolve(request_id, response)
 
 
 class FilePicker:
@@ -122,15 +120,12 @@ class FilePicker:
         if self._app:
             return self._app
         # Try to get the current running app
-        from .core.user_defaults import _get_current_app
+        from .user_defaults import _get_current_app
         return _get_current_app()
 
     def _wait_for_response(self, request_id: str, timeout: float = 300.0) -> Optional[dict]:
         """Wait for a response from Swift."""
-        event = _response_events.get(request_id)
-        if event and event.wait(timeout=timeout):
-            return _pending_responses.pop(request_id, None)
-        return None
+        return _pending.wait(request_id, timeout)
 
     def pick_files(
         self,
@@ -173,58 +168,53 @@ class FilePicker:
             return None
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
-        try:
-            app._connection.send_file_dialog(
-                action="pickFiles",
-                request_id=request_id,
-                title=title,
-                message=message,
-                button_label=button_label,
-                directory=directory,
-                shows_hidden_files=shows_hidden_files,
-                resolves_aliases=resolves_aliases,
-                multiple=multiple,
-                extensions=extensions,
-                uttypes=uttypes,
-                allows_other_file_types=allows_other_file_types,
-                treats_packages_as_directories=treats_packages_as_directories,
+        app._connection.send_file_dialog(
+            action="pickFiles",
+            request_id=request_id,
+            title=title,
+            message=message,
+            button_label=button_label,
+            directory=directory,
+            shows_hidden_files=shows_hidden_files,
+            resolves_aliases=resolves_aliases,
+            multiple=multiple,
+            extensions=extensions,
+            uttypes=uttypes,
+            allows_other_file_types=allows_other_file_types,
+            treats_packages_as_directories=treats_packages_as_directories,
+        )
+
+        response = self._wait_for_response(request_id)
+        if not response or response.get("cancelled", True):
+            return None
+
+        files_data = response.get("files", [])
+        if not files_data:
+            return None
+
+        files = [
+            PickedFile(
+                name=f["name"],
+                path=f["path"],
+                size=f["size"],
+                uti=f.get("uti"),
+                tags=f.get("tags", []),
             )
+            for f in files_data
+        ]
 
-            response = self._wait_for_response(request_id)
-            if not response or response.get("cancelled", True):
+        # Run validator if provided
+        if validator:
+            paths = [f.path for f in files]
+            error = validator(paths)
+            if error:
+                # TODO: Re-show dialog with error message
+                # For now, just return None on validation failure
                 return None
 
-            files_data = response.get("files", [])
-            if not files_data:
-                return None
-
-            files = [
-                PickedFile(
-                    name=f["name"],
-                    path=f["path"],
-                    size=f["size"],
-                    uti=f.get("uti"),
-                    tags=f.get("tags", []),
-                )
-                for f in files_data
-            ]
-
-            # Run validator if provided
-            if validator:
-                paths = [f.path for f in files]
-                error = validator(paths)
-                if error:
-                    # TODO: Re-show dialog with error message
-                    # For now, just return None on validation failure
-                    return None
-
-            return files
-
-        finally:
-            _response_events.pop(request_id, None)
-            _pending_responses.pop(request_id, None)
+        return files
 
     def pick_directory(
         self,
@@ -261,41 +251,36 @@ class FilePicker:
             return None
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
-        try:
-            app._connection.send_file_dialog(
-                action="pickDirectory",
-                request_id=request_id,
-                title=title,
-                message=message,
-                button_label=button_label,
-                directory=directory,
-                shows_hidden_files=shows_hidden_files,
-                resolves_aliases=resolves_aliases,
-                multiple=multiple,
-                can_create_directories=can_create_directories,
-            )
+        app._connection.send_file_dialog(
+            action="pickDirectory",
+            request_id=request_id,
+            title=title,
+            message=message,
+            button_label=button_label,
+            directory=directory,
+            shows_hidden_files=shows_hidden_files,
+            resolves_aliases=resolves_aliases,
+            multiple=multiple,
+            can_create_directories=can_create_directories,
+        )
 
-            response = self._wait_for_response(request_id)
-            if not response or response.get("cancelled", True):
+        response = self._wait_for_response(request_id)
+        if not response or response.get("cancelled", True):
+            return None
+
+        directories = response.get("directories", [])
+        if not directories:
+            return None
+
+        # Run validator if provided
+        if validator:
+            error = validator(directories)
+            if error:
                 return None
 
-            directories = response.get("directories", [])
-            if not directories:
-                return None
-
-            # Run validator if provided
-            if validator:
-                error = validator(directories)
-                if error:
-                    return None
-
-            return directories
-
-        finally:
-            _response_events.pop(request_id, None)
-            _pending_responses.pop(request_id, None)
+        return directories
 
     def save_file(
         self,
@@ -340,47 +325,42 @@ class FilePicker:
             return None
 
         request_id = str(uuid.uuid4())
-        _response_events[request_id] = threading.Event()
+        _pending.create(request_id)
 
-        try:
-            app._connection.send_file_dialog(
-                action="saveFile",
-                request_id=request_id,
-                title=title,
-                message=message,
-                button_label=button_label,
-                directory=directory,
-                shows_hidden_files=shows_hidden_files,
-                filename=filename,
-                name_field_label=name_field_label,
-                can_create_directories=can_create_directories,
-                extensions=extensions,
-                uttypes=uttypes,
-                allows_other_file_types=allows_other_file_types,
-                shows_tag_field=shows_tag_field,
-            )
+        app._connection.send_file_dialog(
+            action="saveFile",
+            request_id=request_id,
+            title=title,
+            message=message,
+            button_label=button_label,
+            directory=directory,
+            shows_hidden_files=shows_hidden_files,
+            filename=filename,
+            name_field_label=name_field_label,
+            can_create_directories=can_create_directories,
+            extensions=extensions,
+            uttypes=uttypes,
+            allows_other_file_types=allows_other_file_types,
+            shows_tag_field=shows_tag_field,
+        )
 
-            response = self._wait_for_response(request_id)
-            if not response or response.get("cancelled", True):
+        response = self._wait_for_response(request_id)
+        if not response or response.get("cancelled", True):
+            return None
+
+        save_result = response.get("saveResult")
+        if not save_result:
+            return None
+
+        result = SaveResult(
+            path=save_result["path"],
+            tags=save_result.get("tags", []),
+        )
+
+        # Run validator if provided
+        if validator:
+            error = validator(result.path)
+            if error:
                 return None
 
-            save_result = response.get("saveResult")
-            if not save_result:
-                return None
-
-            result = SaveResult(
-                path=save_result["path"],
-                tags=save_result.get("tags", []),
-            )
-
-            # Run validator if provided
-            if validator:
-                error = validator(result.path)
-                if error:
-                    return None
-
-            return result
-
-        finally:
-            _response_events.pop(request_id, None)
-            _pending_responses.pop(request_id, None)
+        return result

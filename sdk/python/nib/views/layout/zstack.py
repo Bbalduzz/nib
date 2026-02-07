@@ -29,6 +29,7 @@ Example:
         )
 """
 
+import warnings
 from typing import Any, List, Optional, Union
 from ..base import View
 from ...types import Alignment, resolve_enum
@@ -120,6 +121,12 @@ class ZStack(View):
                     alignment=nib.Alignment.topTrailing,
                 )
         """
+        if children is not None and controls is None:
+            warnings.warn(
+                "'children' is deprecated, use 'controls'",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         super().__init__(**kwargs)
         # controls is the preferred name, children is alias for backwards compatibility
         self._children = controls if controls is not None else (children or [])

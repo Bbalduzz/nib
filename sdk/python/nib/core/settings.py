@@ -42,12 +42,13 @@ import threading
 import uuid
 from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
 
+from .pending import PendingRequests
+
 if TYPE_CHECKING:
     from .connection import Connection
 
-# Storage for batch load responses
-_batch_responses: Dict[str, Dict[str, Any]] = {}
-_batch_events: Dict[str, threading.Event] = {}
+# Thread-safe storage for batch load responses
+_pending = PendingRequests()
 
 
 def _handle_settings_batch_response(request_id: str, values: Dict[str, Any]) -> None:
@@ -59,9 +60,7 @@ def _handle_settings_batch_response(request_id: str, values: Dict[str, Any]) -> 
         request_id: The unique request ID to match.
         values: Dictionary of key-value pairs loaded from UserDefaults.
     """
-    if request_id in _batch_events:
-        _batch_responses[request_id] = values
-        _batch_events[request_id].set()
+    _pending.resolve(request_id, values)
 
 
 class Settings:

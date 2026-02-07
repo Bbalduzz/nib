@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "nib"
-version = "0.1.2"
+name = "pynib"
+dynamic = ["version"]
 description = "Python-SwiftUI Bridge for macOS Status Bar Apps"
 readme = "README.md"
 license = "MIT"
@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 authors = [
     { name = "Edoardo Balducci" }
 ]
-keywords = ["macos", "swiftui", "status-bar", "menu-bar", "ui"]
+keywords = ["macos", "swiftui", "status-bar", "menu-bar", "ui", "python"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: MacOS X",
@@ -28,8 +28,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "msgpack>=1.0.0",
-    "watchdog>=3.0.0",
+    "msgpack>=1.1.2",
+    "watchdog>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -43,6 +43,9 @@ nib = "nib.cli:main"
 [project.urls]
 Homepage = "https://github.com/Bbalduzz/nib"
 Repository = "https://github.com/Bbalduzz/nib"
+
+[tool.hatch.version]
+path = "sdk/python/nib/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sdk/python/nib"]

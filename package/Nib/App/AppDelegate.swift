@@ -4,7 +4,7 @@ import ServiceManagement
 import SwiftUI
 import UserNotifications
 
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarController: StatusBarController?
     var socketServer: SocketServer?
     var hotkeyManager = HotkeyManager()
@@ -259,7 +259,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
             case .notify(let payload):
                 debugPrint("Notification (legacy) - title:", payload.title)
-                self?.sendNotification(payload)
+                self?.notificationService.sendLegacyNotification(payload)
 
             case .notification(let payload):
                 debugPrint("Notification - action:", payload.action)
@@ -366,22 +366,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     // MARK: - Notifications
 
-    /// Whether we're running as the main executable of a proper .app bundle
-    /// UserNotifications framework crashes without a proper app bundle
-    private lazy var isRunningFromAppBundle: Bool = {
-        // We need to check that:
-        // 1. Bundle path ends with .app (we are the main app, not something inside it)
-        // 2. The executable is in Contents/MacOS/ (standard app bundle structure)
-        let bundlePath = Bundle.main.bundlePath
-        let executablePath = Bundle.main.executablePath ?? ""
-
-        // Must be .app bundle AND executable must be in Contents/MacOS/
-        let isAppBundle = bundlePath.hasSuffix(".app")
-        let isMainExecutable = executablePath.contains("/Contents/MacOS/")
-
-        return isAppBundle && isMainExecutable
-    }()
-
     private func setupNotifications() {
         // Configure notification service with callbacks
         notificationService.configure(
@@ -395,16 +379,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Set up notification center (handles app bundle check internally)
         notificationService.setupNotificationCenter()
-
-        // Legacy setup for old notification API
-        guard isRunningFromAppBundle else {
-            debugPrint(
-                "Skipping legacy notification setup (not running from .app bundle - dev mode)")
-            return
-        }
-
-        let center = UNUserNotificationCenter.current()
-        center.delegate = notificationService
     }
 
     private func sendNotificationResponse(_ response: NotificationService.NotificationResponse) {
@@ -501,81 +475,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self.intValue = intValue
             }
         }
-    }
-
-    private func sendNotification(_ payload: NibMessage.NotifyPayload) {
-        // IMPORTANT: Must check app bundle BEFORE touching UNUserNotificationCenter
-        if isRunningFromAppBundle {
-            sendNotificationModern(payload)
-        } else {
-            sendNotificationLegacy(payload)
-        }
-    }
-
-    private func sendNotificationModern(_ payload: NibMessage.NotifyPayload) {
-        let content = UNMutableNotificationContent()
-        content.title = payload.title
-
-        if let body = payload.body {
-            content.body = body
-        }
-        if let subtitle = payload.subtitle {
-            content.subtitle = subtitle
-        }
-        if payload.sound ?? true {
-            content.sound = .default
-        }
-
-        // Use provided identifier or generate a unique one
-        let identifier = payload.identifier ?? UUID().uuidString
-
-        // Create request with no trigger (immediate delivery)
-        let request = UNNotificationRequest(
-            identifier: identifier,
-            content: content,
-            trigger: nil
-        )
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                debugPrint("Failed to send notification: \(error)")
-            } else {
-                debugPrint("Notification sent: \(payload.title)")
-            }
-        }
-    }
-
-    private func sendNotificationLegacy(_ payload: NibMessage.NotifyPayload) {
-        // Use AppleScript for dev mode (no bundle) - avoids deprecated APIs
-        let title = payload.title.replacingOccurrences(of: "\"", with: "\\\"")
-        let body = (payload.body ?? "").replacingOccurrences(of: "\"", with: "\\\"")
-        let subtitle = payload.subtitle?.replacingOccurrences(of: "\"", with: "\\\"")
-
-        var script = "display notification \"\(body)\" with title \"\(title)\""
-        if let sub = subtitle {
-            script += " subtitle \"\(sub)\""
-        }
-        if payload.sound ?? true {
-            script += " sound name \"default\""
-        }
-
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
-        process.arguments = ["-e", script]
-        try? process.run()
-        debugPrint("Notification sent (AppleScript): \(payload.title)")
-    }
-
-    // MARK: - UNUserNotificationCenterDelegate
-
-    func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) ->
-            Void
-    ) {
-        // Show notification even when app is in foreground
-        completionHandler([.banner, .sound])
     }
 
     // MARK: - Service Routing

@@ -231,7 +231,12 @@ class StatusBarController: NSObject, NSPopoverDelegate {
 
             // Handle insert at specific position
             if patch.op == "insert", let newNode = patch.node {
-                let targetParentId = String(patch.id.dropLast(2))  // Remove ".X" suffix
+                let targetParentId: String
+                if let dotIndex = patch.id.lastIndex(of: ".") {
+                    targetParentId = String(patch.id[..<dotIndex])
+                } else {
+                    targetParentId = ""
+                }
                 if targetParentId == node.id {
                     if let insertIndex = extractIndex(from: patch.id, parentId: node.id),
                         insertIndex <= updatedChildren.count
@@ -254,86 +259,16 @@ class StatusBarController: NSObject, NSPopoverDelegate {
     private func mergeProps(_ existing: ViewNode.Props, with updates: [String: AnyCodable])
         -> ViewNode.Props
     {
-        var props = existing
-        for (key, value) in updates {
-            switch key {
-            // Text
-            case "content":
-                props.content = value.value as? String
-
-            // TextField / SecureField
-            case "text":
-                props.text = value.value as? String
-            case "placeholder":
-                props.placeholder = value.value as? String
-
-            // Toggle
-            case "isOn":
-                props.isOn = value.value as? Bool
-
-            // Slider
-            case "value":
-                props.value = value.value as? Double
-            case "minValue":
-                props.minValue = value.value as? Double
-            case "maxValue":
-                props.maxValue = value.value as? Double
-            case "step":
-                props.step = value.value as? Double
-
-            // ProgressView
-            case "progress":
-                props.progress = value.value as? Double
-
-            // Common
-            case "label":
-                props.label = value.value as? String
-            case "icon":
-                props.icon = value.value as? String
-
-            // Stack
-            case "spacing":
-                if let doubleVal = value.value as? Double {
-                    props.spacing = CGFloat(doubleVal)
-                } else if let intVal = value.value as? Int {
-                    props.spacing = CGFloat(intVal)
-                }
-            case "alignment":
-                props.alignment = value.value as? String
-
-            // Picker
-            case "selection":
-                props.selection = value.value as? String
-
-            // DisclosureGroup
-            case "isExpanded":
-                props.isExpanded = value.value as? Bool
-
-            // Shapes
-            case "cornerRadius":
-                if let doubleVal = value.value as? Double {
-                    props.cornerRadius = CGFloat(doubleVal)
-                } else if let intVal = value.value as? Int {
-                    props.cornerRadius = CGFloat(intVal)
-                }
-
-            // Image
-            case "sourceType":
-                props.sourceType = value.value as? String
-            case "sourceValue":
-                props.sourceValue = value.value as? String
-            case "systemName":
-                props.systemName = value.value as? String
-
-            // Link
-            case "url":
-                props.url = value.value as? String
-
-            default:
-                debugPrint("mergeProps: unhandled key '\(key)'")
-            }
+        // Round-trip through JSON to decode the full Props struct.
+        // diff.py sends complete props in each patch, so this handles all 80+ prop types.
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: updates.mapValues { $0.value })
+            let decoded = try JSONDecoder().decode(ViewNode.Props.self, from: jsonData)
+            return decoded
+        } catch {
+            debugPrint("mergeProps: JSON round-trip failed, falling back to existing props: \(error)")
+            return existing
         }
-        return props
     }
 
     private func extractIndex(from id: String, parentId: String) -> Int? {

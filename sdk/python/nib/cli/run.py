@@ -16,6 +16,7 @@ from typing import Callable, Optional, Set
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
+from .. import __version__
 from ..core.connection import Connection
 from ..core.logging import logger
 
@@ -106,6 +107,8 @@ class HotReloadRunner:
         if not self.script_path.exists():
             logger.error(f"Script not found: {self.script_path}")
             return 1
+
+        logger.info(f"Using nib version {__version__}")
 
         try:
             self._setup_runtime()

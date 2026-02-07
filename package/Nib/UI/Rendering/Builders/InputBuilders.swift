@@ -200,6 +200,12 @@ struct TextEditorWrapper: View {
 
     var body: some View {
         let base = TextEditor(text: $localText)
+            .onChange(of: text) { _, newValue in
+                // Sync local state when prop changes from Python
+                if localText != newValue {
+                    localText = newValue
+                }
+            }
             .onChange(of: localText) { _, newValue in
                 onEvent(nodeId, "change:\(newValue)")
             }

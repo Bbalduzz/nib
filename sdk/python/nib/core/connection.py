@@ -15,6 +15,7 @@ Note:
     :class:`~nib.App` API instead of interacting with Connection directly.
 """
 
+import queue
 import socket
 import struct
 import threading
@@ -59,6 +60,8 @@ class Connection:
         self._socket: Optional[socket.socket] = None
         self._connected = False
         self._read_thread: Optional[threading.Thread] = None
+        self._event_thread: Optional[threading.Thread] = None
+        self._event_queue: queue.Queue = queue.Queue()
         self._on_event: Optional[Callable[[str, str], None]] = None
         self._send_lock = threading.Lock()
 
@@ -593,13 +596,30 @@ class Connection:
                 self._connected = False
 
     def _start_read_thread(self) -> None:
-        """Start the background thread for reading events.
+        """Start background threads for reading messages and dispatching events.
 
         Creates a daemon thread that continuously reads messages from
-        the Swift runtime and dispatches them to the event handler.
+        the Swift runtime, and a separate event dispatch thread that
+        processes events sequentially to avoid concurrent view mutations.
         """
         self._read_thread = threading.Thread(target=self._read_loop, daemon=True)
         self._read_thread.start()
+        self._event_thread = threading.Thread(target=self._event_loop, daemon=True)
+        self._event_thread.start()
+
+    def _event_loop(self) -> None:
+        """Sequential event dispatch loop.
+
+        Pulls (node_id, event) tuples from the queue and calls
+        _dispatch_event one at a time, ensuring event handlers never
+        run concurrently.
+        """
+        while True:
+            item = self._event_queue.get()
+            if item is None:
+                break
+            node_id, event = item
+            self._dispatch_event(node_id, event)
 
     def _read_loop(self) -> None:
         """Background loop for reading events from the Swift runtime.
@@ -648,13 +668,8 @@ class Connection:
             node_id = message.get("nodeId", "")
             event = message.get("event", "")
             logger.info("Dispatching event", node_id=node_id, event=event)
-            # Run event handlers on a separate thread to avoid blocking the read loop
-            # This allows service requests made in callbacks to complete
-            threading.Thread(
-                target=self._dispatch_event,
-                args=(node_id, event),
-                daemon=True,
-            ).start()
+            # Queue events for sequential dispatch to avoid concurrent view mutations
+            self._event_queue.put((node_id, event))
 
         elif msg_type == "serviceResponse":
             self._handle_service_response(message)

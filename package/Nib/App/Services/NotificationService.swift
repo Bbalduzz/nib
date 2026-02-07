@@ -523,6 +523,69 @@ class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         ]
     }
 
+    // MARK: - Legacy Notification API (NibMessage.NotifyPayload)
+
+    /// Send a notification using the legacy API (simple title/body).
+    /// Routes to modern or AppleScript fallback based on app bundle status.
+    func sendLegacyNotification(_ payload: NibMessage.NotifyPayload) {
+        if isRunningFromAppBundle {
+            sendLegacyNotificationModern(payload)
+        } else {
+            sendLegacyNotificationViaAppleScript(payload)
+        }
+    }
+
+    private func sendLegacyNotificationModern(_ payload: NibMessage.NotifyPayload) {
+        let content = UNMutableNotificationContent()
+        content.title = payload.title
+
+        if let body = payload.body {
+            content.body = body
+        }
+        if let subtitle = payload.subtitle {
+            content.subtitle = subtitle
+        }
+        if payload.sound ?? true {
+            content.sound = .default
+        }
+
+        let identifier = payload.identifier ?? UUID().uuidString
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                debugPrint("Failed to send notification: \(error)")
+            } else {
+                debugPrint("Notification sent: \(payload.title)")
+            }
+        }
+    }
+
+    private func sendLegacyNotificationViaAppleScript(_ payload: NibMessage.NotifyPayload) {
+        let title = payload.title.replacingOccurrences(of: "\"", with: "\\\"")
+        let body = (payload.body ?? "").replacingOccurrences(of: "\"", with: "\\\"")
+        let subtitle = payload.subtitle?.replacingOccurrences(of: "\"", with: "\\\"")
+
+        var script = "display notification \"\(body)\" with title \"\(title)\""
+        if let sub = subtitle {
+            script += " subtitle \"\(sub)\""
+        }
+        if payload.sound ?? true {
+            script += " sound name \"default\""
+        }
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = ["-e", script]
+        try? process.run()
+        debugPrint("Notification sent (AppleScript): \(payload.title)")
+    }
+
     // MARK: - UNUserNotificationCenterDelegate
 
     func userNotificationCenter(

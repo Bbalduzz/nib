@@ -27,6 +27,7 @@ Example:
         )
 """
 
+import warnings
 from typing import Any, Callable, Optional, Union
 from ..base import View
 from ...types import TextFieldStyle, resolve_enum
@@ -138,6 +139,12 @@ class TextField(View):
                     autocorrection=False,
                 )
         """
+        if text is not None:
+            warnings.warn(
+                "'text' is deprecated, use 'value'",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         super().__init__(**kwargs)
         self._placeholder = placeholder
         # value is the preferred name, text is alias for backwards compatibility
@@ -279,6 +286,12 @@ class SecureField(View):
                     style=nib.TextFieldStyle.roundedBorder,
                 )
         """
+        if text is not None:
+            warnings.warn(
+                "'text' is deprecated, use 'value'",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         super().__init__(**kwargs)
         self._placeholder = placeholder
         # value is the preferred name, text is alias for backwards compatibility

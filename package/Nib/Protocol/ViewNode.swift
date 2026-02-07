@@ -42,7 +42,6 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
     // MARK: - Hashable
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.combine(type)
     }
 
     /// Convenience accessor for the single background view
