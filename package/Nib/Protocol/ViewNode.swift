@@ -59,6 +59,29 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         children?.first { $0.slot == slotName }
     }
 
+    // Direct memberwise initializer (for tree reconstruction from flat nodes)
+    init(
+        id: String,
+        type: ViewType,
+        props: Props,
+        children: [ViewNode]?,
+        modifiers: [ViewModifier]?,
+        backgroundViews: [ViewNode]?,
+        overlayViews: [ViewNode]?,
+        slot: String?,
+        animationContext: AnimationContext?
+    ) {
+        self.id = id
+        self.type = type
+        self.props = props
+        self.children = children
+        self.modifiers = modifiers
+        self.backgroundViews = backgroundViews
+        self.overlayViews = overlayViews
+        self.slot = slot
+        self.animationContext = animationContext
+    }
+
     // Custom decoder to handle missing props
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -406,5 +429,91 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         var baseURL: String?
         var allowsBackForward: Bool?
         var allowsMagnification: Bool?
+    }
+}
+
+// MARK: - Flat Node for Iterative Decoding
+
+/// A flat representation of a ViewNode, decoded without recursion.
+/// Each node stores ID references to children instead of nested nodes,
+/// preventing stack overflow during MessagePack decoding.
+struct FlatViewNode: Codable {
+    let id: String
+    let type: ViewNode.ViewType
+    var props: ViewNode.Props
+    var modifiers: [ViewNode.ViewModifier]?
+    var slot: String?
+    var animationContext: ViewNode.AnimationContext?
+
+    // Flat references (no recursion)
+    var parentId: String?
+    var childIds: [String]?
+    var backgroundId: String?
+    var overlayId: String?
+}
+
+// MARK: - Iterative Tree Reconstruction
+
+extension ViewNode {
+    /// Reconstruct a nested ViewNode tree from a flat node list.
+    /// Uses iterative bottom-up construction (no recursion, O(n) time).
+    static func fromFlatNodes(_ flatNodes: [FlatViewNode], rootId: String) -> ViewNode? {
+        guard !flatNodes.isEmpty else { return nil }
+
+        // Build lookup
+        var flatMap: [String: FlatViewNode] = [:]
+        flatMap.reserveCapacity(flatNodes.count)
+        for node in flatNodes {
+            flatMap[node.id] = node
+        }
+
+        // Sort by depth (deeper first). Depth = number of "." in ID.
+        // This ensures children are built before their parents.
+        let sorted = flatNodes.sorted { a, b in
+            let depthA = a.id.filter { $0 == "." }.count
+            let depthB = b.id.filter { $0 == "." }.count
+            return depthA > depthB
+        }
+
+        // Build ViewNodes bottom-up
+        var viewNodeMap: [String: ViewNode] = [:]
+        viewNodeMap.reserveCapacity(flatNodes.count)
+
+        for flat in sorted {
+            // Resolve children (order preserved from childIds)
+            let children: [ViewNode]? = flat.childIds?.compactMap { viewNodeMap[$0] }
+
+            // Resolve background view
+            let backgroundViews: [ViewNode]?
+            if let bgId = flat.backgroundId, let bgNode = viewNodeMap[bgId] {
+                backgroundViews = [bgNode]
+            } else {
+                backgroundViews = nil
+            }
+
+            // Resolve overlay view
+            let overlayViews: [ViewNode]?
+            if let ovId = flat.overlayId, let ovNode = viewNodeMap[ovId] {
+                overlayViews = [ovNode]
+            } else {
+                overlayViews = nil
+            }
+
+            let node = ViewNode(
+                id: flat.id,
+                type: flat.type,
+                props: flat.props,
+                children: (children?.isEmpty ?? true) ? nil : children,
+                modifiers: flat.modifiers,
+                backgroundViews: backgroundViews,
+                overlayViews: overlayViews,
+                slot: flat.slot,
+                animationContext: flat.animationContext
+            )
+
+            viewNodeMap[node.id] = node
+        }
+
+        return viewNodeMap[rootId]
     }
 }

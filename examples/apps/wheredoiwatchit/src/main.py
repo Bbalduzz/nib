@@ -198,7 +198,7 @@ def main(app: nib.App):
                 [
                     image,
                     nib.VStack(
-                        [title, release_year, short_description],
+                        [nib.HStack([title, release_year]), short_description],
                         alignment=nib.HorizontalAlignment.LEADING,
                         spacing=5,
                     ),
@@ -220,20 +220,29 @@ def main(app: nib.App):
         controls=[
             # Header
             nib.HStack(
-                controls=[
-                    nib.Text(
-                        "Where do i watch it?",
-                        style=nib.TextStyle(
-                            font=nib.Font.custom(
-                                "SF Pro Rounded",
-                                size=15,
-                            )
-                        ),
+                [
+                    nib.HStack(
+                        controls=[
+                            nib.VStack(
+                                [
+                                    nib.Text(
+                                        "Where do i watch it?",
+                                        style=nib.TextStyle(
+                                            font=nib.Font.custom(
+                                                "SF Pro Rounded",
+                                                size=15,
+                                            )
+                                        ),
+                                    ),
+                                ],
+                                alignment=nib.HorizontalAlignment.LEADING,
+                            ),
+                            nib.Spacer(),
+                            services_row,
+                        ],
+                        alignment=nib.HorizontalAlignment.LEADING,
                     ),
-                    nib.Spacer(),
-                    services_row,
-                ],
-                alignment=nib.HorizontalAlignment.LEADING,
+                ]
             ),
             nib.ZStack(
                 controls=[

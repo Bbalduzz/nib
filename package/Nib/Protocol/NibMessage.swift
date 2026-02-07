@@ -450,6 +450,9 @@ struct RawMessage: Codable {
     struct Payload: Codable {
         // For render
         let root: ViewNode?
+        // For flatRender
+        let nodes: [FlatViewNode]?
+        let rootId: String?
         let menu: [NibMessage.MenuItemConfig]?
         let hotkeys: [String]?
         let fonts: [String: String]?  // Font name -> path or URL

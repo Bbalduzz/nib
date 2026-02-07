@@ -55,7 +55,7 @@ from typing import Callable, Dict, List, Optional, Union
 import uuid
 
 from .connection import Connection
-from .diff import diff_trees
+from .diff import diff_trees  # noqa: F401 (kept for backward compatibility)
 from .logging import logger
 from .settings import Settings
 from ..views import View
@@ -1202,58 +1202,39 @@ class App:
                 if tab.content:
                     self._collect_actions(tab.content, f"settings.{i}")
 
-        # Serialize
-        root_dict = root.to_dict()
-
-        # Compute diff with previous tree
-        patches = diff_trees(self._previous_tree, root_dict)
+        # Serialize as flat list (iterative, prevents Swift stack overflow)
+        nodes, root_id = root.to_flat_list()
 
         # Debug output
         if self._previous_tree is None:
-            logger.info(f"Initial render", root_type=root_dict.get('type'))
-        else:
-            logger.debug(f"Sending {len(patches)} patches")
-            for p in patches:
-                logger.debug(f"  Patch: {p['op']} @ {p['id']}", props=p.get('props', p.get('node', {}).get('props', '')))
+            logger.info(f"Initial render (root_type={root._type})")
 
-        # Send patches or full render
-        # NOTE: Incremental patching disabled - Swift-side handling has bugs
-        #       Always use send_render so menu/hotkey changes are included
-        if self._previous_tree is None or len(patches) >= 0:
-            # First render or too many changes - send full tree
-            # Build menu config
-            menu_config = None
-            if self._menu:
-                menu_config = [item.to_dict() for item in self._menu]
+        # Build menu config
+        menu_config = None
+        if self._menu:
+            menu_config = [item.to_dict() for item in self._menu]
 
-            # Get hotkey list
-            hotkeys = list(self._hotkey_map.keys()) if self._hotkey_map else None
+        # Get hotkey list
+        hotkeys = list(self._hotkey_map.keys()) if self._hotkey_map else None
 
-            self._connection.send_render(
-                root=root_dict,
-                icon=self._serialize_icon(),
-                title=self._title,
-                width=self._width,
-                height=self._height,
-                menu=menu_config,
-                hotkeys=hotkeys,
-                fonts=self._get_all_fonts(),
-            )
-        else:
-            # Send incremental patches
-            self._connection.send_patch(
-                patches=patches,
-                icon=self._serialize_icon(),
-                title=self._title,
-                width=self._width,
-                height=self._height,
-            )
+        # Send flat render (decoded iteratively on Swift side)
+        self._connection.send_flat_render(
+            nodes=nodes,
+            root_id=root_id,
+            icon=self._serialize_icon(),
+            title=self._title,
+            width=self._width,
+            height=self._height,
+            menu=menu_config,
+            hotkeys=hotkeys,
+            fonts=self._get_all_fonts(),
+        )
 
-        # Send settings page if configured (only on full render)
+        # Send settings page if configured (only on first render)
         is_full_render = self._previous_tree is None
 
-        # Store for next diff
-        self._previous_tree = root_dict
+        # Mark that we've done the first render
+        self._previous_tree = True
 
         # Send settings on first render
         if is_full_render and self._settings_page:

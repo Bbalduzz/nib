@@ -563,7 +563,7 @@ class View:
                     stack.append((child, child_path, depth + 1, view_id))
 
             # Handle special child containers (e.g., _content, _destination)
-            if hasattr(view, "_content") and view._content is not None and view._content._visible:
+            if hasattr(view, "_content") and view._content is not None and isinstance(view._content, View) and view._content._visible:
                 child_path = f"{current_path}.0"
                 child_id = view._content._id if view._content._id is not None else child_path
                 child_ids.append(child_id)

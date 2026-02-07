@@ -221,6 +221,24 @@ class SocketServer {
                 fonts: raw.payload?.fonts
             )
             return .render(payload)
+        case "flatRender":
+            // Decode flat nodes and reconstruct tree iteratively (prevents stack overflow)
+            let flatNodes = raw.payload?.nodes ?? []
+            let rootId = raw.payload?.rootId ?? "0"
+            let root = ViewNode.fromFlatNodes(flatNodes, rootId: rootId)
+            let flatPayload = NibMessage.RenderPayload(
+                root: root,
+                statusBar: raw.payload?.statusBar.map {
+                    NibMessage.RenderPayload.StatusBarConfig(icon: $0.icon, title: $0.title)
+                },
+                window: raw.payload?.window.map {
+                    NibMessage.WindowConfig(width: $0.width, height: $0.height)
+                },
+                menu: raw.payload?.menu,
+                hotkeys: raw.payload?.hotkeys,
+                fonts: raw.payload?.fonts
+            )
+            return .render(flatPayload)
         case "patch":
             debugPrint("parseMessage: parsing patch, patches count =", raw.payload?.patches?.count ?? 0)
             let payload = NibMessage.PatchPayload(
