@@ -1,6 +1,7 @@
 site_name: Nib
 site_description: Build native macOS menu bar apps in Python
 site_url: https://bbalduzz.github.io/nib/
+repo_url: https://github.com/Bbalduzz/nib
 
 theme:
   name: shadcn
