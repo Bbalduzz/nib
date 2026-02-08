@@ -10,7 +10,7 @@ examples/tests/*/dist/
 *.pyc
 __pycache__/
 media/demo.mov
-architecture.md
+/architecture.md
 
 examples/apps/diduknow
 examples/apps/rayondl
