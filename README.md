@@ -106,7 +106,7 @@ Nib runs as two processes connected by a Unix socket. Your Python code builds a 
 **Requirements:** macOS 14+, Python 3.10+
 
 ```bash
-pip install nib
+pip install pynib
 ```
 
 Or build from source:
