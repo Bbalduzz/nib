@@ -1,0 +1,3 @@
+docs/** linguist-documentation
+site/** linguist-generated
+*.apng linguist-generated
