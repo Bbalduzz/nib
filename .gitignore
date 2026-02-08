@@ -9,6 +9,7 @@ examples/tests/*/dist/
 
 *.pyc
 __pycache__/
+*.db
 media/demo.mov
 /architecture.md
 
