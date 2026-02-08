@@ -79,8 +79,8 @@ from .deps import (
 )
 
 # python-build-standalone configuration
-PBS_VERSION = "20241219"
-PYTHON_VERSION = "3.12"
+PBS_VERSION = "20260203"
+PYTHON_VERSION = f"{sys.version_info.major}.{sys.version_info.minor}"
 
 
 def get_cache_dir() -> Path:
@@ -94,23 +94,66 @@ def get_cache_dir() -> Path:
     return cache_dir
 
 
+# another option would be: after downloading the PBS runtime,
+# use that interpreter to compile the .pyc files instead of the host python.
+# that way the magic numbers always match regardless of version differences.
 def get_python_standalone_url(arch: Literal["arm64", "x86_64"]) -> str:
     """Get download URL for python-build-standalone distribution.
 
+    Finds the available build matching the host Python's major.minor version,
+    since python-build-standalone may ship a different micro version than
+    what's installed locally (e.g. host has 3.12.11, PBS ships 3.12.12).
+    This is safe because .pyc magic numbers only change across major.minor.
     Args:
         arch: Target architecture ("arm64" or "x86_64").
 
     Returns:
         str: Full download URL for the distribution.
+
+    Raises:
+        RuntimeError: If no matching Python build is found for this version.
     """
+    import re
+
     arch_map = {
         "arm64": "aarch64",
         "x86_64": "x86_64",
     }
     pbs_arch = arch_map[arch]
-    # install_only variant - smaller, sufficient for runtime
-    filename = f"cpython-{PYTHON_VERSION}.8+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
-    return f"https://github.com/astral-sh/python-build-standalone/releases/download/{PBS_VERSION}/{filename}"
+    base_url = f"https://github.com/astral-sh/python-build-standalone/releases/download/{PBS_VERSION}"
+
+    # pattern: cpython-3.12.X+DATE-ARCH-apple-darwin-install_only.tar.gz
+    pattern = re.compile(
+        rf"cpython-{PYTHON_VERSION}\.\d+\+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only\.tar\.gz"
+    )
+    full_version = (
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    )
+    exact_filename = f"cpython-{full_version}+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
+    exact_url = f"{base_url}/{exact_filename}"
+    try:
+        req = urllib.request.Request(exact_url, method="HEAD")
+        urllib.request.urlopen(req)
+        return exact_url
+    except urllib.error.HTTPError:
+        pass
+    # exact micro not available, query the release page for a matching build
+    api_url = f"https://api.github.com/repos/astral-sh/python-build-standalone/releases/tags/{PBS_VERSION}"
+    try:
+        with urllib.request.urlopen(api_url) as resp:
+            import json
+
+            release = json.loads(resp.read())
+            for asset in release.get("assets", []):
+                if pattern.match(asset["name"]):
+                    return asset["browser_download_url"]
+    except Exception:
+        pass
+
+    raise RuntimeError(
+        f"No python-build-standalone build found for Python {PYTHON_VERSION} "
+        f"({pbs_arch}) in release {PBS_VERSION}"
+    )
 
 
 def download_python_standalone(arch: str) -> Path:
@@ -134,7 +177,7 @@ def download_python_standalone(arch: str) -> Path:
         logger.info(f"Using cached Python: {filename}")
         return cached_path
 
-    logger.info(f"Downloading Python ({arch}): {filename}")
+    logger.info(f"Downloading Python ({PYTHON_VERSION} for {arch}): {filename}")
 
     try:
         with urllib.request.urlopen(url) as response:
