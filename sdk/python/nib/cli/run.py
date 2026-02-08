@@ -51,12 +51,10 @@ class ReloadHandler(FileSystemEventHandler):
         if not event.src_path.endswith(".py"):
             return
 
-        # Skip excluded directories
         path_parts = Path(event.src_path).parts
         if any(part in EXCLUDED_DIRS for part in path_parts):
             return
 
-        # Debounce rapid changes (e.g., editor save)
         with self._lock:
             if self._debounce_timer:
                 self._debounce_timer.cancel()
@@ -99,7 +97,6 @@ class HotReloadRunner:
         self._reload_lock = threading.Lock()
         self._stop_event = threading.Event()
 
-        # Current app state
         self._current_app = None
 
     def start(self) -> int:
@@ -114,10 +111,7 @@ class HotReloadRunner:
             self._setup_runtime()
             self._setup_watcher()
 
-            # Initial load
             self._reload()
-
-            # Main loop
             self._main_loop()
 
             return 0

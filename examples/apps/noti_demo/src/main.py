@@ -17,7 +17,7 @@ def main(app: nib.App):
     app.title = "Notifications"
     app.icon = nib.SFSymbol("bell.fill")
     app.width = 380
-    app.height = 650
+    app.height = 480
     app.menu = [nib.MenuItem("Quit", action=app.quit)]
 
     # Status display
@@ -163,34 +163,6 @@ def main(app: nib.App):
 
     app.notifications.request_permission(on_permission)
 
-    # --- Permissions demo ---
-    perm_camera_text = nib.Text("Camera: ...", font=nib.Font.CAPTION)
-    perm_mic_text = nib.Text("Microphone: ...", font=nib.Font.CAPTION)
-    perm_notif_text = nib.Text("Notifications: ...", font=nib.Font.CAPTION)
-
-    def refresh_permissions():
-        cam = app.permissions.check(nib.Permission.CAMERA)
-        mic = app.permissions.check(nib.Permission.MICROPHONE)
-        notif = app.permissions.check(nib.Permission.NOTIFICATIONS)
-        perm_camera_text.content = f"Camera: {cam.value}"
-        perm_mic_text.content = f"Microphone: {mic.value}"
-        perm_notif_text.content = f"Notifications: {notif.value}"
-
-    def request_camera():
-        granted = app.permissions.request(nib.Permission.CAMERA)
-        update_status(f"Camera permission: {'granted' if granted else 'denied'}")
-        refresh_permissions()
-
-    def request_mic():
-        granted = app.permissions.request(nib.Permission.MICROPHONE)
-        update_status(f"Microphone permission: {'granted' if granted else 'denied'}")
-        refresh_permissions()
-
-    def request_notif():
-        granted = app.permissions.request(nib.Permission.NOTIFICATIONS)
-        update_status(f"Notification permission: {'granted' if granted else 'denied'}")
-        refresh_permissions()
-
     app.build(
         nib.VStack(
             controls=[
@@ -260,36 +232,6 @@ def main(app: nib.App):
                                     action=cancel_all,
                                     role=nib.ButtonRole.DESTRUCTIVE,
                                 ),
-                            ],
-                            spacing=8,
-                        ),
-                    ],
-                    spacing=8,
-                    padding=12,
-                    background=nib.Rectangle(
-                        corner_radius=8,
-                        fill=nib.Color.hex("#1a1a1a"),
-                    ),
-                ),
-                nib.Spacer(min_length=8),
-                # Permissions
-                nib.VStack(
-                    controls=[
-                        nib.Text("Permissions", font=nib.Font.HEADLINE),
-                        perm_camera_text,
-                        perm_mic_text,
-                        perm_notif_text,
-                        nib.HStack(
-                            controls=[
-                                nib.Button("Check All", action=refresh_permissions),
-                            ],
-                            spacing=8,
-                        ),
-                        nib.HStack(
-                            controls=[
-                                nib.Button("Req Camera", action=request_camera),
-                                nib.Button("Req Mic", action=request_mic),
-                                nib.Button("Req Notif", action=request_notif),
                             ],
                             spacing=8,
                         ),

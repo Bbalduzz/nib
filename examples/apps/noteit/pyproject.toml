@@ -14,7 +14,7 @@ entry = "src/main.py"
 [tool.nib.build]
 # App display name (defaults to project name)
 name = "Noteit"
-
+launch_at_login = true
 # Bundle identifier (defaults to com.nib.<name>)
 # identifier = "com.example.noteit"
 

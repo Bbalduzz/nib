@@ -137,16 +137,37 @@ name = "{name}"
 # copyright = "Copyright © 2025 Your Name"
 # category = "public.app-category.utilities"
 # notification_style = "banner"  # "banner", "alert", or "none"
+# dock_icon = false              # true to show in Dock (default: menu-bar only)
+# background_only = false        # true for background daemon (no UI)
+# build_number = "1"             # separate build number (defaults to version)
+# allow_http = false             # true for all domains, or ["api.example.com"]
 # url_schemes = ["myapp"]
+
+# File type associations
+# [[tool.nib.build.plist.document_types]]
+# name = "Text Document"
+# extensions = ["txt", "md"]
+# role = "Viewer"  # "Viewer" or "Editor"
 
 # Privacy usage descriptions
 # [tool.nib.build.plist.usage]
-# microphone = "This app needs microphone access for..."
 # camera = "This app needs camera access for..."
+# microphone = "This app needs microphone access for..."
 # location = "This app needs location access for..."
 # apple_events = "This app needs to control other apps for..."
+# contacts = "This app needs contacts access for..."
+# photos = "This app needs photo library access for..."
+# calendars = "This app needs calendar access for..."
+# reminders = "This app needs reminders access for..."
+# bluetooth = "This app needs Bluetooth access for..."
+# speech_recognition = "This app needs speech recognition for..."
+# desktop_folder = "This app needs Desktop folder access for..."
+# downloads_folder = "This app needs Downloads folder access for..."
+# network_volumes = "This app needs network volume access for..."
+# removable_volumes = "This app needs removable volume access for..."
+# accessibility = "This app needs accessibility access for..."
 
-# Custom plist keys
+# Custom plist keys (escape hatch — merged last, can override anything)
 # [tool.nib.build.plist.custom]
 # MyCustomKey = "value"
 """
@@ -161,7 +182,7 @@ A macOS menu bar application built with [nib](https://github.com/Bbalduzz/nib).
 Run the app in development mode:
 
 ```bash
-python src/main.py
+nib run main.py
 ```
 
 ## Building

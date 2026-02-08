@@ -11,3 +11,5 @@ examples/tests/*/dist/
 __pycache__/
 media/demo.mov
 architecture.md
+
+examples/apps/diduknow

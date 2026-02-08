@@ -170,15 +170,7 @@ def main(app: nib.App):
 
         notes.sort(key=lambda n: n["timestamp"], reverse=True)
 
-        menu_items = [
-            nib.MenuItem(
-                "New note",
-                icon="square.and.pencil",
-                action=new_note,
-                shortcut="ctrl+n",
-            ),
-            nib.MenuDivider(),
-        ]
+        menu_items = []
 
         if notes:
             for note in notes:
@@ -199,7 +191,7 @@ def main(app: nib.App):
                         content=nib.VStack(
                             [
                                 nib.Text(
-                                    note["title"],
+                                    note["title"][:20] + "...",
                                     font=nib.Font.custom("Iosevka", size=12),
                                 ),
                                 nib.Text(
@@ -209,7 +201,7 @@ def main(app: nib.App):
                                 ),
                             ],
                             alignment=nib.Alignment.LEADING,
-                            margin={"leading": -40},
+                            margin={"leading": -35},
                         ),
                         action=make_load_action(did),
                         height=38,

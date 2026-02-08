@@ -52,9 +52,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 from ..core.logging import logger
-from .build import build_app
+from .build import BuildConfig, build_app
 from .create import create_project
-from .deps import detect_imports, resolve_packages
+from .deps import detect_imports, extract_metadata, resolve_packages
 
 __all__ = ["build_app", "create_project", "detect_imports", "resolve_packages", "main"]
 
@@ -144,6 +144,75 @@ def load_pyproject_config() -> Optional[dict[str, Any]]:
         return nib_config
     except Exception:
         return None
+
+
+def _resolve_build_config(
+    args: argparse.Namespace, config: dict[str, Any]
+) -> tuple[Optional[BuildConfig], list[str]]:
+    """Merge CLI arguments with pyproject.toml config into a BuildConfig.
+
+    CLI arguments take precedence over pyproject.toml values. Returns
+    ``(config, [])`` on success or ``(None, errors)`` on failure.
+    """
+    build_config = config.get("build", {})
+
+    # Determine script path
+    script = args.script
+    if script is None:
+        entry = config.get("entry", "src/main.py")
+        script = Path(entry)
+        if not script.exists():
+            return None, [
+                f"Entry point not found: {script}",
+                "Specify a script or create pyproject.toml with [tool.nib] entry",
+            ]
+
+    # Resolve name (from CLI, config, or script metadata)
+    name = args.name or build_config.get("name")
+    if not name:
+        metadata = extract_metadata(script)
+        name = metadata.get("title") or script.stem.replace("_", " ").title()
+
+    # Resolve icon
+    icon = args.icon
+    if icon is None and "icon" in build_config:
+        icon = Path(build_config["icon"])
+    if icon is None:
+        for icon_name in ["icon.icns", "icon.png"]:
+            default_icon = Path("src/assets") / icon_name
+            if default_icon.exists():
+                icon = default_icon
+                break
+
+    # Normalize extra_deps
+    extra_deps = args.extra_deps or build_config.get("extra_deps")
+    if isinstance(extra_deps, list):
+        extra_deps = ",".join(extra_deps)
+
+    # Explicit deps from [project].dependencies
+    project_deps = config.get("_project_dependencies", [])
+
+    cfg = BuildConfig(
+        script=script,
+        name=name,
+        output=args.output or Path(build_config.get("output", "dist")),
+        icon=icon,
+        identifier=args.identifier or build_config.get("identifier"),
+        version=args.version or build_config.get("version", "1.0.0"),
+        extra_deps=extra_deps,
+        min_macos=args.min_macos or build_config.get("min_macos"),
+        plist_options=build_config.get("plist", {}),
+        explicit_deps=project_deps if project_deps else None,
+        arch=args.arch or build_config.get("arch"),
+        launch_at_login=build_config.get("launch_at_login", False),
+        no_compile=args.no_compile or not build_config.get("compile", True),
+        obfuscate=args.obfuscate or build_config.get("obfuscate", False),
+        native=args.native or build_config.get("native", False),
+        optimize=args.optimize or build_config.get("optimize", False),
+    )
+
+    errors = cfg.validate()
+    return cfg, errors
 
 
 def main() -> int:
@@ -281,6 +350,11 @@ def main() -> int:
         action="store_true",
         help="Compile Python to native .so modules with Cython (requires cython)",
     )
+    build_parser.add_argument(
+        "--optimize",
+        action="store_true",
+        help="Optimize bundle size (strip binaries, prune unused stdlib)",
+    )
 
     # Run command
     run_parser = subparsers.add_parser(
@@ -300,6 +374,12 @@ def main() -> int:
         action="store_true",
         help="Watch subdirectories for changes",
     )
+    run_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output (show info-level logs)",
+    )
 
     args = parser.parse_args()
 
@@ -307,7 +387,7 @@ def main() -> int:
     from ..core.logging import LogLevel
 
     if getattr(args, "verbose", False):
-        logger.set_level(LogLevel.DEBUG)
+        logger.set_level(LogLevel.INFO)
     else:
         logger.set_level(LogLevel.WARN)
 
@@ -315,100 +395,13 @@ def main() -> int:
         return create_project(name=args.name)
 
     elif args.command == "build":
-        # Load config from pyproject.toml
         config = load_pyproject_config() or {}
-        build_config = config.get("build", {})
-
-        # Determine script path
-        script = args.script
-        if script is None:
-            entry = config.get("entry", "src/main.py")
-            script = Path(entry)
-            if not script.exists():
-                logger.error(f"Entry point not found: {script}")
-                logger.error(
-                    "Specify a script or create pyproject.toml with [tool.nib] entry"
-                )
-                return 1
-
-        # Merge CLI args with config (CLI takes precedence)
-        output = args.output or Path(build_config.get("output", "dist"))
-        name = args.name or build_config.get("name")
-        icon = args.icon
-        if icon is None and "icon" in build_config:
-            icon = Path(build_config["icon"])
-        # Default icon location (check for .icns first, then .png)
-        if icon is None:
-            for icon_name in ["icon.icns", "icon.png"]:
-                default_icon = Path("src/assets") / icon_name
-                if default_icon.exists():
-                    icon = default_icon
-                    break
-
-        identifier = args.identifier or build_config.get("identifier")
-        version = args.version or build_config.get("version", "1.0.0")
-        extra_deps = args.extra_deps or build_config.get("extra_deps")
-        if isinstance(extra_deps, list):
-            extra_deps = ",".join(extra_deps)
-        min_macos = args.min_macos or build_config.get("min_macos")
-        excludes = args.exclude or build_config.get("exclude")
-        if isinstance(excludes, list):
-            excludes = ",".join(excludes)
-
-        # Get plist options from config
-        plist_options = build_config.get("plist", {})
-
-        # Get explicit dependencies from [project].dependencies
-        project_deps = config.get("_project_dependencies", [])
-
-        # Get arch from CLI or config
-        arch = args.arch or build_config.get("arch")
-
-        # Launch at login setting
-        launch_at_login = build_config.get("launch_at_login", False)
-
-        # Compilation setting (default: True, can be disabled via CLI or config)
-        no_compile = args.no_compile or not build_config.get("compile", True)
-
-        # Obfuscation setting (default: False, can be enabled via CLI or config)
-        obfuscate = args.obfuscate or build_config.get("obfuscate", False)
-
-        # Native compilation setting (default: False)
-        native = args.native or build_config.get("native", False)
-
-        # Validate: can't obfuscate without compiling
-        if obfuscate and no_compile:
-            logger.error("Cannot use --obfuscate with --no-compile")
+        cfg, errors = _resolve_build_config(args, config)
+        if errors:
+            for e in errors:
+                logger.error(e)
             return 1
-
-        # Validate: native is incompatible with no-compile and obfuscate
-        if native and no_compile:
-            logger.error("Cannot use --native with --no-compile")
-            return 1
-        if native and obfuscate:
-            logger.error(
-                "Cannot use --native with --obfuscate (native code is already opaque)"
-            )
-            return 1
-
-        return build_app(
-            script=script,
-            name=name,
-            output=output,
-            icon=icon,
-            identifier=identifier,
-            version=version,
-            extra_deps=extra_deps,
-            min_macos=min_macos,
-            excludes=excludes,
-            plist_options=plist_options,
-            explicit_deps=project_deps if project_deps else None,
-            arch=arch,
-            launch_at_login=launch_at_login,
-            no_compile=no_compile,
-            obfuscate=obfuscate,
-            native=native,
-        )
+        return build_app(cfg)
 
     elif args.command == "run":
         from .run import run_with_reload

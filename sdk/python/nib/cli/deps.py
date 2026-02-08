@@ -194,59 +194,21 @@ def _get_mappings() -> dict[str, str]:
     return _IMPORT_TO_PACKAGE
 
 
-def detect_imports(script_path: Path, project_dir: Optional[Path] = None) -> set[str]:
-    """Extract third-party imports from a Python script using AST analysis.
-
-    Parses the Python source file and extracts all import statements,
-    filtering out standard library modules, the nib package, and local
-    project modules. Uses AST analysis to avoid executing the code.
-
-    Handles both import styles:
-        - ``import module`` statements
-        - ``from module import ...`` statements
-
-    For dotted imports (e.g., ``from package.submodule import func``), only
-    the top-level package name is extracted.
+def _scan_file_imports(file_path: Path) -> set[str]:
+    """Extract raw top-level import names from a single Python file via AST.
 
     Args:
-        script_path (Path): Path to the Python script to analyze. The file
-            must be valid Python syntax.
-        project_dir (Path | None): Root directory of the project. Used to detect
-            local modules that should be excluded. If None, uses script's parent.
+        file_path: Path to the Python file to scan.
 
     Returns:
-        set[str]: Set of third-party module/package names found in the script.
-            Standard library modules, ``nib``, and local modules are excluded.
-
-    Raises:
-        SyntaxError: If the script contains invalid Python syntax.
-        FileNotFoundError: If the script file does not exist.
-
-    Example:
-        Given a script with these imports::
-
-            import os
-            import json
-            import requests
-            from PIL import Image
-            from nib import App
-            from services import downloader  # local module
-
-        The function returns::
-
-            >>> imports = detect_imports(Path("script.py"))
-            >>> imports
-            {'requests', 'PIL'}
-
-        Note that ``os``, ``json`` (stdlib), ``nib``, and ``services`` (local) are excluded.
-
-    See Also:
-        - :func:`resolve_packages`: Convert import names to pip package names
-        - :func:`filter_third_party`: Filter out non-third-party imports
-        - :func:`detect_local_modules`: Detect local project modules
+        set[str]: Top-level module names from all import statements.
+            Returns empty set if the file has syntax errors or can't be read.
     """
-    source = script_path.read_text()
-    tree = ast.parse(source)
+    try:
+        source = file_path.read_text()
+        tree = ast.parse(source)
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        return set()
 
     imports = set()
     for node in ast.walk(tree):
@@ -256,24 +218,86 @@ def detect_imports(script_path: Path, project_dir: Optional[Path] = None) -> set
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 imports.add(node.module.split(".")[0])
+    return imports
 
-    # Detect local modules in the project
+
+def detect_imports(script_path: Path, project_dir: Optional[Path] = None) -> set[str]:
+    """Extract third-party imports from a script and all its local modules.
+
+    Scans the main script and every ``.py`` file inside local packages to
+    detect transitive third-party dependencies. This ensures that imports
+    used by local modules (not just the entry point) are also detected.
+
+    Args:
+        script_path (Path): Path to the Python script to analyze.
+        project_dir (Path | None): Root directory of the project. Used to detect
+            local modules that should be excluded. If None, uses script's parent.
+
+    Returns:
+        set[str]: Set of third-party module/package names found across the
+            script and all local modules. Standard library modules, ``nib``,
+            and local modules are excluded.
+    """
     if project_dir is None:
         project_dir = script_path.parent
+
     local_modules = detect_local_modules(project_dir)
 
-    # Filter out stdlib, nib, and local modules
-    return filter_third_party(imports, local_modules)
+    # Scan the main script
+    all_imports = _scan_file_imports(script_path)
+    scanned = {script_path.resolve()}
+
+    # Scan all local module files for transitive imports
+    script_dir = script_path.parent
+    for item in script_dir.iterdir():
+        if item == script_path:
+            continue
+        if item.name.startswith((".", "_")):
+            continue
+        if item.name == "assets":
+            continue
+        if item.is_file() and item.suffix == ".py":
+            resolved = item.resolve()
+            if resolved not in scanned:
+                scanned.add(resolved)
+                all_imports.update(_scan_file_imports(item))
+        elif item.is_dir() and _is_local_package(item):
+            for py_file in item.rglob("*.py"):
+                resolved = py_file.resolve()
+                if resolved not in scanned:
+                    scanned.add(resolved)
+                    all_imports.update(_scan_file_imports(py_file))
+
+    return filter_third_party(all_imports, local_modules)
+
+
+def _is_local_package(directory: Path) -> bool:
+    """Check if a directory is a local Python package (regular or namespace).
+
+    A directory is a local package if it contains ``__init__.py`` (regular
+    package) or any ``.py`` files (namespace package per PEP 420).
+
+    This is the single source of truth used by both dependency detection
+    and file copying in the build pipeline.
+
+    Args:
+        directory: Path to the directory to check.
+
+    Returns:
+        bool: True if the directory contains Python source files.
+    """
+    if (directory / "__init__.py").exists():
+        return True
+    return any(directory.glob("*.py"))
 
 
 def detect_local_modules(project_dir: Path) -> set[str]:
     """Detect local Python modules/packages in the project directory.
 
     Scans the project directory for local Python packages and modules that
-    should not be confused with third-party pip packages.
-
-    A directory is considered a local package if it contains an __init__.py.
-    A .py file (not __init__.py) is considered a local module.
+    should not be confused with third-party pip packages. Recognizes both
+    regular packages (with ``__init__.py``) and namespace packages
+    (directories containing ``.py`` files).
 
     Args:
         project_dir (Path): Root directory of the project to scan.
@@ -288,19 +312,16 @@ def detect_local_modules(project_dir: Path) -> set[str]:
     """
     local_modules = set()
 
-    # Check immediate subdirectories for packages
     for item in project_dir.iterdir():
         if item.is_dir() and not item.name.startswith((".", "_")):
-            # Check if it's a Python package
-            if (item / "__init__.py").exists():
-                local_modules.add(item.name)
-            # Also check for common src layouts
-            elif item.name == "src":
+            if item.name == "src":
+                # Common src layout: scan subdirectories for local packages
                 for subitem in item.iterdir():
-                    if subitem.is_dir() and (subitem / "__init__.py").exists():
+                    if subitem.is_dir() and _is_local_package(subitem):
                         local_modules.add(subitem.name)
+            elif _is_local_package(item):
+                local_modules.add(item.name)
         elif item.is_file() and item.suffix == ".py" and item.name != "__init__.py":
-            # Single-file modules
             local_modules.add(item.stem)
 
     return local_modules
