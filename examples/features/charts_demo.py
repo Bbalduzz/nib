@@ -20,7 +20,7 @@ def main(app: nib.App):
     app.title = "Charts"
     app.icon = nib.SFSymbol("chart.bar.fill")
     app.width = 400
-    app.height = 600
+    app.height = 400
 
     # Sample data for line/bar/area charts
     monthly_sales = [
@@ -236,12 +236,6 @@ def main(app: nib.App):
     app.build(
         nib.VStack(
             controls=[
-                nib.Text(
-                    "Nib Charts Demo",
-                    font=nib.Font.title,
-                    padding={"top": 16, "bottom": 8},
-                ),
-                nib.Divider(),
                 chart_container,
                 nib.Spacer(),
                 nav_buttons,

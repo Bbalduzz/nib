@@ -4,19 +4,15 @@ Color demo for Nib.
 Demonstrates the Color class with hex values, named colors, and opacity.
 """
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent / "python"))
-
 from nib import (
     App,
     Color,
+    CornerRadius,
     Font,
     FontWeight,
     HStack,
     MenuItem,
-    RoundedRectangle,
+    Rectangle,
     ScrollView,
     Spacer,
     Text,
@@ -28,11 +24,11 @@ def color_swatch(color: Color, name: str) -> VStack:
     """Create a color swatch with label."""
     return VStack(
         controls=[
-            RoundedRectangle(
-                corner_radius=8,
+            Rectangle(
+                corner_radius=CornerRadius.all(8),
                 fill=color,
-                width=60,
-                height=40,
+                width=35,
+                height=25,
             ),
             Text(
                 name,
@@ -48,7 +44,7 @@ def main(app: App):
     app.title = "Colors"
     app.icon = "paintpalette.fill"
     app.width = 420
-    app.height = 500
+    app.height = 550
     app.menu = [
         MenuItem("Quit", action=app.quit),
     ]
@@ -59,19 +55,6 @@ def main(app: App):
             controls=[
                 VStack(
                     controls=[
-                        # Header
-                        Text(
-                            "Color Demo",
-                            font=Font.system(size=26, weight=FontWeight.semibold),
-                            foreground_color=Color.PRIMARY,
-                        ),
-                        Text(
-                            "All available colors in Nib",
-                            font=Font.subheadline,
-                            foreground_color=Color.SECONDARY,
-                        ),
-                        Spacer(min_length=10),
-                        # Divider(),
                         # Basic Colors
                         Text(
                             "Basic Colors",

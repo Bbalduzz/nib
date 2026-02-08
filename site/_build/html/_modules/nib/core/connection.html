@@ -1,0 +1,1680 @@
+
+	
+
+<!DOCTYPE html>
+<html class="writer-html5 " lang="en" >
+<head>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+		<title>nib.core.connection &mdash; Nib 0.1.0 documentation</title>
+	
+	
+	
+	<link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+	
+	
+	
+	
+
+	
+	<!--[if lt IE 9]>
+		<script src="../../../_static/js/html5shiv.min.js"></script>
+	<![endif]-->
+	
+		
+			<script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+				<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+				<script src="../../../_static/doctools.js"></script>
+				<script src="../../../_static/sphinx_highlight.js"></script>
+		
+		<script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+		
+		<link rel="index" title="Index" href="../../../genindex.html" />
+		<link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+<body class="wy-body-for-nav">
+
+
+	 
+	<div class="wy-grid-for-nav">
+		
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search">
+					
+						<div class="brand">
+							<a href="../../../index.html">
+							
+								Nib
+							
+							</a>
+						</div>
+						
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+					
+				</div>
+				
+				<div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+					
+						
+						
+							
+						
+						
+							<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting-started.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#install-from-source">Install from Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting-started.html#quick-start">Quick Start</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#creating-your-first-app">Creating Your First App</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting-started.html#core-concepts">Core Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#views">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#layout-containers">Layout Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#reactivity">Reactivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#event-handling">Event Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting-started.html#app-features">App Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#notifications">Notifications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#menu-bar-context-menu">Menu Bar Context Menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#file-dialogs">File Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started.html#clipboard">Clipboard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting-started.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/app.html">App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#app-class">App Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/app.html#nib.App"><code class="docutils literal notranslate"><span class="pre">App</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.title"><code class="docutils literal notranslate"><span class="pre">App.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.icon"><code class="docutils literal notranslate"><span class="pre">App.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.width"><code class="docutils literal notranslate"><span class="pre">App.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.height"><code class="docutils literal notranslate"><span class="pre">App.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.menu"><code class="docutils literal notranslate"><span class="pre">App.menu</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.fonts"><code class="docutils literal notranslate"><span class="pre">App.fonts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.on_appear"><code class="docutils literal notranslate"><span class="pre">App.on_appear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.set_assets_dir"><code class="docutils literal notranslate"><span class="pre">App.set_assets_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.resolve_asset"><code class="docutils literal notranslate"><span class="pre">App.resolve_asset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.__init__"><code class="docutils literal notranslate"><span class="pre">App.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id0"><code class="docutils literal notranslate"><span class="pre">App.fonts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id1"><code class="docutils literal notranslate"><span class="pre">App.on_appear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id2"><code class="docutils literal notranslate"><span class="pre">App.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id3"><code class="docutils literal notranslate"><span class="pre">App.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.show_quit_item"><code class="docutils literal notranslate"><span class="pre">App.show_quit_item</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id4"><code class="docutils literal notranslate"><span class="pre">App.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id5"><code class="docutils literal notranslate"><span class="pre">App.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#id6"><code class="docutils literal notranslate"><span class="pre">App.menu</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.clipboard"><code class="docutils literal notranslate"><span class="pre">App.clipboard</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.get_clipboard"><code class="docutils literal notranslate"><span class="pre">App.get_clipboard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.set_clipboard"><code class="docutils literal notranslate"><span class="pre">App.set_clipboard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.on_hotkey"><code class="docutils literal notranslate"><span class="pre">App.on_hotkey()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.hotkey"><code class="docutils literal notranslate"><span class="pre">App.hotkey()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.open_file_dialog"><code class="docutils literal notranslate"><span class="pre">App.open_file_dialog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.save_file_dialog"><code class="docutils literal notranslate"><span class="pre">App.save_file_dialog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.quit"><code class="docutils literal notranslate"><span class="pre">App.quit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.notify"><code class="docutils literal notranslate"><span class="pre">App.notify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.build"><code class="docutils literal notranslate"><span class="pre">App.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.body"><code class="docutils literal notranslate"><span class="pre">App.body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.App.run"><code class="docutils literal notranslate"><span class="pre">App.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#run-function">run Function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/app.html#nib.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#sfsymbol">SFSymbol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/app.html#nib.SFSymbol"><code class="docutils literal notranslate"><span class="pre">SFSymbol</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/app.html#nib.SFSymbol.__init__"><code class="docutils literal notranslate"><span class="pre">SFSymbol.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#window-configuration">Window Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html#system-features">System Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/menu.html">Menu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/menu.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/menu.html#menuitem">MenuItem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/menu.html#nib.MenuItem"><code class="docutils literal notranslate"><span class="pre">MenuItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/menu.html#nib.MenuItem.__init__"><code class="docutils literal notranslate"><span class="pre">MenuItem.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/menu.html#nib.MenuItem.to_dict"><code class="docutils literal notranslate"><span class="pre">MenuItem.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/menu.html#menudivider">MenuDivider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/menu.html#nib.MenuDivider"><code class="docutils literal notranslate"><span class="pre">MenuDivider</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/menu.html#nib.MenuDivider.__init__"><code class="docutils literal notranslate"><span class="pre">MenuDivider.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/menu.html#nib.MenuDivider.to_dict"><code class="docutils literal notranslate"><span class="pre">MenuDivider.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/menu.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Layout</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/vstack.html">VStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack"><code class="docutils literal notranslate"><span class="pre">VStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack._type"><code class="docutils literal notranslate"><span class="pre">VStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack._children"><code class="docutils literal notranslate"><span class="pre">VStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack._spacing"><code class="docutils literal notranslate"><span class="pre">VStack._spacing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack._alignment"><code class="docutils literal notranslate"><span class="pre">VStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/vstack.html#nib.VStack.__init__"><code class="docutils literal notranslate"><span class="pre">VStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/vstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/vstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/hstack.html">HStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack"><code class="docutils literal notranslate"><span class="pre">HStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack._type"><code class="docutils literal notranslate"><span class="pre">HStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack._children"><code class="docutils literal notranslate"><span class="pre">HStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack._spacing"><code class="docutils literal notranslate"><span class="pre">HStack._spacing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack._alignment"><code class="docutils literal notranslate"><span class="pre">HStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/hstack.html#nib.HStack.__init__"><code class="docutils literal notranslate"><span class="pre">HStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/hstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/hstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/zstack.html">ZStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/zstack.html#nib.ZStack"><code class="docutils literal notranslate"><span class="pre">ZStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/zstack.html#nib.ZStack._type"><code class="docutils literal notranslate"><span class="pre">ZStack._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/zstack.html#nib.ZStack._children"><code class="docutils literal notranslate"><span class="pre">ZStack._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/zstack.html#nib.ZStack._alignment"><code class="docutils literal notranslate"><span class="pre">ZStack._alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/zstack.html#nib.ZStack.__init__"><code class="docutils literal notranslate"><span class="pre">ZStack.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/zstack.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/zstack.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/spacer.html">Spacer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/spacer.html#nib.Spacer"><code class="docutils literal notranslate"><span class="pre">Spacer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/spacer.html#nib.Spacer._type"><code class="docutils literal notranslate"><span class="pre">Spacer._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/spacer.html#nib.Spacer._min_length"><code class="docutils literal notranslate"><span class="pre">Spacer._min_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/spacer.html#nib.Spacer.__init__"><code class="docutils literal notranslate"><span class="pre">Spacer.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/spacer.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/spacer.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/scrollview.html">ScrollView</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView"><code class="docutils literal notranslate"><span class="pre">ScrollView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView._type"><code class="docutils literal notranslate"><span class="pre">ScrollView._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView._children"><code class="docutils literal notranslate"><span class="pre">ScrollView._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView._axes"><code class="docutils literal notranslate"><span class="pre">ScrollView._axes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView._shows_indicators"><code class="docutils literal notranslate"><span class="pre">ScrollView._shows_indicators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/scrollview.html#nib.ScrollView.__init__"><code class="docutils literal notranslate"><span class="pre">ScrollView.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/scrollview.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/scrollview.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/list.html">List</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/list.html#nib.List"><code class="docutils literal notranslate"><span class="pre">List</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/list.html#nib.List._type"><code class="docutils literal notranslate"><span class="pre">List._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/list.html#nib.List._children"><code class="docutils literal notranslate"><span class="pre">List._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/list.html#nib.List.__init__"><code class="docutils literal notranslate"><span class="pre">List.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/list.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/list.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/section.html">Section</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/section.html#nib.Section"><code class="docutils literal notranslate"><span class="pre">Section</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/section.html#nib.Section._type"><code class="docutils literal notranslate"><span class="pre">Section._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/section.html#nib.Section._children"><code class="docutils literal notranslate"><span class="pre">Section._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/section.html#nib.Section._header"><code class="docutils literal notranslate"><span class="pre">Section._header</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/section.html#nib.Section._footer"><code class="docutils literal notranslate"><span class="pre">Section._footer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/section.html#nib.Section.__init__"><code class="docutils literal notranslate"><span class="pre">Section.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/section.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/section.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/group.html">Group</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/group.html#nib.Group"><code class="docutils literal notranslate"><span class="pre">Group</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/group.html#nib.Group._type"><code class="docutils literal notranslate"><span class="pre">Group._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/group.html#nib.Group._children"><code class="docutils literal notranslate"><span class="pre">Group._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/group.html#nib.Group.__init__"><code class="docutils literal notranslate"><span class="pre">Group.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/group.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/group.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/grid.html">Grid Layouts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#lazyvgrid">LazyVGrid</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/grid.html#griditem-sizes">GridItem Sizes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/grid.html#convenience-functions">Convenience Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#lazyhgrid">LazyHGrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#grid">Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#gridrow">GridRow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#example-photo-grid">Example: Photo Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/grid.html#example-adaptive-grid">Example: Adaptive Grid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/navigation.html">Navigation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/navigation.html#navigationstack">NavigationStack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationStack"><code class="docutils literal notranslate"><span class="pre">NavigationStack</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationStack._type"><code class="docutils literal notranslate"><span class="pre">NavigationStack._type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationStack._children"><code class="docutils literal notranslate"><span class="pre">NavigationStack._children</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationStack.__init__"><code class="docutils literal notranslate"><span class="pre">NavigationStack.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/navigation.html#navigationlink">NavigationLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationLink"><code class="docutils literal notranslate"><span class="pre">NavigationLink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationLink._type"><code class="docutils literal notranslate"><span class="pre">NavigationLink._type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationLink._label"><code class="docutils literal notranslate"><span class="pre">NavigationLink._label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationLink._destination"><code class="docutils literal notranslate"><span class="pre">NavigationLink._destination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/navigation.html#nib.NavigationLink.__init__"><code class="docutils literal notranslate"><span class="pre">NavigationLink.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/navigation.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/disclosure.html">DisclosureGroup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup._type"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup._label"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup._children"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._children</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup._is_expanded"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._is_expanded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup._on_expand"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup._on_expand</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/disclosure.html#nib.DisclosureGroup.__init__"><code class="docutils literal notranslate"><span class="pre">DisclosureGroup.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/disclosure.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/disclosure.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Controls</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/text.html">Text</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/text.html#nib.Text"><code class="docutils literal notranslate"><span class="pre">Text</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/text.html#nib.Text.content"><code class="docutils literal notranslate"><span class="pre">Text.content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/text.html#nib.Text.__init__"><code class="docutils literal notranslate"><span class="pre">Text.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/text.html#id0"><code class="docutils literal notranslate"><span class="pre">Text.content</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/text.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/text.html#reactive-updates">Reactive Updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/text.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/button.html">Button</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/button.html#nib.Button"><code class="docutils literal notranslate"><span class="pre">Button</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/button.html#nib.Button._label"><code class="docutils literal notranslate"><span class="pre">Button._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/button.html#nib.Button._icon"><code class="docutils literal notranslate"><span class="pre">Button._icon</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/button.html#nib.Button._action"><code class="docutils literal notranslate"><span class="pre">Button._action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/button.html#nib.Button._content"><code class="docutils literal notranslate"><span class="pre">Button._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/button.html#nib.Button.__init__"><code class="docutils literal notranslate"><span class="pre">Button.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/button.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/button.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/textfield.html">TextField</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/textfield.html#nib.TextField"><code class="docutils literal notranslate"><span class="pre">TextField</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/textfield.html#nib.TextField.value"><code class="docutils literal notranslate"><span class="pre">TextField.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/textfield.html#nib.TextField.__init__"><code class="docutils literal notranslate"><span class="pre">TextField.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/textfield.html#id0"><code class="docutils literal notranslate"><span class="pre">TextField.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/textfield.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/textfield.html#securefield">SecureField</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/textfield.html#nib.SecureField"><code class="docutils literal notranslate"><span class="pre">SecureField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/textfield.html#nib.SecureField.value"><code class="docutils literal notranslate"><span class="pre">SecureField.value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/textfield.html#nib.SecureField.__init__"><code class="docutils literal notranslate"><span class="pre">SecureField.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/textfield.html#id1"><code class="docutils literal notranslate"><span class="pre">SecureField.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/textfield.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/texteditor.html">TextEditor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#using-textstyle">Using TextStyle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#custom-background">Custom Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#example-note-taking">Example: Note Taking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#updating-content">Updating Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/texteditor.html#difference-from-textfield">Difference from TextField</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/toggle.html">Toggle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle"><code class="docutils literal notranslate"><span class="pre">Toggle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle._label"><code class="docutils literal notranslate"><span class="pre">Toggle._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle._is_on"><code class="docutils literal notranslate"><span class="pre">Toggle._is_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle._on_change"><code class="docutils literal notranslate"><span class="pre">Toggle._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle._content"><code class="docutils literal notranslate"><span class="pre">Toggle._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/toggle.html#nib.Toggle.__init__"><code class="docutils literal notranslate"><span class="pre">Toggle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/toggle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/toggle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/slider.html">Slider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider._value"><code class="docutils literal notranslate"><span class="pre">Slider._value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider._min_value"><code class="docutils literal notranslate"><span class="pre">Slider._min_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider._max_value"><code class="docutils literal notranslate"><span class="pre">Slider._max_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider._step"><code class="docutils literal notranslate"><span class="pre">Slider._step</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider._on_change"><code class="docutils literal notranslate"><span class="pre">Slider._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/slider.html#nib.Slider.__init__"><code class="docutils literal notranslate"><span class="pre">Slider.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/slider.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/slider.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/picker.html">Picker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker"><code class="docutils literal notranslate"><span class="pre">Picker</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker._label"><code class="docutils literal notranslate"><span class="pre">Picker._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker._selection"><code class="docutils literal notranslate"><span class="pre">Picker._selection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker._options"><code class="docutils literal notranslate"><span class="pre">Picker._options</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker._on_change"><code class="docutils literal notranslate"><span class="pre">Picker._on_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/picker.html#nib.Picker.__init__"><code class="docutils literal notranslate"><span class="pre">Picker.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/picker.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/picker.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/gauge.html">Gauge</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/gauge.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/gauge.html#gauge-styles">Gauge Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/gauge.html#custom-view-labels">Custom View Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/gauge.html#example-system-monitor">Example: System Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/progressview.html">ProgressView</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView"><code class="docutils literal notranslate"><span class="pre">ProgressView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView._value"><code class="docutils literal notranslate"><span class="pre">ProgressView._value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView._total"><code class="docutils literal notranslate"><span class="pre">ProgressView._total</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView._label"><code class="docutils literal notranslate"><span class="pre">ProgressView._label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView.__init__"><code class="docutils literal notranslate"><span class="pre">ProgressView.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView.value"><code class="docutils literal notranslate"><span class="pre">ProgressView.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView.progress"><code class="docutils literal notranslate"><span class="pre">ProgressView.progress</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView.total"><code class="docutils literal notranslate"><span class="pre">ProgressView.total</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/progressview.html#nib.ProgressView.label"><code class="docutils literal notranslate"><span class="pre">ProgressView.label</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/progressview.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/progressview.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/label.html">Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/label.html#nib.Label"><code class="docutils literal notranslate"><span class="pre">Label</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/label.html#nib.Label._title"><code class="docutils literal notranslate"><span class="pre">Label._title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/label.html#nib.Label._icon"><code class="docutils literal notranslate"><span class="pre">Label._icon</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/label.html#nib.Label._title_view"><code class="docutils literal notranslate"><span class="pre">Label._title_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/label.html#nib.Label._icon_view"><code class="docutils literal notranslate"><span class="pre">Label._icon_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/label.html#nib.Label.__init__"><code class="docutils literal notranslate"><span class="pre">Label.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/label.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/label.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/link.html">Link</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/link.html#nib.Link"><code class="docutils literal notranslate"><span class="pre">Link</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/link.html#nib.Link._title"><code class="docutils literal notranslate"><span class="pre">Link._title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/link.html#nib.Link._url"><code class="docutils literal notranslate"><span class="pre">Link._url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/link.html#nib.Link._content"><code class="docutils literal notranslate"><span class="pre">Link._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/link.html#nib.Link.__init__"><code class="docutils literal notranslate"><span class="pre">Link.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/link.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/link.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/image.html">Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/image.html#nib.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/image.html#nib.Image.src"><code class="docutils literal notranslate"><span class="pre">Image.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/image.html#nib.Image.label"><code class="docutils literal notranslate"><span class="pre">Image.label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/image.html#nib.Image.__init__"><code class="docutils literal notranslate"><span class="pre">Image.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/image.html#id0"><code class="docutils literal notranslate"><span class="pre">Image.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/image.html#id1"><code class="docutils literal notranslate"><span class="pre">Image.label</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/image.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/image.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/video.html">Video</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/video.html#nib.Video"><code class="docutils literal notranslate"><span class="pre">Video</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.src"><code class="docutils literal notranslate"><span class="pre">Video.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.autoplay"><code class="docutils literal notranslate"><span class="pre">Video.autoplay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.loop"><code class="docutils literal notranslate"><span class="pre">Video.loop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.muted"><code class="docutils literal notranslate"><span class="pre">Video.muted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.controls"><code class="docutils literal notranslate"><span class="pre">Video.controls</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.Video.__init__"><code class="docutils literal notranslate"><span class="pre">Video.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#id0"><code class="docutils literal notranslate"><span class="pre">Video.src</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#id1"><code class="docutils literal notranslate"><span class="pre">Video.autoplay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#id2"><code class="docutils literal notranslate"><span class="pre">Video.loop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#id3"><code class="docutils literal notranslate"><span class="pre">Video.muted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#id4"><code class="docutils literal notranslate"><span class="pre">Video.controls</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/video.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/video.html#videogravity">VideoGravity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/video.html#nib.VideoGravity"><code class="docutils literal notranslate"><span class="pre">VideoGravity</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#nib.VideoGravity.RESIZE_ASPECT"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#nib.VideoGravity.RESIZE_ASPECT_FILL"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT_FILL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#nib.VideoGravity.RESIZE"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#id5"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#id6"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE_ASPECT_FILL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/video.html#id7"><code class="docutils literal notranslate"><span class="pre">VideoGravity.RESIZE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/video.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/sharelink.html">ShareLink</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#simple-label">Simple Label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#custom-view-label">Custom View Label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#sharing-urls">Sharing URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#sharing-files">Sharing Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#multiple-items">Multiple Items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/sharelink.html#example-share-button">Example: Share Button</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/divider.html">Divider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/divider.html#nib.Divider"><code class="docutils literal notranslate"><span class="pre">Divider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/divider.html#nib.Divider.__init__"><code class="docutils literal notranslate"><span class="pre">Divider.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/divider.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Shapes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/rectangle.html">Rectangle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/rectangle.html#nib.Rectangle"><code class="docutils literal notranslate"><span class="pre">Rectangle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/rectangle.html#nib.Rectangle._type"><code class="docutils literal notranslate"><span class="pre">Rectangle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/rectangle.html#nib.Rectangle.__init__"><code class="docutils literal notranslate"><span class="pre">Rectangle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/rectangle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/rectangle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/roundedrectangle.html">RoundedRectangle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle._type"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle._corner_radius"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._corner_radius</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle._stroke_color"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._stroke_color</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle._stroke_width"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle._stroke_width</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#nib.RoundedRectangle.__init__"><code class="docutils literal notranslate"><span class="pre">RoundedRectangle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/roundedrectangle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/circle.html">Circle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle"><code class="docutils literal notranslate"><span class="pre">Circle</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle._type"><code class="docutils literal notranslate"><span class="pre">Circle._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle._trim_from"><code class="docutils literal notranslate"><span class="pre">Circle._trim_from</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle._trim_to"><code class="docutils literal notranslate"><span class="pre">Circle._trim_to</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle._rotation"><code class="docutils literal notranslate"><span class="pre">Circle._rotation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/circle.html#nib.Circle.__init__"><code class="docutils literal notranslate"><span class="pre">Circle.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/circle.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/circle.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/ellipse.html">Ellipse</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/ellipse.html#nib.Ellipse"><code class="docutils literal notranslate"><span class="pre">Ellipse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/ellipse.html#nib.Ellipse._type"><code class="docutils literal notranslate"><span class="pre">Ellipse._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/ellipse.html#nib.Ellipse.__init__"><code class="docutils literal notranslate"><span class="pre">Ellipse.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/ellipse.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/ellipse.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/capsule.html">Capsule</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/capsule.html#nib.Capsule"><code class="docutils literal notranslate"><span class="pre">Capsule</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/capsule.html#nib.Capsule._type"><code class="docutils literal notranslate"><span class="pre">Capsule._type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/capsule.html#nib.Capsule.__init__"><code class="docutils literal notranslate"><span class="pre">Capsule.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/capsule.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/capsule.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Charts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/chart.html">Chart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart"><code class="docutils literal notranslate"><span class="pre">Chart</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart.data"><code class="docutils literal notranslate"><span class="pre">Chart.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart.__init__"><code class="docutils literal notranslate"><span class="pre">Chart.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#id0"><code class="docutils literal notranslate"><span class="pre">Chart.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart.append_data"><code class="docutils literal notranslate"><span class="pre">Chart.append_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart.update_data"><code class="docutils literal notranslate"><span class="pre">Chart.update_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.Chart.clear_data"><code class="docutils literal notranslate"><span class="pre">Chart.clear_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/chart.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/chart.html#chartaxis">ChartAxis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartAxis"><code class="docutils literal notranslate"><span class="pre">ChartAxis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartAxis.__init__"><code class="docutils literal notranslate"><span class="pre">ChartAxis.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartAxis.to_dict"><code class="docutils literal notranslate"><span class="pre">ChartAxis.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/chart.html#chartlegend">ChartLegend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartLegend"><code class="docutils literal notranslate"><span class="pre">ChartLegend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartLegend.__init__"><code class="docutils literal notranslate"><span class="pre">ChartLegend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/chart.html#nib.ChartLegend.to_dict"><code class="docutils literal notranslate"><span class="pre">ChartLegend.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/chart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/marks.html">Chart Marks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#linemark">LineMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.LineMark"><code class="docutils literal notranslate"><span class="pre">LineMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.LineMark.__init__"><code class="docutils literal notranslate"><span class="pre">LineMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#barmark">BarMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.BarMark"><code class="docutils literal notranslate"><span class="pre">BarMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.BarMark.__init__"><code class="docutils literal notranslate"><span class="pre">BarMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#areamark">AreaMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.AreaMark"><code class="docutils literal notranslate"><span class="pre">AreaMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.AreaMark.__init__"><code class="docutils literal notranslate"><span class="pre">AreaMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#pointmark">PointMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.PointMark"><code class="docutils literal notranslate"><span class="pre">PointMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.PointMark.__init__"><code class="docutils literal notranslate"><span class="pre">PointMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#rulemark">RuleMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.RuleMark"><code class="docutils literal notranslate"><span class="pre">RuleMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.RuleMark.__init__"><code class="docutils literal notranslate"><span class="pre">RuleMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#rectmark">RectMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.RectMark"><code class="docutils literal notranslate"><span class="pre">RectMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.RectMark.__init__"><code class="docutils literal notranslate"><span class="pre">RectMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#sectormark">SectorMark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#nib.SectorMark"><code class="docutils literal notranslate"><span class="pre">SectorMark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.SectorMark.__init__"><code class="docutils literal notranslate"><span class="pre">SectorMark.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/marks.html#enums">Enums</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#interpolationmethod">InterpolationMethod</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.InterpolationMethod"><code class="docutils literal notranslate"><span class="pre">InterpolationMethod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#stackingmethod">StackingMethod</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.StackingMethod"><code class="docutils literal notranslate"><span class="pre">StackingMethod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/views/marks.html#symbolshape">SymbolShape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/views/marks.html#nib.SymbolShape"><code class="docutils literal notranslate"><span class="pre">SymbolShape</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Views - Effects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/views/visualeffectblur.html">VisualEffectBlur</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#blur-styles">Blur Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#blending-modes">Blending Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#as-background">As Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#example-frosted-card">Example: Frosted Card</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/views/visualeffectblur.html#example-sidebar-style">Example: Sidebar Style</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Types &amp; Styling</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/types/color.html">Color</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/color.html#color-class">Color Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/color.html#nib.Color"><code class="docutils literal notranslate"><span class="pre">Color</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.RED"><code class="docutils literal notranslate"><span class="pre">Color.RED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.BLUE"><code class="docutils literal notranslate"><span class="pre">Color.BLUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.GREEN"><code class="docutils literal notranslate"><span class="pre">Color.GREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.YELLOW"><code class="docutils literal notranslate"><span class="pre">Color.YELLOW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.ORANGE"><code class="docutils literal notranslate"><span class="pre">Color.ORANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.PURPLE"><code class="docutils literal notranslate"><span class="pre">Color.PURPLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.PINK"><code class="docutils literal notranslate"><span class="pre">Color.PINK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.WHITE"><code class="docutils literal notranslate"><span class="pre">Color.WHITE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.BLACK"><code class="docutils literal notranslate"><span class="pre">Color.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.GRAY"><code class="docutils literal notranslate"><span class="pre">Color.GRAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.CLEAR"><code class="docutils literal notranslate"><span class="pre">Color.CLEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.INDIGO"><code class="docutils literal notranslate"><span class="pre">Color.INDIGO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.CYAN"><code class="docutils literal notranslate"><span class="pre">Color.CYAN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.MINT"><code class="docutils literal notranslate"><span class="pre">Color.MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.TEAL"><code class="docutils literal notranslate"><span class="pre">Color.TEAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.BROWN"><code class="docutils literal notranslate"><span class="pre">Color.BROWN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.PRIMARY"><code class="docutils literal notranslate"><span class="pre">Color.PRIMARY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.SECONDARY"><code class="docutils literal notranslate"><span class="pre">Color.SECONDARY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.ACCENT"><code class="docutils literal notranslate"><span class="pre">Color.ACCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.red"><code class="docutils literal notranslate"><span class="pre">Color.red</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.blue"><code class="docutils literal notranslate"><span class="pre">Color.blue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.green"><code class="docutils literal notranslate"><span class="pre">Color.green</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.yellow"><code class="docutils literal notranslate"><span class="pre">Color.yellow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.orange"><code class="docutils literal notranslate"><span class="pre">Color.orange</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.purple"><code class="docutils literal notranslate"><span class="pre">Color.purple</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.pink"><code class="docutils literal notranslate"><span class="pre">Color.pink</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.white"><code class="docutils literal notranslate"><span class="pre">Color.white</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.black"><code class="docutils literal notranslate"><span class="pre">Color.black</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.gray"><code class="docutils literal notranslate"><span class="pre">Color.gray</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.clear"><code class="docutils literal notranslate"><span class="pre">Color.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.primary"><code class="docutils literal notranslate"><span class="pre">Color.primary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.secondary"><code class="docutils literal notranslate"><span class="pre">Color.secondary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.accent"><code class="docutils literal notranslate"><span class="pre">Color.accent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.__init__"><code class="docutils literal notranslate"><span class="pre">Color.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.value"><code class="docutils literal notranslate"><span class="pre">Color.value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.opacity"><code class="docutils literal notranslate"><span class="pre">Color.opacity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.with_opacity"><code class="docutils literal notranslate"><span class="pre">Color.with_opacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.hex"><code class="docutils literal notranslate"><span class="pre">Color.hex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.rgb"><code class="docutils literal notranslate"><span class="pre">Color.rgb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.rgba"><code class="docutils literal notranslate"><span class="pre">Color.rgba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/color.html#nib.Color.to_dict"><code class="docutils literal notranslate"><span class="pre">Color.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/color.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/color.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/types/font.html">Font</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/font.html#font-class">Font Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/font.html#nib.Font"><code class="docutils literal notranslate"><span class="pre">Font</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.name"><code class="docutils literal notranslate"><span class="pre">Font.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.size"><code class="docutils literal notranslate"><span class="pre">Font.size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.weight"><code class="docutils literal notranslate"><span class="pre">Font.weight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.path"><code class="docutils literal notranslate"><span class="pre">Font.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.LARGE_TITLE"><code class="docutils literal notranslate"><span class="pre">Font.LARGE_TITLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.TITLE"><code class="docutils literal notranslate"><span class="pre">Font.TITLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.TITLE2"><code class="docutils literal notranslate"><span class="pre">Font.TITLE2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.TITLE3"><code class="docutils literal notranslate"><span class="pre">Font.TITLE3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.HEADLINE"><code class="docutils literal notranslate"><span class="pre">Font.HEADLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.SUBHEADLINE"><code class="docutils literal notranslate"><span class="pre">Font.SUBHEADLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.BODY"><code class="docutils literal notranslate"><span class="pre">Font.BODY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.CALLOUT"><code class="docutils literal notranslate"><span class="pre">Font.CALLOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.CAPTION"><code class="docutils literal notranslate"><span class="pre">Font.CAPTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.CAPTION2"><code class="docutils literal notranslate"><span class="pre">Font.CAPTION2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.FOOTNOTE"><code class="docutils literal notranslate"><span class="pre">Font.FOOTNOTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.largeTitle"><code class="docutils literal notranslate"><span class="pre">Font.largeTitle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.title"><code class="docutils literal notranslate"><span class="pre">Font.title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.title2"><code class="docutils literal notranslate"><span class="pre">Font.title2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.title3"><code class="docutils literal notranslate"><span class="pre">Font.title3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.headline"><code class="docutils literal notranslate"><span class="pre">Font.headline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.subheadline"><code class="docutils literal notranslate"><span class="pre">Font.subheadline</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.body"><code class="docutils literal notranslate"><span class="pre">Font.body</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.callout"><code class="docutils literal notranslate"><span class="pre">Font.callout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.caption"><code class="docutils literal notranslate"><span class="pre">Font.caption</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.caption2"><code class="docutils literal notranslate"><span class="pre">Font.caption2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.footnote"><code class="docutils literal notranslate"><span class="pre">Font.footnote</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.system"><code class="docutils literal notranslate"><span class="pre">Font.system()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.custom"><code class="docutils literal notranslate"><span class="pre">Font.custom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.to_dict"><code class="docutils literal notranslate"><span class="pre">Font.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.Font.__init__"><code class="docutils literal notranslate"><span class="pre">Font.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/font.html#system-fonts">System Fonts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/font.html#custom-fonts">Custom Fonts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/font.html#fontweight">FontWeight</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight"><code class="docutils literal notranslate"><span class="pre">FontWeight</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.ULTRA_LIGHT"><code class="docutils literal notranslate"><span class="pre">FontWeight.ULTRA_LIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.THIN"><code class="docutils literal notranslate"><span class="pre">FontWeight.THIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.LIGHT"><code class="docutils literal notranslate"><span class="pre">FontWeight.LIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.REGULAR"><code class="docutils literal notranslate"><span class="pre">FontWeight.REGULAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.MEDIUM"><code class="docutils literal notranslate"><span class="pre">FontWeight.MEDIUM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.SEMIBOLD"><code class="docutils literal notranslate"><span class="pre">FontWeight.SEMIBOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.BOLD"><code class="docutils literal notranslate"><span class="pre">FontWeight.BOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.HEAVY"><code class="docutils literal notranslate"><span class="pre">FontWeight.HEAVY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.BLACK"><code class="docutils literal notranslate"><span class="pre">FontWeight.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.ultraLight"><code class="docutils literal notranslate"><span class="pre">FontWeight.ultraLight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.thin"><code class="docutils literal notranslate"><span class="pre">FontWeight.thin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.light"><code class="docutils literal notranslate"><span class="pre">FontWeight.light</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.regular"><code class="docutils literal notranslate"><span class="pre">FontWeight.regular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.medium"><code class="docutils literal notranslate"><span class="pre">FontWeight.medium</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.semibold"><code class="docutils literal notranslate"><span class="pre">FontWeight.semibold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.bold"><code class="docutils literal notranslate"><span class="pre">FontWeight.bold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.heavy"><code class="docutils literal notranslate"><span class="pre">FontWeight.heavy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/font.html#nib.FontWeight.black"><code class="docutils literal notranslate"><span class="pre">FontWeight.black</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/font.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/types/animation.html">Animation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#animation-class">Animation Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation"><code class="docutils literal notranslate"><span class="pre">Animation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.type"><code class="docutils literal notranslate"><span class="pre">Animation.type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.duration"><code class="docutils literal notranslate"><span class="pre">Animation.duration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.delay"><code class="docutils literal notranslate"><span class="pre">Animation.delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.response"><code class="docutils literal notranslate"><span class="pre">Animation.response</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.damping"><code class="docutils literal notranslate"><span class="pre">Animation.damping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.default"><code class="docutils literal notranslate"><span class="pre">Animation.default</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.fast"><code class="docutils literal notranslate"><span class="pre">Animation.fast</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.slow"><code class="docutils literal notranslate"><span class="pre">Animation.slow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.bouncy"><code class="docutils literal notranslate"><span class="pre">Animation.bouncy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.linear"><code class="docutils literal notranslate"><span class="pre">Animation.linear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.easeIn"><code class="docutils literal notranslate"><span class="pre">Animation.easeIn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.easeOut"><code class="docutils literal notranslate"><span class="pre">Animation.easeOut()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.__init__"><code class="docutils literal notranslate"><span class="pre">Animation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.easeInOut"><code class="docutils literal notranslate"><span class="pre">Animation.easeInOut()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.spring"><code class="docutils literal notranslate"><span class="pre">Animation.spring()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Animation.to_dict"><code class="docutils literal notranslate"><span class="pre">Animation.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#creating-animations">Creating Animations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#applying-animations">Applying Animations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#content-transitions">Content Transitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition"><code class="docutils literal notranslate"><span class="pre">ContentTransition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.IDENTITY"><code class="docutils literal notranslate"><span class="pre">ContentTransition.IDENTITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.INTERPOLATE"><code class="docutils literal notranslate"><span class="pre">ContentTransition.INTERPOLATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.NUMERIC_TEXT"><code class="docutils literal notranslate"><span class="pre">ContentTransition.NUMERIC_TEXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.NUMERIC_TEXT_DOWN"><code class="docutils literal notranslate"><span class="pre">ContentTransition.NUMERIC_TEXT_DOWN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.OPACITY"><code class="docutils literal notranslate"><span class="pre">ContentTransition.OPACITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.identity"><code class="docutils literal notranslate"><span class="pre">ContentTransition.identity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.interpolate"><code class="docutils literal notranslate"><span class="pre">ContentTransition.interpolate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.numericText"><code class="docutils literal notranslate"><span class="pre">ContentTransition.numericText</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.numericTextDown"><code class="docutils literal notranslate"><span class="pre">ContentTransition.numericTextDown</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.ContentTransition.opacity"><code class="docutils literal notranslate"><span class="pre">ContentTransition.opacity</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#view-transitions">View Transitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition"><code class="docutils literal notranslate"><span class="pre">Transition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.IDENTITY"><code class="docutils literal notranslate"><span class="pre">Transition.IDENTITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.OPACITY"><code class="docutils literal notranslate"><span class="pre">Transition.OPACITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.SCALE"><code class="docutils literal notranslate"><span class="pre">Transition.SCALE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.SLIDE"><code class="docutils literal notranslate"><span class="pre">Transition.SLIDE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.MOVE_LEADING"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_LEADING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.MOVE_TRAILING"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_TRAILING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.MOVE_TOP"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_TOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.MOVE_BOTTOM"><code class="docutils literal notranslate"><span class="pre">Transition.MOVE_BOTTOM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.PUSH"><code class="docutils literal notranslate"><span class="pre">Transition.PUSH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.identity"><code class="docutils literal notranslate"><span class="pre">Transition.identity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.opacity"><code class="docutils literal notranslate"><span class="pre">Transition.opacity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.scale"><code class="docutils literal notranslate"><span class="pre">Transition.scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.slide"><code class="docutils literal notranslate"><span class="pre">Transition.slide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.moveLeading"><code class="docutils literal notranslate"><span class="pre">Transition.moveLeading</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.moveTrailing"><code class="docutils literal notranslate"><span class="pre">Transition.moveTrailing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.moveTop"><code class="docutils literal notranslate"><span class="pre">Transition.moveTop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.moveBottom"><code class="docutils literal notranslate"><span class="pre">Transition.moveBottom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/animation.html#nib.Transition.push"><code class="docutils literal notranslate"><span class="pre">Transition.push</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/animation.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/types/enums.html">Enums</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#alignment">Alignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#horizontalalignment">HorizontalAlignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.HorizontalAlignment"><code class="docutils literal notranslate"><span class="pre">HorizontalAlignment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#verticalalignment">VerticalAlignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.VerticalAlignment"><code class="docutils literal notranslate"><span class="pre">VerticalAlignment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#id1">Alignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.Alignment"><code class="docutils literal notranslate"><span class="pre">Alignment</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#button-styles">Button Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#buttonstyle">ButtonStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ButtonStyle"><code class="docutils literal notranslate"><span class="pre">ButtonStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#buttonrole">ButtonRole</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ButtonRole"><code class="docutils literal notranslate"><span class="pre">ButtonRole</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#controlsize">ControlSize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ControlSize"><code class="docutils literal notranslate"><span class="pre">ControlSize</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#control-styles">Control Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#togglestyle">ToggleStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ToggleStyle"><code class="docutils literal notranslate"><span class="pre">ToggleStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#textfieldstyle">TextFieldStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.TextFieldStyle"><code class="docutils literal notranslate"><span class="pre">TextFieldStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#pickerstyle">PickerStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.PickerStyle"><code class="docutils literal notranslate"><span class="pre">PickerStyle</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#progressstyle">ProgressStyle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ProgressStyle"><code class="docutils literal notranslate"><span class="pre">ProgressStyle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#text-styles">Text Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#truncationmode">TruncationMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.TruncationMode"><code class="docutils literal notranslate"><span class="pre">TruncationMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#textcase">TextCase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.TextCase"><code class="docutils literal notranslate"><span class="pre">TextCase</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#image-styles">Image Styles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#contentmode">ContentMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ContentMode"><code class="docutils literal notranslate"><span class="pre">ContentMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#imagerenderingmode">ImageRenderingMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ImageRenderingMode"><code class="docutils literal notranslate"><span class="pre">ImageRenderingMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#symbolscale">SymbolScale</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.SymbolScale"><code class="docutils literal notranslate"><span class="pre">SymbolScale</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#symbolrenderingmode">SymbolRenderingMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.SymbolRenderingMode"><code class="docutils literal notranslate"><span class="pre">SymbolRenderingMode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#scroll">Scroll</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#scrollaxis">ScrollAxis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.ScrollAxis"><code class="docutils literal notranslate"><span class="pre">ScrollAxis</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types/enums.html#effects">Effects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/types/enums.html#blendmode">BlendMode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/types/enums.html#nib.BlendMode"><code class="docutils literal notranslate"><span class="pre">BlendMode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/modifiers.html">Modifiers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#layout-modifiers">Layout Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#appearance-modifiers">Appearance Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#shape-modifiers">Shape Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#shadow-border">Shadow &amp; Border</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#typography-modifiers">Typography Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#animation-modifiers">Animation Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#transform-modifiers">Transform Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#overlay">Overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/modifiers.html#drag-and-drop">Drag and Drop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/state.html">State</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/state.html#reactive-properties">Reactive Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/state.html#common-reactive-properties">Common Reactive Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/state.html#state-descriptor-class-based">State Descriptor (Class-based)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/state.html#nib.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State._initial"><code class="docutils literal notranslate"><span class="pre">State._initial</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State._name"><code class="docutils literal notranslate"><span class="pre">State._name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State.__set_name__"><code class="docutils literal notranslate"><span class="pre">State.__set_name__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State.__get__"><code class="docutils literal notranslate"><span class="pre">State.__get__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.State.__set__"><code class="docutils literal notranslate"><span class="pre">State.__set__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/state.html#binding">Binding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/state.html#nib.core.Binding"><code class="docutils literal notranslate"><span class="pre">Binding</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.core.Binding._getter"><code class="docutils literal notranslate"><span class="pre">Binding._getter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.core.Binding._setter"><code class="docutils literal notranslate"><span class="pre">Binding._setter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.core.Binding.__init__"><code class="docutils literal notranslate"><span class="pre">Binding.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/state.html#nib.core.Binding.value"><code class="docutils literal notranslate"><span class="pre">Binding.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/state.html#patterns">Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/userdefaults.html">UserDefaults</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults"><code class="docutils literal notranslate"><span class="pre">UserDefaults</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.__init__"><code class="docutils literal notranslate"><span class="pre">UserDefaults.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.set"><code class="docutils literal notranslate"><span class="pre">UserDefaults.set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.get"><code class="docutils literal notranslate"><span class="pre">UserDefaults.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.remove"><code class="docutils literal notranslate"><span class="pre">UserDefaults.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.clear"><code class="docutils literal notranslate"><span class="pre">UserDefaults.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.contains_key"><code class="docutils literal notranslate"><span class="pre">UserDefaults.contains_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/userdefaults.html#nib.UserDefaults.get_keys"><code class="docutils literal notranslate"><span class="pre">UserDefaults.get_keys()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/userdefaults.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/userdefaults.html#supported-types">Supported Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/userdefaults.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/userdefaults.html#persistence">Persistence</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/services.html">System Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/services.html#battery">Battery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/services.html#connectivity">Connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/services.html#screen">Screen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/services.html#keychain">Keychain</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/services.html#saving-credentials">Saving Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/services.html#retrieving-credentials">Retrieving Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/services.html#deleting-credentials">Deleting Credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/services.html#checking-existence">Checking Existence</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/services.html#launch-at-login">Launch at Login</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Building &amp; Distribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/build.html">Building &amp; Distribution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/build.html#building-your-app">Building Your App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/build.html#basic-build">Basic Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/build.html#build-options">Build Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/build.html#configuration-via-pyproject-toml">Configuration via pyproject.toml</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/build.html#info-plist-options">Info.plist Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/build.html#launch-at-login">Launch at Login</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/build.html#bundle-structure">Bundle Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/build.html#custom-fonts">Custom Fonts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/build.html#code-signing">Code Signing</a></li>
+</ul>
+</li>
+</ul>
+
+						
+					
+				</div>
+				
+			</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+			
+			<nav class="wy-nav-top" aria-label="top navigation">
+			
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="../../../index.html">
+					
+						Nib
+					
+				</a>
+			
+			</nav>
+
+
+			<div class="wy-nav-content">
+				
+				<div class="rst-content style-external-links">
+				
+					<div role="navigation" aria-label="breadcrumbs navigation">
+
+	<ul class="wy-breadcrumbs">
+		
+			
+				<li><a href="../../../index.html">Nib</a> ⁄&nbsp;</li>
+				
+					<li><a href="../../index.html">Module code</a> ⁄&nbsp;</li>
+				
+				<li><a href="">nib.core.connection</a></li>
+			
+		
+		
+			<li class="wy-breadcrumbs-aside">
+			
+			</li>
+		
+	</ul>
+
+</div>
+					<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+					 <div itemprop="articleBody">
+						
+  <h1>Source code for nib.core.connection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Connection layer for communicating with the Swift runtime.</span>
+
+<span class="sd">This module provides the :class:`Connection` class that handles all</span>
+<span class="sd">communication between Python and the Swift runtime over Unix sockets</span>
+<span class="sd">using MessagePack serialization.</span>
+
+<span class="sd">The communication protocol uses length-prefixed MessagePack messages:</span>
+
+<span class="sd">- **Python → Swift messages**: ``render``, ``patch``, ``notify``, ``quit``,</span>
+<span class="sd">  ``clipboard``, ``fileDialog``, ``userDefaults``</span>
+<span class="sd">- **Swift → Python messages**: ``event`` (user interactions)</span>
+
+<span class="sd">Note:</span>
+<span class="sd">    This module is for internal use. Applications should use the high-level</span>
+<span class="sd">    :class:`~nib.App` API instead of interacting with Connection directly.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">msgpack</span>
+
+
+<div class="viewcode-block" id="Connection"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Connection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unix socket connection to the Swift runtime.</span>
+
+<span class="sd">    Manages bidirectional communication with the nib-runtime Swift process</span>
+<span class="sd">    using length-prefixed MessagePack messages over a Unix domain socket.</span>
+
+<span class="sd">    Messages are sent with a 4-byte big-endian length prefix followed by</span>
+<span class="sd">    the MessagePack-encoded payload. Events from Swift are received on</span>
+<span class="sd">    a background thread and dispatched to a registered handler.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        socket_path: Path to the Unix domain socket.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        Internal usage by App::</span>
+
+<span class="sd">            conn = Connection(&quot;/tmp/nib-12345.sock&quot;)</span>
+<span class="sd">            if conn.connect():</span>
+<span class="sd">                conn.set_event_handler(handle_event)</span>
+<span class="sd">                conn.send_render(root=view_tree)</span>
+<span class="sd">                # ... later ...</span>
+<span class="sd">                conn.send_quit()</span>
+<span class="sd">                conn.disconnect()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new Connection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            socket_path: Path to the Unix domain socket file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span> <span class="o">=</span> <span class="n">socket_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Connection.connect"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.connect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect to the Swift runtime socket.</span>
+
+<span class="sd">        Attempts to connect to the Unix socket with retries, as the Swift</span>
+<span class="sd">        runtime may take time to start and create the socket.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            retries: Maximum number of connection attempts.</span>
+<span class="sd">            delay: Seconds to wait between retry attempts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if connection succeeded, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_start_read_thread</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">ConnectionRefusedError</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Connection.disconnect"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.disconnect">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from the Swift runtime.</span>
+
+<span class="sd">        Closes the socket connection and stops the read thread.</span>
+<span class="sd">        Safe to call multiple times.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Connection.send_render"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_render">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_render</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">icon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">menu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hotkeys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fonts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a full render message to the Swift runtime.</span>
+
+<span class="sd">        This sends the complete view tree and app configuration to Swift</span>
+<span class="sd">        for rendering. Used for initial render or when incremental</span>
+<span class="sd">        patching would be too complex.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            root: Serialized view tree dictionary.</span>
+<span class="sd">            icon: Menu bar icon (SF Symbol name or config dict).</span>
+<span class="sd">            title: Menu bar title text.</span>
+<span class="sd">            width: Popover window width in points.</span>
+<span class="sd">            height: Popover window height in points.</span>
+<span class="sd">            menu: List of serialized menu item dictionaries.</span>
+<span class="sd">            hotkeys: List of hotkey strings to register.</span>
+<span class="sd">            fonts: Dictionary mapping font names to paths/URLs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;render&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="n">root</span><span class="p">,</span>
+                <span class="s2">&quot;statusBar&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">icon</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">},</span>
+                <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="n">window</span> <span class="k">if</span> <span class="n">window</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;menu&quot;</span><span class="p">:</span> <span class="n">menu</span><span class="p">,</span>
+                <span class="s2">&quot;hotkeys&quot;</span><span class="p">:</span> <span class="n">hotkeys</span><span class="p">,</span>
+                <span class="s2">&quot;fonts&quot;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[nib.connection] Sending message type: </span><span class="si">{</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sending:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_patch"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_patch">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_patch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">patches</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">icon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send incremental patches to the Swift runtime.</span>
+
+<span class="sd">        Instead of re-rendering the entire view tree, this sends only</span>
+<span class="sd">        the changes (patches) needed to update the UI.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Currently disabled in favor of full renders due to Swift-side</span>
+<span class="sd">            handling issues.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patches: List of patch operations from :func:`diff_trees`.</span>
+<span class="sd">            icon: Menu bar icon (SF Symbol name or config dict).</span>
+<span class="sd">            title: Menu bar title text.</span>
+<span class="sd">            width: Popover window width in points.</span>
+<span class="sd">            height: Popover window height in points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;patch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;patches&quot;</span><span class="p">:</span> <span class="n">patches</span><span class="p">,</span>
+                <span class="s2">&quot;statusBar&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">icon</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">},</span>
+                <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="n">window</span> <span class="k">if</span> <span class="n">window</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[nib.connection] Sending patch with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span><span class="si">}</span><span class="s2"> changes&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_quit"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_quit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a quit message to terminate the Swift runtime.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;quit&quot;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="Connection.send_notify"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_notify">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_notify</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sound</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">identifier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a macOS notification through the Swift runtime.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: The notification title (required).</span>
+<span class="sd">            body: The notification body text.</span>
+<span class="sd">            subtitle: A subtitle shown below the title.</span>
+<span class="sd">            sound: Whether to play the default notification sound.</span>
+<span class="sd">            identifier: Unique ID for updating/removing the notification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;notify&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">body</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle&quot;</span><span class="p">:</span> <span class="n">subtitle</span><span class="p">,</span>
+                <span class="s2">&quot;sound&quot;</span><span class="p">:</span> <span class="n">sound</span><span class="p">,</span>
+                <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_clipboard_write"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_clipboard_write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_clipboard_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write content to the system clipboard.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: The text to copy to the clipboard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;write&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_clipboard_read"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_clipboard_read">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_clipboard_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request clipboard content asynchronously.</span>
+
+<span class="sd">        The clipboard content will be returned via an event callback</span>
+<span class="sd">        with the format ``clipboard:&lt;content&gt;``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request_id: Unique ID to match the response callback.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_file_dialog"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_file_dialog">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_file_dialog</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">multiple</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show a file open or save dialog.</span>
+
+<span class="sd">        The selected file path(s) will be returned via an event callback</span>
+<span class="sd">        with the format ``fileDialog:&lt;paths&gt;``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action: Either &quot;open&quot; or &quot;save&quot;.</span>
+<span class="sd">            request_id: Unique ID to match the response callback.</span>
+<span class="sd">            title: Dialog window title.</span>
+<span class="sd">            types: Allowed file extensions (e.g., [&quot;txt&quot;, &quot;md&quot;]).</span>
+<span class="sd">            multiple: Allow selecting multiple files (open only).</span>
+<span class="sd">            directory: Starting directory path.</span>
+<span class="sd">            default_name: Default filename (save only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fileDialog&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="n">types</span><span class="p">,</span>
+                <span class="s2">&quot;multiple&quot;</span><span class="p">:</span> <span class="n">multiple</span><span class="p">,</span>
+                <span class="s2">&quot;directory&quot;</span><span class="p">:</span> <span class="n">directory</span><span class="p">,</span>
+                <span class="s2">&quot;defaultName&quot;</span><span class="p">:</span> <span class="n">default_name</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_user_defaults"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_user_defaults">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_user_defaults</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a UserDefaults operation to the Swift runtime.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action: Operation type - &quot;set&quot;, &quot;get&quot;, &quot;remove&quot;, &quot;clear&quot;,</span>
+<span class="sd">                &quot;containsKey&quot;, or &quot;getKeys&quot;.</span>
+<span class="sd">            key: The key for get/set/remove/containsKey operations.</span>
+<span class="sd">            value: The value to store (set operation only).</span>
+<span class="sd">            prefix: Key prefix filter (getKeys operation only).</span>
+<span class="sd">            request_id: Unique ID for async response matching.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;userDefaults&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="n">prefix</span><span class="p">,</span>
+                <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.send_service_query"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.send_service_query">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_service_query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">service</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Query a system service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            service: Service name (&quot;battery&quot;, &quot;connectivity&quot;, &quot;screen&quot;).</span>
+<span class="sd">            action: Action to perform (e.g., &quot;status&quot;, &quot;info&quot;, &quot;setBrightness&quot;).</span>
+<span class="sd">            request_id: Unique ID to match the response callback.</span>
+<span class="sd">            params: Optional parameters for the action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">,</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">message</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Connection.set_event_handler"><a class="viewcode-back" href="../../../api/nib.core.connection.html#nib.core.Connection.set_event_handler">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_event_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the handler for events from the Swift runtime.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            handler: Callback function receiving (node_id, event_string).</span>
+<span class="sd">                The event string format varies by event type:</span>
+<span class="sd">                - &quot;tap&quot; - User tapped a button</span>
+<span class="sd">                - &quot;change:&lt;value&gt;&quot; - Value changed (TextField, Toggle, etc.)</span>
+<span class="sd">                - &quot;hotkey:&lt;shortcut&gt;&quot; - Global hotkey pressed</span>
+<span class="sd">                - &quot;drop:&lt;paths&gt;&quot; - Files dropped on a view</span>
+<span class="sd">                - &quot;clipboard:&lt;content&gt;&quot; - Clipboard read response</span>
+<span class="sd">                - &quot;fileDialog:&lt;paths&gt;&quot; - File dialog response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_event</span> <span class="o">=</span> <span class="n">handler</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a message to the Swift runtime.</span>
+
+<span class="sd">        Messages are serialized with MessagePack and sent with a 4-byte</span>
+<span class="sd">        big-endian length prefix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message: Dictionary to serialize and send.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_lock</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">packed</span> <span class="o">=</span> <span class="n">msgpack</span><span class="o">.</span><span class="n">packb</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">use_bin_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># Length prefix (4 bytes, big-endian)</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;I&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">packed</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="n">packed</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[nib] Error sending message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_read_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the background thread for reading events.</span>
+
+<span class="sd">        Creates a daemon thread that continuously reads messages from</span>
+<span class="sd">        the Swift runtime and dispatches them to the event handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Background loop for reading events from the Swift runtime.</span>
+
+<span class="sd">        Continuously reads length-prefixed MessagePack messages from</span>
+<span class="sd">        the socket and passes them to :meth:`_handle_message`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">buffer</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">buffer</span> <span class="o">+=</span> <span class="n">data</span>
+
+                <span class="c1"># Extract complete messages</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">length</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;I&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">[:</span><span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">length</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="n">message_data</span> <span class="o">=</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">4</span> <span class="p">:</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+                    <span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">4</span> <span class="o">+</span> <span class="n">length</span> <span class="p">:]</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="n">msgpack</span><span class="o">.</span><span class="n">unpackb</span><span class="p">(</span><span class="n">message_data</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error unpacking message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading from socket: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle a message from the Swift runtime.&quot;&quot;&quot;</span>
+        <span class="n">msg_type</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s2">&quot;event&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_event</span><span class="p">:</span>
+            <span class="n">node_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodeId&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_on_event</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[nib] Error in event handler: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s2">&quot;serviceResponse&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_service_response</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_service_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle a service query response.&quot;&quot;&quot;</span>
+        <span class="n">service</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requestId&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s2">&quot;battery&quot;</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">..services.battery</span><span class="w"> </span><span class="kn">import</span> <span class="n">Battery</span>
+                <span class="n">Battery</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s2">&quot;connectivity&quot;</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">..services.connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connectivity</span>
+                <span class="n">Connectivity</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s2">&quot;screen&quot;</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">..services.screen</span><span class="w"> </span><span class="kn">import</span> <span class="n">Screen</span>
+                <span class="n">Screen</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s2">&quot;keychain&quot;</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">..services.keychain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keychain</span>
+                <span class="n">Keychain</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s2">&quot;launchAtLogin&quot;</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">..services.launch_at_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">LaunchAtLogin</span>
+                <span class="n">LaunchAtLogin</span><span class="o">.</span><span class="n">_handle_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[nib] Error handling service response: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span></div>
+</pre></div>
+
+					 </div>
+					 
+					</div>
+					<footer>
+  
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2026, Nib Contributors
+	  <br>
+      
+      
+      
+      Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+      
+      <a href="https://github.com/revitron/revitron-sphinx-theme">theme</a>
+      
+      provided by <a href="https://github.com/revitron">Revitron</a>.
+
+    </p>
+  </div> 
+
+</footer>
+
+				</div>
+			</div>
+
+		</section>
+
+	</div>
+	
+
+	<script type="text/javascript">
+			jQuery(function () {
+					SphinxRtdTheme.Navigation.enable(true);
+			});
+	</script>
+
+	
+	
+		
+	 
+
+ 
+</body>	
+</html>

@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // for search plugin notably
+        const base_url = "https://nib.dev/";
+    </script>
+    <script>
+    const darkTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    darkTheme.onchange = (e) => {
+        if (e.matches) {
+            document.documentElement.classList.add("dark")
+            localStorage.theme = 'dark';
+        } else {
+            document.documentElement.classList.remove("dark")
+            localStorage.removeItem("theme")
+        }
+    };
+
+    // On page load. Priotiry to lcaolStorage
+    if (localStorage.theme === "dark") {
+        document.documentElement.classList.add("dark")
+    } else if (localStorage.theme === "light") {
+        document.documentElement.classList.remove("dark")
+    } else if (darkTheme.matches) {
+        document.documentElement.classList.add("dark")
+    } else {
+        document.documentElement.classList.remove("dark")
+    }
+
+    // set the layout based on localStorage
+    document.documentElement.classList.add(localStorage.getItem("html-layout") || "layout-fixed");
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Handling - Nib</title>
+    
+
+
+<title>Event Handling</title>
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://nib.dev/concepts/event-handling/">
+
+
+<!-- Open Graph (Facebook, LinkedIn) -->
+
+<meta property="og:title" content="Event Handling">
+
+
+
+
+
+<meta property="og:url" content="https://nib.dev/concepts/event-handling/">
+
+
+
+
+
+
+<!-- Twitter Card -->
+
+<meta name="twitter:title" content="Event Handling">
+
+
+
+
+
+
+<!-- JSON-LD Structured Data -->
+
+
+
+    <link rel="icon" href="../../assets/img/nib-logo.svg">
+
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/geist.css" rel="stylesheet">
+
+    
+    
+
+<link id="pygments-light" rel="stylesheet"
+    href="../../css/pygments/shadcn-light.css">
+<link id="pygments-dark" rel="stylesheet"
+    href="../../css/pygments/github-dark.css"
+    media="(prefers-color-scheme: dark)">
+
+
+    
+    <link href="../../assets/css/custom.css" rel="stylesheet">
+
+    
+
+    <script src="../../js/callbacks.js"></script>
+
+    
+
+    
+
+    
+
+</head>
+
+<body
+    class="text-foreground group/body overscroll-none font-sans antialiased [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] xl:[--footer-height:calc(var(--spacing)*24)] theme-default">
+    <div id="inner-body" class="bg-background relative z-10 flex min-h-svh flex-col">
+        <header class="bg-background sticky top-0 z-50 w-full" view-transition-name="header">
+    <div class="container-wrapper 3xl:fixed:px-0 px-6">
+        <div class="3xl:fixed:container flex h-(--header-height) items-center gap-2 **:data-[slot=separator]:!h-4">
+            <button id="menu-button" data-slot="popover-trigger" onclick="onMobileMenuButtonClick(event)"
+                class="group whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground px-4 py-2 has-[&gt;svg]:px-3 extend-touch-target h-8 touch-manipulation items-center justify-start gap-2.5 !p-0 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 active:bg-transparent dark:hover:bg-transparent flex lg:hidden"
+                type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«Rmplb»"
+                data-state="closed">
+                <div class="relative flex h-8 w-4 items-center justify-center">
+                    <div class="relative size-4">
+                        <!-- 16px x 16px -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" x2="16" y1="5" y2="5"
+                                class="group-data-[state=open]:translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:rotate-45 transition-all duration-300 origin-center" />
+                            <line x1="0" x2="16" y1="11" y2="11"
+                                class="group-data-[state=open]:-translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:-rotate-45 transition-all duration-300 origin-center" />
+                        </svg>
+                    </div>
+
+                    <span class="sr-only">Toggle Menu</span>
+                </div>
+                <span class="flex h-8 items-center text-lg leading-none font-medium">Menu</span>
+            </button>
+            <a data-slot="button"
+                class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 hidden h-8 lg:flex"
+                href="https://nib.dev/">
+                <span class="size-8 flex flex-row justify-center items-center">
+                    
+
+<img class="size-5" src="../../assets/img/nib-logo.svg" alt="icon">
+
+
+                </span>
+
+                
+                <h1 class="pr-2">Nib</h1>
+                
+            </a>
+            
+            <nav class="items-center gap-0.5 hidden lg:flex">
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../getting-started/">
+        Getting Started
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../">
+        Concepts
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../guides/">
+        Guides
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../cli/">
+        CLI
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../reference/">
+        API Reference
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../examples/">
+        Examples
+    </a>
+    
+    
+</nav>
+            
+            <div class="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+                <div class="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+                    <button data-slot="dialog-trigger" onclick="onSearchBarClick(event)"
+    class="inline-flex items-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-secondary/80 px-4 py-2 has-[&gt;svg]:px-3 bg-surface text-surface-foreground/60 dark:bg-card relative h-8 w-full justify-start pl-2.5 font-normal shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64"
+    type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«R66plb»" data-state="closed">
+    <span class="text-muted-foreground hidden lg:inline-flex">Search documentation...</span>
+    <span class="text-muted-foreground inline-flex lg:hidden">Search...</span>
+    <div class="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
+        <kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">Ctrl</kbd><kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3 aspect-square">K</kbd>
+    </div>
+</button>
+<dialog id="search-dialog" onclick="onSearchDialogClick(event)"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-lg border overflow-hidden p-0">
+    <div class="w-lg gap-4">
+        <div class="flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground">
+            <div data-slot="command-input-wrapper" class="flex h-9 items-center gap-2 border-b px-3"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-search size-4 shrink-0 opacity-50">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input data-slot="command-input"
+                    class="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search documentation..." cmdk-input="" autocomplete="off" autocorrect="off"
+                    spellcheck="false" aria-autocomplete="list" role="combobox" aria-expanded="true"
+                    aria-controls="radix-«r1t6»" aria-labelledby="radix-«r1t7»" id="radix-«r1t8»" type="text" value=""
+                    aria-activedescendant="radix-«r1th»" oninput="onInputHandler(event)">
+            </div>
+        </div>
+        <div id="mkdocs-search-results">
+            <!-- search results go there -->
+        </div>
+    </div>
+</dialog>
+<script>
+    document.removeEventListener("keydown", searchShortcutHandler);
+    document.addEventListener("keydown", searchShortcutHandler);
+</script>
+                </div>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px ml-2 hidden lg:block">
+                </div>
+                <a target="_blank" rel="noreferrer" data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 h-8 shadow-none"
+                    href="None">
+                    <svg viewBox="0 0 438.549 438.549">
+                        <path fill="currentColor"
+                            d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z">
+                        </path>
+                    </svg>
+                    
+                    <span id="stargazers" class="text-muted-foreground w-8 text-xs tabular-nums" onload="test()">
+                    </span>
+                    
+                </a>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px 3xl:flex hidden">
+                </div>
+                <button data-slot="button"
+                    class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-8 3xl:flex hidden"
+                    title="Toggle layout" onclick="toggleLayout(event)">
+                    <span class="sr-only">Toggle layout</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-gallery-horizontal">
+                        <path d="M2 3v18"></path>
+                        <rect width="12" height="18" x="6" y="3" rx="2"></rect>
+                        <path d="M22 3v18"></path>
+                    </svg>
+                </button>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px">
+                </div>
+                <button data-slot="button"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 group/toggle extend-touch-target size-8"
+                    title="Toggle theme" onclick="onThemeSwitch(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="size-4.5">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                        <path d="M12 3l0 18"></path>
+                        <path d="M12 9l4.65 -4.65"></path>
+                        <path d="M12 14.3l7.37 -7.37"></path>
+                        <path d="M12 19.6l8.85 -8.85"></path>
+                    </svg>
+                    <span class="sr-only">Toggle theme</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+        <main class="flex flex-1 flex-col">
+            <div class="container-wrapper flex flex-1 flex-col px-2">
+                <div data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
+                    class="group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex w-full 3xl:fixed:container 3xl:fixed:px-3 min-h-min flex-1 items-start px-0 [--sidebar-width:220px] [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--sidebar-width:240px] lg:[--top-spacing:calc(var(--spacing)*4)]">
+                    <div data-slot="sidebar"
+                        class="text-sidebar-foreground w-(--sidebar-width) flex-col sticky top-[calc(var(--header-height)+1px)] z-30 hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] bg-transparent lg:flex">
+                        <div data-slot="sidebar-content" data-sidebar="content"
+                            class="flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden no-scrollbar px-2 pb-12">
+                            <div class="h-(--top-spacing) shrink-0"></div>
+                            <div view-transition-name="sidebar" data-slot="sidebar-group" data-sidebar="group"
+    class="relative flex w-full min-w-0 flex-col p-2 no-scrollbar">
+    
+
+    
+    
+    
+
+    
+
+    
+    
+
+    
+    <div data-slot="sidebar-group" data-sidebar="group" class="relative flex w-full min-w-0 flex-col p-2">
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="w-full text-sm">
+            <ul data-slot="sidebar-menu" data-sidebar="menu" class="flex w-full min-w-0 flex-col gap-0.5">
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Index
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/architecture/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Architecture
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/reactivity/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Reactivity
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/view-tree/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        The View Tree
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/modifiers/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Modifiers
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="true" data-sidebar="menu-button"
+        data-size="default" href="/concepts/event-handling/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Event Handling
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+    
+
+    
+
+
+    
+</div>
+                        </div>
+                    </div>
+                    <div class="h-full w-full">
+                        <div data-slot="docs" class="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
+                            <div class="flex min-w-0 flex-1 flex-col">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <article class="w-full" view-transition-name="page">
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
+      <div id="page-header" class="flex items-start justify-between">
+        <h1
+          class="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl"
+        >
+          Event Handling
+        </h1>
+
+        <div class="flex items-center gap-2 pt-1.5">
+          
+<button onclick="fetch(`https://nib.dev/concepts/event-handling.md`).then((r) => r.blob()).then((blob) => navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]))" 
+        data-slot="button" 
+        class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md gap-1.5 px-3 has-[&>svg]:px-2.5 h-8 shadow-none md:h-7 md:text-[0.8rem]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-copy ">
+    <path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"></path><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"></path>
+</svg>
+<span class="max-md:hidden">Copy Page</span>
+</button> 
+          
+          <a
+            data-slot="button"
+            id="previous-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/concepts/modifiers/"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-left"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M5 12l6 6"></path>
+              <path d="M5 12l6 -6"></path>
+            </svg>
+            <span class="sr-only">Previous</span>
+          </a>
+           
+          
+          <a
+            data-slot="button"
+            id="next-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/guides/"
+          >
+            <span class="sr-only">Next</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-right"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M13 18l6 -6"></path>
+              <path d="M13 6l6 6"></path>
+            </svg>
+          </a>
+          
+        </div>
+      </div>
+      
+    </div>
+    <div class="flex justify-end items-center">
+       
+    </div>
+  </div>
+  <div class="typography w-full flex-1 *:data-[slot=alert]:first:mt-0">
+    <p>Events flow from Swift to Python over the Unix socket. When a user taps a button, types in a text field, or drops a file, Swift sends an event message containing the view's node ID and the event data. Python looks up the registered callback and calls it.</p>
+<h2 id="how-events-work">How Events Work<a class="headerlink" href="#how-events-work" title="Permanent link">&para;</a></h2>
+<ol>
+<li>You register a callback when creating a view (e.g., <code>action=</code> on a Button, <code>on_change=</code> on a TextField).</li>
+<li>During each render, <code>App._collect_actions()</code> walks the view tree and builds maps from node IDs to callback functions.</li>
+<li>When the user interacts with the view, Swift sends an event message with the node ID and event string.</li>
+<li>Python's event handler looks up the callback in the appropriate map and calls it.</li>
+</ol>
+<p>Events are dispatched sequentially on a dedicated event thread. This prevents concurrent callback execution, so you do not need locks when modifying view properties inside event handlers.</p>
+<h2 id="button-actions">Button Actions<a class="headerlink" href="#button-actions" title="Permanent link">&para;</a></h2>
+<p>Buttons use the <code>action=</code> parameter. The callback receives no arguments.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Font</span><span class="o">.</span><span class="n">TITLE</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">increment</span><span class="p">():</span>
+        <span class="n">count</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="o">.</span><span class="n">content</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">():</span>
+        <span class="n">count</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+            <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">count</span><span class="p">,</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">HStack</span><span class="p">(</span>
+                    <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">nib</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Add&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">increment</span><span class="p">),</span>
+                        <span class="n">nib</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Reset&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">reset</span><span class="p">),</span>
+                    <span class="p">],</span>
+                    <span class="n">spacing</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Callback signature</p>
+<p>Button action callbacks take no arguments: <code>def handler():</code>. The button does not pass any value -- it simply signals that it was tapped.</p>
+</div>
+<h2 id="text-field-changes">Text Field Changes<a class="headerlink" href="#text-field-changes" title="Permanent link">&para;</a></h2>
+<p><code>TextField</code> and <code>SecureField</code> use <code>on_change=</code> for value changes and <code>on_submit=</code> for the Return/Enter key. Both receive the current text value as a string.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">search_field</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+    <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Search...&quot;</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">handle_search</span><span class="p">,</span>
+    <span class="n">on_submit</span><span class="o">=</span><span class="n">submit_search</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">TextFieldStyle</span><span class="o">.</span><span class="n">roundedBorder</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_search</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Called on every keystroke</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Searching: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">submit_search</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Called when user presses Return/Enter</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitted: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Secure fields work the same way:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">password_field</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">SecureField</span><span class="p">(</span>
+    <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Password&quot;</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pw</span><span class="p">:</span> <span class="n">validate_password</span><span class="p">(</span><span class="n">pw</span><span class="p">),</span>
+    <span class="n">on_submit</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pw</span><span class="p">:</span> <span class="n">login</span><span class="p">(</span><span class="n">pw</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="texteditor-changes">TextEditor Changes<a class="headerlink" href="#texteditor-changes" title="Permanent link">&para;</a></h2>
+<p><code>TextEditor</code> provides multi-line text input with <code>on_change=</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">notes</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">TextEditor</span><span class="p">(</span>
+    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">placeholder</span><span class="o">=</span><span class="s2">&quot;Enter your notes...&quot;</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">handle_notes_change</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_notes_change</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Called when the text content changes</span>
+    <span class="n">word_count</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span><span class="si">}</span><span class="s2"> words&quot;</span>
+</code></pre></div>
+
+<h2 id="toggle-changes">Toggle Changes<a class="headerlink" href="#toggle-changes" title="Permanent link">&para;</a></h2>
+<p><code>Toggle</code> uses <code>on_change=</code> and passes a boolean indicating the new state.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">dark_mode</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Toggle</span><span class="p">(</span>
+    <span class="s2">&quot;Dark Mode&quot;</span><span class="p">,</span>
+    <span class="n">is_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">handle_dark_mode</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_dark_mode</span><span class="p">(</span><span class="n">is_on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_on</span><span class="p">:</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s2">&quot;#1a1a1a&quot;</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">foreground_color</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">foreground_color</span> <span class="o">=</span> <span class="s2">&quot;#000000&quot;</span>
+</code></pre></div>
+
+<h2 id="slider-changes">Slider Changes<a class="headerlink" href="#slider-changes" title="Permanent link">&para;</a></h2>
+<p><code>Slider</code> uses <code>on_change=</code> and passes the new float value. The callback is called continuously while dragging.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">volume_label</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Volume: 50%&quot;</span><span class="p">)</span>
+
+<span class="n">volume_slider</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Slider</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">max_value</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">handle_volume</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_volume</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="n">volume_label</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Volume: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
+</code></pre></div>
+
+<h2 id="picker-changes">Picker Changes<a class="headerlink" href="#picker-changes" title="Permanent link">&para;</a></h2>
+<p><code>Picker</code> uses <code>on_change=</code> and passes the selected value as a string.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">nib</span><span class="o">.</span><span class="n">Picker</span><span class="p">(</span>
+    <span class="s2">&quot;Theme&quot;</span><span class="p">,</span>
+    <span class="n">selection</span><span class="o">=</span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;light&quot;</span><span class="p">,</span> <span class="s2">&quot;Light&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;dark&quot;</span><span class="p">,</span> <span class="s2">&quot;Dark&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;System&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="n">handle_theme</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">PickerStyle</span><span class="o">.</span><span class="n">segmented</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_theme</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected theme: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># &quot;light&quot;, &quot;dark&quot;, or &quot;system&quot;</span>
+</code></pre></div>
+
+<h2 id="lifecycle-events">Lifecycle Events<a class="headerlink" href="#lifecycle-events" title="Permanent link">&para;</a></h2>
+<p>The app provides lifecycle callbacks for the popover window and app termination.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">on_appear</span> <span class="o">=</span> <span class="n">on_open</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">on_disappear</span> <span class="o">=</span> <span class="n">on_close</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">on_quit</span> <span class="o">=</span> <span class="n">on_quit</span>
+
+    <span class="c1"># ...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_open</span><span class="p">():</span>
+    <span class="c1"># Called every time the popover opens (user clicks menu bar icon)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Popover opened&quot;</span><span class="p">)</span>
+    <span class="n">refresh_data</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_close</span><span class="p">():</span>
+    <span class="c1"># Called every time the popover closes</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Popover closed&quot;</span><span class="p">)</span>
+    <span class="n">pause_updates</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_quit</span><span class="p">():</span>
+    <span class="c1"># Called once when the app is shutting down</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;App quitting&quot;</span><span class="p">)</span>
+    <span class="n">save_state</span><span class="p">()</span>
+    <span class="n">close_connections</span><span class="p">()</span>
+</code></pre></div>
+
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When it fires</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_appear</code></td>
+<td>Popover opens</td>
+<td>Every open</td>
+</tr>
+<tr>
+<td><code>on_disappear</code></td>
+<td>Popover closes</td>
+<td>Every close</td>
+</tr>
+<tr>
+<td><code>on_quit</code></td>
+<td>App is shutting down</td>
+<td>Once</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="drag-and-drop">Drag and Drop<a class="headerlink" href="#drag-and-drop" title="Permanent link">&para;</a></h2>
+<p>Any container view can accept dropped files via <code>on_drop=</code>. The callback receives a list of file path strings.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">drop_zone</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+    <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="s2">&quot;arrow.down.doc&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Font</span><span class="o">.</span><span class="n">TITLE</span><span class="p">),</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Drop files here&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">spacing</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+    <span class="n">border_color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">,</span>
+    <span class="n">border_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">corner_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">on_drop</span><span class="o">=</span><span class="n">handle_drop</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_drop</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dropped </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span><span class="si">}</span><span class="s2"> file(s)&quot;</span>
+</code></pre></div>
+
+<h2 id="hover-events">Hover Events<a class="headerlink" href="#hover-events" title="Permanent link">&para;</a></h2>
+<p>Any view can detect mouse hover via <code>on_hover=</code>. The callback receives a boolean -- <code>True</code> when the mouse enters, <code>False</code> when it exits.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">card</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+    <span class="n">controls</span><span class="o">=</span><span class="p">[</span><span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Hover me&quot;</span><span class="p">)],</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">background</span><span class="o">=</span><span class="s2">&quot;#333333&quot;</span><span class="p">,</span>
+    <span class="n">corner_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">on_hover</span><span class="o">=</span><span class="n">handle_hover</span><span class="p">,</span>
+    <span class="n">animation</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Animation</span><span class="o">.</span><span class="n">EASE_IN_OUT</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_hover</span><span class="p">(</span><span class="n">is_hovering</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_hovering</span><span class="p">:</span>
+        <span class="n">card</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s2">&quot;#444444&quot;</span>
+        <span class="n">card</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="mf">1.02</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">card</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s2">&quot;#333333&quot;</span>
+        <span class="n">card</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+</code></pre></div>
+
+<h2 id="click-events">Click Events<a class="headerlink" href="#click-events" title="Permanent link">&para;</a></h2>
+<p>Any view can respond to clicks via <code>on_click=</code>. The callback receives no arguments.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+    <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="s2">&quot;checkmark.circle&quot;</span><span class="p">),</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Click to select&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected!&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="canvas-gestures">Canvas Gestures<a class="headerlink" href="#canvas-gestures" title="Permanent link">&para;</a></h2>
+<p>The <code>Canvas</code> view supports gesture tracking for drawing and interactive graphics. Enable gestures with <code>enable_gestures=True</code> or by setting any gesture callback.</p>
+<p>Gesture callbacks receive a <code>PanEvent</code> with <code>x</code> and <code>y</code> coordinates in the canvas coordinate space.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">canvas</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Canvas</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s2">&quot;#1a1a1a&quot;</span><span class="p">)</span>
+    <span class="n">last_pos</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pan_start</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">PanEvent</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">last_pos</span>
+        <span class="n">last_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pan_update</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">PanEvent</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">last_pos</span>
+        <span class="k">if</span> <span class="n">last_pos</span><span class="p">:</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nib</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span>
+                <span class="n">x1</span><span class="o">=</span><span class="n">last_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y1</span><span class="o">=</span><span class="n">last_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">x2</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                <span class="n">stroke</span><span class="o">=</span><span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="p">))</span>
+            <span class="n">last_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pan_end</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">PanEvent</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">last_pos</span>
+        <span class="n">last_pos</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_hover</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">PanEvent</span><span class="p">):</span>
+        <span class="c1"># Mouse is moving over canvas (not dragging)</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="n">canvas</span><span class="o">.</span><span class="n">on_pan_start</span> <span class="o">=</span> <span class="n">on_pan_start</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">on_pan_update</span> <span class="o">=</span> <span class="n">on_pan_update</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">on_pan_end</span> <span class="o">=</span> <span class="n">on_pan_end</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="n">on_hover</span> <span class="o">=</span> <span class="n">on_hover</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;(0, 0)&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Font</span><span class="o">.</span><span class="n">CAPTION</span><span class="p">)</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+            <span class="n">controls</span><span class="o">=</span><span class="p">[</span><span class="n">canvas</span><span class="p">,</span> <span class="n">coords</span><span class="p">],</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Callback</th>
+<th>When it fires</th>
+<th>Argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_pan_start</code></td>
+<td>Mouse/pen pressed down</td>
+<td><code>PanEvent(x, y)</code></td>
+</tr>
+<tr>
+<td><code>on_pan_update</code></td>
+<td>Mouse/pen dragged</td>
+<td><code>PanEvent(x, y)</code></td>
+</tr>
+<tr>
+<td><code>on_pan_end</code></td>
+<td>Mouse/pen released</td>
+<td><code>PanEvent(x, y)</code></td>
+</tr>
+<tr>
+<td><code>on_hover</code></td>
+<td>Mouse moves (not dragging)</td>
+<td><code>PanEvent(x, y)</code></td>
+</tr>
+</tbody>
+</table></div>
+<div class="admonition info">
+<p class="admonition-title">Canvas hover vs view hover</p>
+<p>Canvas <code>on_hover</code> receives a <code>PanEvent</code> with x/y coordinates. View <code>on_hover</code> (on any other view) receives a <code>bool</code> indicating whether the mouse entered or exited. They share the same parameter name but have different callback signatures depending on the view type.</p>
+</div>
+<h2 id="hotkeys">Hotkeys<a class="headerlink" href="#hotkeys" title="Permanent link">&para;</a></h2>
+<p>Register global keyboard shortcuts that work even when the app window is not focused.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">on_hotkey</span><span class="p">(</span><span class="s2">&quot;cmd+shift+n&quot;</span><span class="p">,</span> <span class="n">show_new_dialog</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">on_hotkey</span><span class="p">(</span><span class="s2">&quot;cmd+k&quot;</span><span class="p">,</span> <span class="n">toggle_search</span><span class="p">)</span>
+
+    <span class="c1"># Decorator syntax</span>
+    <span class="nd">@app</span><span class="o">.</span><span class="n">hotkey</span><span class="p">(</span><span class="s2">&quot;cmd+shift+p&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open_command_palette</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Command palette opened&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Hotkey strings use modifier names joined with <code>+</code>: <code>cmd</code>, <code>shift</code>, <code>opt</code> (or <code>alt</code>), <code>ctrl</code>, plus a key name.</p>
+<h2 id="context-menu-events">Context Menu Events<a class="headerlink" href="#context-menu-events" title="Permanent link">&para;</a></h2>
+<p>Right-click menu items use the <code>action=</code> parameter, same as buttons.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">app</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">(</span><span class="s2">&quot;Settings&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">open_settings</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;gear&quot;</span><span class="p">,</span> <span class="n">shortcut</span><span class="o">=</span><span class="s2">&quot;cmd+,&quot;</span><span class="p">),</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">(</span><span class="s2">&quot;Check for Updates&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">check_updates</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;arrow.clockwise&quot;</span><span class="p">),</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">MenuDivider</span><span class="p">(),</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">(</span><span class="s2">&quot;Quit&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">quit</span><span class="p">,</span> <span class="n">shortcut</span><span class="o">=</span><span class="s2">&quot;cmd+q&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">open_settings</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Opening settings&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_updates</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking for updates&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="callback-signatures-summary">Callback Signatures Summary<a class="headerlink" href="#callback-signatures-summary" title="Permanent link">&para;</a></h2>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>View / Feature</th>
+<th>Parameter</th>
+<th>Callback Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Button</code></td>
+<td><code>action=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td><code>TextField</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(value: str):</code></td>
+</tr>
+<tr>
+<td><code>TextField</code></td>
+<td><code>on_submit=</code></td>
+<td><code>def handler(value: str):</code></td>
+</tr>
+<tr>
+<td><code>SecureField</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(value: str):</code></td>
+</tr>
+<tr>
+<td><code>SecureField</code></td>
+<td><code>on_submit=</code></td>
+<td><code>def handler(value: str):</code></td>
+</tr>
+<tr>
+<td><code>TextEditor</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(text: str):</code></td>
+</tr>
+<tr>
+<td><code>Toggle</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(is_on: bool):</code></td>
+</tr>
+<tr>
+<td><code>Slider</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(value: float):</code></td>
+</tr>
+<tr>
+<td><code>Picker</code></td>
+<td><code>on_change=</code></td>
+<td><code>def handler(value: str):</code></td>
+</tr>
+<tr>
+<td><code>App</code></td>
+<td><code>on_appear=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td><code>App</code></td>
+<td><code>on_disappear=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td><code>App</code></td>
+<td><code>on_quit=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td>Any view</td>
+<td><code>on_drop=</code></td>
+<td><code>def handler(paths: list[str]):</code></td>
+</tr>
+<tr>
+<td>Any view</td>
+<td><code>on_hover=</code></td>
+<td><code>def handler(is_hovering: bool):</code></td>
+</tr>
+<tr>
+<td>Any view</td>
+<td><code>on_click=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td><code>Canvas</code></td>
+<td><code>on_pan_start=</code></td>
+<td><code>def handler(e: PanEvent):</code></td>
+</tr>
+<tr>
+<td><code>Canvas</code></td>
+<td><code>on_pan_update=</code></td>
+<td><code>def handler(e: PanEvent):</code></td>
+</tr>
+<tr>
+<td><code>Canvas</code></td>
+<td><code>on_pan_end=</code></td>
+<td><code>def handler(e: PanEvent):</code></td>
+</tr>
+<tr>
+<td><code>Canvas</code></td>
+<td><code>on_hover=</code></td>
+<td><code>def handler(e: PanEvent):</code></td>
+</tr>
+<tr>
+<td><code>MenuItem</code></td>
+<td><code>action=</code></td>
+<td><code>def handler():</code></td>
+</tr>
+<tr>
+<td><code>App.on_hotkey</code></td>
+<td>callback</td>
+<td><code>def handler():</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="event-threading">Event Threading<a class="headerlink" href="#event-threading" title="Permanent link">&para;</a></h2>
+<p>All event callbacks run on a single dedicated event thread. This means:</p>
+<ul>
+<li>Callbacks never run concurrently with each other.</li>
+<li>You can safely mutate view properties in callbacks without locks.</li>
+<li>Long-running callbacks block subsequent events from being processed.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Avoid blocking the event thread</p>
+<p>If a callback needs to do heavy work (network requests, file I/O, computation), run it in a separate thread and update the UI from there. View property mutations are thread-safe and will trigger re-renders from any thread.</p>
+</div>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">():</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Loading...&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">do_fetch</span><span class="p">():</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Simulate network request</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Done!&quot;</span>
+
+    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">do_fetch</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+  </div>
+</article>
+                                <div class="mx-auto flex flex-wrap h-16 w-full max-w-2xl items-center gap-2 px-4 md:px-0">
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 shadow-none"
+        href="/concepts/modifiers/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-left ">
+            <path d="M5 12l14 0"></path>
+            <path d="M5 12l6 6"></path>
+            <path d="M5 12l6 -6"></path>
+        </svg>
+        <span class="max-[500px]:hidden">Modifiers</span>
+    </a>
+    
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 ml-auto shadow-none"
+        href="/guides/">
+        <span class="max-[500px]:hidden">Index</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-right ">
+            <path d="M5 12l14 0"></path>
+            <path d="M13 18l6 -6"></path>
+            <path d="M13 6l6 6"></path>
+        </svg>
+    </a>
+    
+</div>
+                                <dialog id="bottom-sidebar" onclick="onBottomSidebarDialogClick(event)" class="bg-transparent"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0px, 58px); min-width: max-content; --radix-popper-transform-origin: 0% 0px; will-change: transform; z-index: 50; --radix-popper-available-width: 504px; --radix-popper-available-height: 857px; --radix-popper-anchor-width: 72.94999694824219px; --radix-popper-anchor-height: 32px;">
+    <div data-side="bottom" data-align="start" data-state="open" role="dialog" data-slot="popover-content"
+        class="text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) border outline-hidden bg-background/90 no-scrollbar h-(--radix-popper-available-height) w-(--radix-popper-available-width) overflow-y-auto rounded-none border-none p-0 shadow-none backdrop-blur duration-100"
+        style="--radix-popover-content-transform-origin: var(--radix-popper-transform-origin); --radix-popover-content-available-width: var(--radix-popper-available-width); --radix-popover-content-available-height: var(--radix-popper-available-height); --radix-popover-trigger-width: var(--radix-popper-anchor-width); --radix-popover-trigger-height: var(--radix-popper-anchor-height);"
+        tabindex="-1">
+        <div class="flex flex-col gap-12 overflow-auto px-6 py-6">
+            
+            
+            
+
+            
+            <div class="flex flex-col gap-4">
+                <div class="text-muted-foreground text-sm font-medium">Menu</div>
+                <div class="flex flex-col gap-3">
+                    
+                    <a class="text-2xl font-medium" href="../..">
+                        
+                        Home
+                        
+                    </a>
+                    
+                </div>
+            </div>
+            
+
+            
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Getting Started</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/installation/">
+                            
+                            Installation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/quickstart/">
+                            
+                            Quick Start
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/first-app/">
+                            
+                            Your First App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/project-structure/">
+                            
+                            Project Structure
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Concepts</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../architecture/">
+                            
+                            Architecture
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../reactivity/">
+                            
+                            Reactivity
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../view-tree/">
+                            
+                            The View Tree
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../modifiers/">
+                            
+                            Modifiers
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="./">
+                            
+                            Event Handling
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Guides</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../guides/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/layouts/">
+                            
+                            Building Layouts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/styling/">
+                            
+                            Styling & Theming
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/colors-gradients/">
+                            
+                            Colors & Gradients
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/typography/">
+                            
+                            Typography & Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/animations/">
+                            
+                            Animations & Transitions
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/context-menu/">
+                            
+                            Context Menu
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/settings/">
+                            
+                            Settings & Persistence
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/notifications/">
+                            
+                            Notifications
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/services/">
+                            
+                            System Services
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/file-dialogs/">
+                            
+                            File Dialogs
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/canvas/">
+                            
+                            Canvas Drawing
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/charts/">
+                            
+                            Charts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/navigation/">
+                            
+                            Navigation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/drag-drop/">
+                            
+                            Drag & Drop
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/hotkeys-clipboard/">
+                            
+                            Hotkeys & Clipboard
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/custom-fonts/">
+                            
+                            Custom Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/assets/">
+                            
+                            Assets
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">CLI</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../cli/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/create/">
+                            
+                            nib create
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/run/">
+                            
+                            nib run
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/build/">
+                            
+                            nib build
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/pyproject-config/">
+                            
+                            pyproject.toml Config
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">API Reference</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../reference/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Examples</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../examples/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/counter/">
+                            
+                            Counter App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/todo/">
+                            
+                            Todo App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/system-monitor/">
+                            
+                            System Monitor
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/drawing-app/">
+                            
+                            Drawing App
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            
+
+        </div>
+    </div>
+</dialog>
+                            </div>
+                            <div
+                                class="sticky top-[calc(var(--header-height)+1px)] z-30 ml-auto hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] w-72 flex-col gap-4 overflow-hidden overscroll-none pb-8 xl:flex">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <div view-transition-name="toc" class="no-scrollbar overflow-y-auto px-8">
+    <div class="flex flex-col gap-2 p-4 pt-0 text-sm">
+        <p class="text-muted-foreground bg-background sticky top-0 h-6 text-xs">On This Page</p>
+        
+        
+        
+        
+        <a href="#how-events-work"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            How Events Work
+        </a>
+        
+
+        
+        <a href="#button-actions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Button Actions
+        </a>
+        
+
+        
+        <a href="#text-field-changes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Text Field Changes
+        </a>
+        
+
+        
+        <a href="#texteditor-changes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            TextEditor Changes
+        </a>
+        
+
+        
+        <a href="#toggle-changes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Toggle Changes
+        </a>
+        
+
+        
+        <a href="#slider-changes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Slider Changes
+        </a>
+        
+
+        
+        <a href="#picker-changes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Picker Changes
+        </a>
+        
+
+        
+        <a href="#lifecycle-events"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Lifecycle Events
+        </a>
+        
+
+        
+        <a href="#drag-and-drop"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Drag and Drop
+        </a>
+        
+
+        
+        <a href="#hover-events"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Hover Events
+        </a>
+        
+
+        
+        <a href="#click-events"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Click Events
+        </a>
+        
+
+        
+        <a href="#canvas-gestures"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Canvas Gestures
+        </a>
+        
+
+        
+        <a href="#hotkeys"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Hotkeys
+        </a>
+        
+
+        
+        <a href="#context-menu-events"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Context Menu Events
+        </a>
+        
+
+        
+        <a href="#callback-signatures-summary"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Callback Signatures Summary
+        </a>
+        
+
+        
+        <a href="#event-threading"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Event Threading
+        </a>
+        
+
+        
+        
+        
+        
+
+    </div>
+    <div class="h-12"></div>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer view-transition-name="footer"
+    class="group-has-[.section-soft]/body:bg-surface/40 3xl:fixed:bg-transparent dark:bg-transparent">
+    <div class="container-wrapper px-4 xl:px-6">
+        <div class="flex h-(--footer-height) items-center justify-between">
+            <div class="text-muted-foreground w-full text-center text-xs leading-loose sm:text-sm">
+                
+                <a href="https://github.com/asiffer/mkdocs-shadcn">shadcn theme</a> provided by
+                <a href="https://github.com/asiffer">@asiffer</a>
+            </div>
+        </div>
+    </div>
+</footer>
+    </div>
+     
+
+<script src="../../search/main.js"></script>
+
+
+    
+
+    <script src="../../js/copy-button.js"></script>
+    <script>updatePygmentsStylesheet();</script>
+    
+    <script>fetchStargazers("None");</script>
+    
+    
+    
+    <script type="speculationrules">
+{
+  "prerender": [
+    {
+      "where": {
+          "selector_matches": ["#next-button", "#previous-button"],
+      }
+    }
+  ]
+}
+</script>
+</body>
+
+</html>

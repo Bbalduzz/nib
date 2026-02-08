@@ -38,7 +38,7 @@ def main(app: nib.App):
         x_axis=nib.ChartAxis(label=None),
         y_axis=nib.ChartAxis(label=None),
         legend=nib.ChartLegend(position="bottom"),
-        chart_background="#2d2d2d",
+        # chart_background="#2d2d2d",
         width=360,
         height=280,
     )

@@ -34,7 +34,7 @@ nib/
 │   │   ├── layout/           # VStack, HStack, ZStack, ScrollView, List, Section,
 │   │   │                     # Form, Spacer, Divider, Group, NavigationStack,
 │   │   │                     # NavigationLink, DisclosureGroup, Grid, LazyVGrid, LazyHGrid
-│   │   ├── shapes/           # Rectangle, RoundedRectangle, Circle, Ellipse, Capsule
+│   │   ├── shapes/           # Rectangle, Circle, Ellipse, Capsule
 │   │   ├── charts/           # Chart, LineMark, BarMark, AreaMark, PointMark,
 │   │   │                     # RuleMark, RectMark, SectorMark
 │   │   ├── effects/          # VisualEffectBlur

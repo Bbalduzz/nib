@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // for search plugin notably
+        const base_url = "https://nib.dev/";
+    </script>
+    <script>
+    const darkTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    darkTheme.onchange = (e) => {
+        if (e.matches) {
+            document.documentElement.classList.add("dark")
+            localStorage.theme = 'dark';
+        } else {
+            document.documentElement.classList.remove("dark")
+            localStorage.removeItem("theme")
+        }
+    };
+
+    // On page load. Priotiry to lcaolStorage
+    if (localStorage.theme === "dark") {
+        document.documentElement.classList.add("dark")
+    } else if (localStorage.theme === "light") {
+        document.documentElement.classList.remove("dark")
+    } else if (darkTheme.matches) {
+        document.documentElement.classList.add("dark")
+    } else {
+        document.documentElement.classList.remove("dark")
+    }
+
+    // set the layout based on localStorage
+    document.documentElement.classList.add(localStorage.getItem("html-layout") || "layout-fixed");
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>System Services - Nib</title>
+    
+
+
+<title>System Services</title>
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://nib.dev/guides/services/">
+
+
+<!-- Open Graph (Facebook, LinkedIn) -->
+
+<meta property="og:title" content="System Services">
+
+
+
+
+
+<meta property="og:url" content="https://nib.dev/guides/services/">
+
+
+
+
+
+
+<!-- Twitter Card -->
+
+<meta name="twitter:title" content="System Services">
+
+
+
+
+
+
+<!-- JSON-LD Structured Data -->
+
+
+
+    <link rel="icon" href="../../assets/img/nib-logo.svg">
+
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/geist.css" rel="stylesheet">
+
+    
+    
+
+<link id="pygments-light" rel="stylesheet"
+    href="../../css/pygments/shadcn-light.css">
+<link id="pygments-dark" rel="stylesheet"
+    href="../../css/pygments/github-dark.css"
+    media="(prefers-color-scheme: dark)">
+
+
+    
+    <link href="../../assets/css/custom.css" rel="stylesheet">
+
+    
+
+    <script src="../../js/callbacks.js"></script>
+
+    
+
+    
+
+    
+
+</head>
+
+<body
+    class="text-foreground group/body overscroll-none font-sans antialiased [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] xl:[--footer-height:calc(var(--spacing)*24)] theme-default">
+    <div id="inner-body" class="bg-background relative z-10 flex min-h-svh flex-col">
+        <header class="bg-background sticky top-0 z-50 w-full" view-transition-name="header">
+    <div class="container-wrapper 3xl:fixed:px-0 px-6">
+        <div class="3xl:fixed:container flex h-(--header-height) items-center gap-2 **:data-[slot=separator]:!h-4">
+            <button id="menu-button" data-slot="popover-trigger" onclick="onMobileMenuButtonClick(event)"
+                class="group whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground px-4 py-2 has-[&gt;svg]:px-3 extend-touch-target h-8 touch-manipulation items-center justify-start gap-2.5 !p-0 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 active:bg-transparent dark:hover:bg-transparent flex lg:hidden"
+                type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«Rmplb»"
+                data-state="closed">
+                <div class="relative flex h-8 w-4 items-center justify-center">
+                    <div class="relative size-4">
+                        <!-- 16px x 16px -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" x2="16" y1="5" y2="5"
+                                class="group-data-[state=open]:translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:rotate-45 transition-all duration-300 origin-center" />
+                            <line x1="0" x2="16" y1="11" y2="11"
+                                class="group-data-[state=open]:-translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:-rotate-45 transition-all duration-300 origin-center" />
+                        </svg>
+                    </div>
+
+                    <span class="sr-only">Toggle Menu</span>
+                </div>
+                <span class="flex h-8 items-center text-lg leading-none font-medium">Menu</span>
+            </button>
+            <a data-slot="button"
+                class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 hidden h-8 lg:flex"
+                href="https://nib.dev/">
+                <span class="size-8 flex flex-row justify-center items-center">
+                    
+
+<img class="size-5" src="../../assets/img/nib-logo.svg" alt="icon">
+
+
+                </span>
+
+                
+                <h1 class="pr-2">Nib</h1>
+                
+            </a>
+            
+            <nav class="items-center gap-0.5 hidden lg:flex">
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../getting-started/">
+        Getting Started
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../concepts/">
+        Concepts
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../">
+        Guides
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../cli/">
+        CLI
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../reference/">
+        API Reference
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../examples/">
+        Examples
+    </a>
+    
+    
+</nav>
+            
+            <div class="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+                <div class="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+                    <button data-slot="dialog-trigger" onclick="onSearchBarClick(event)"
+    class="inline-flex items-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-secondary/80 px-4 py-2 has-[&gt;svg]:px-3 bg-surface text-surface-foreground/60 dark:bg-card relative h-8 w-full justify-start pl-2.5 font-normal shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64"
+    type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«R66plb»" data-state="closed">
+    <span class="text-muted-foreground hidden lg:inline-flex">Search documentation...</span>
+    <span class="text-muted-foreground inline-flex lg:hidden">Search...</span>
+    <div class="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
+        <kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">Ctrl</kbd><kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3 aspect-square">K</kbd>
+    </div>
+</button>
+<dialog id="search-dialog" onclick="onSearchDialogClick(event)"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-lg border overflow-hidden p-0">
+    <div class="w-lg gap-4">
+        <div class="flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground">
+            <div data-slot="command-input-wrapper" class="flex h-9 items-center gap-2 border-b px-3"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-search size-4 shrink-0 opacity-50">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input data-slot="command-input"
+                    class="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search documentation..." cmdk-input="" autocomplete="off" autocorrect="off"
+                    spellcheck="false" aria-autocomplete="list" role="combobox" aria-expanded="true"
+                    aria-controls="radix-«r1t6»" aria-labelledby="radix-«r1t7»" id="radix-«r1t8»" type="text" value=""
+                    aria-activedescendant="radix-«r1th»" oninput="onInputHandler(event)">
+            </div>
+        </div>
+        <div id="mkdocs-search-results">
+            <!-- search results go there -->
+        </div>
+    </div>
+</dialog>
+<script>
+    document.removeEventListener("keydown", searchShortcutHandler);
+    document.addEventListener("keydown", searchShortcutHandler);
+</script>
+                </div>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px ml-2 hidden lg:block">
+                </div>
+                <a target="_blank" rel="noreferrer" data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 h-8 shadow-none"
+                    href="None">
+                    <svg viewBox="0 0 438.549 438.549">
+                        <path fill="currentColor"
+                            d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z">
+                        </path>
+                    </svg>
+                    
+                    <span id="stargazers" class="text-muted-foreground w-8 text-xs tabular-nums" onload="test()">
+                    </span>
+                    
+                </a>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px 3xl:flex hidden">
+                </div>
+                <button data-slot="button"
+                    class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-8 3xl:flex hidden"
+                    title="Toggle layout" onclick="toggleLayout(event)">
+                    <span class="sr-only">Toggle layout</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-gallery-horizontal">
+                        <path d="M2 3v18"></path>
+                        <rect width="12" height="18" x="6" y="3" rx="2"></rect>
+                        <path d="M22 3v18"></path>
+                    </svg>
+                </button>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px">
+                </div>
+                <button data-slot="button"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 group/toggle extend-touch-target size-8"
+                    title="Toggle theme" onclick="onThemeSwitch(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="size-4.5">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                        <path d="M12 3l0 18"></path>
+                        <path d="M12 9l4.65 -4.65"></path>
+                        <path d="M12 14.3l7.37 -7.37"></path>
+                        <path d="M12 19.6l8.85 -8.85"></path>
+                    </svg>
+                    <span class="sr-only">Toggle theme</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+        <main class="flex flex-1 flex-col">
+            <div class="container-wrapper flex flex-1 flex-col px-2">
+                <div data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
+                    class="group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex w-full 3xl:fixed:container 3xl:fixed:px-3 min-h-min flex-1 items-start px-0 [--sidebar-width:220px] [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--sidebar-width:240px] lg:[--top-spacing:calc(var(--spacing)*4)]">
+                    <div data-slot="sidebar"
+                        class="text-sidebar-foreground w-(--sidebar-width) flex-col sticky top-[calc(var(--header-height)+1px)] z-30 hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] bg-transparent lg:flex">
+                        <div data-slot="sidebar-content" data-sidebar="content"
+                            class="flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden no-scrollbar px-2 pb-12">
+                            <div class="h-(--top-spacing) shrink-0"></div>
+                            <div view-transition-name="sidebar" data-slot="sidebar-group" data-sidebar="group"
+    class="relative flex w-full min-w-0 flex-col p-2 no-scrollbar">
+    
+
+    
+    
+    
+
+    
+
+    
+    
+
+    
+    <div data-slot="sidebar-group" data-sidebar="group" class="relative flex w-full min-w-0 flex-col p-2">
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="w-full text-sm">
+            <ul data-slot="sidebar-menu" data-sidebar="menu" class="flex w-full min-w-0 flex-col gap-0.5">
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Index
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/layouts/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Building Layouts
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/styling/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Styling & Theming
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/colors-gradients/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Colors & Gradients
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/typography/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Typography & Fonts
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/animations/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Animations & Transitions
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/context-menu/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Context Menu
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/settings/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Settings & Persistence
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/notifications/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Notifications
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="true" data-sidebar="menu-button"
+        data-size="default" href="/guides/services/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        System Services
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/file-dialogs/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        File Dialogs
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/canvas/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Canvas Drawing
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/charts/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Charts
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/navigation/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Navigation
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/drag-drop/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Drag & Drop
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/hotkeys-clipboard/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Hotkeys & Clipboard
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/custom-fonts/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Custom Fonts
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/guides/assets/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Assets
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+    
+
+    
+
+
+    
+</div>
+                        </div>
+                    </div>
+                    <div class="h-full w-full">
+                        <div data-slot="docs" class="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
+                            <div class="flex min-w-0 flex-1 flex-col">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <article class="w-full" view-transition-name="page">
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
+      <div id="page-header" class="flex items-start justify-between">
+        <h1
+          class="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl"
+        >
+          System Services
+        </h1>
+
+        <div class="flex items-center gap-2 pt-1.5">
+          
+<button onclick="fetch(`https://nib.dev/guides/services.md`).then((r) => r.blob()).then((blob) => navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]))" 
+        data-slot="button" 
+        class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md gap-1.5 px-3 has-[&>svg]:px-2.5 h-8 shadow-none md:h-7 md:text-[0.8rem]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-copy ">
+    <path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"></path><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"></path>
+</svg>
+<span class="max-md:hidden">Copy Page</span>
+</button> 
+          
+          <a
+            data-slot="button"
+            id="previous-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/guides/notifications/"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-left"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M5 12l6 6"></path>
+              <path d="M5 12l6 -6"></path>
+            </svg>
+            <span class="sr-only">Previous</span>
+          </a>
+           
+          
+          <a
+            data-slot="button"
+            id="next-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/guides/file-dialogs/"
+          >
+            <span class="sr-only">Next</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-right"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M13 18l6 -6"></path>
+              <path d="M13 6l6 6"></path>
+            </svg>
+          </a>
+          
+        </div>
+      </div>
+      
+    </div>
+    <div class="flex justify-end items-center">
+       
+    </div>
+  </div>
+  <div class="typography w-full flex-1 *:data-[slot=alert]:first:mt-0">
+    <p>Nib exposes native macOS services through lazy-loaded properties on the <code>app</code> object. Each service communicates with the Swift runtime via a blocking request/response pattern.</p>
+<hr />
+<h2 id="battery">Battery<a class="headerlink" href="#battery" title="Permanent link">&para;</a></h2>
+<p>Access battery level, charging state, health metrics, and thermal information.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Battery&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">icon</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="s2">&quot;battery.100&quot;</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">300</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">250</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">battery</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+
+    <span class="n">level_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">level</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">level</span> <span class="k">else</span> <span class="s2">&quot;N/A&quot;</span>
+    <span class="n">state_text</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">charging_text</span> <span class="o">=</span> <span class="s2">&quot;Yes&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">is_charging</span> <span class="k">else</span> <span class="s2">&quot;No&quot;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+            <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Battery Status&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Font</span><span class="o">.</span><span class="n">HEADLINE</span><span class="p">),</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">Divider</span><span class="p">(),</span>
+                <span class="n">_row</span><span class="p">(</span><span class="s2">&quot;Level&quot;</span><span class="p">,</span> <span class="n">level_text</span><span class="p">),</span>
+                <span class="n">_row</span><span class="p">(</span><span class="s2">&quot;State&quot;</span><span class="p">,</span> <span class="n">state_text</span><span class="p">),</span>
+                <span class="n">_row</span><span class="p">(</span><span class="s2">&quot;Charging&quot;</span><span class="p">,</span> <span class="n">charging_text</span><span class="p">),</span>
+                <span class="n">_row</span><span class="p">(</span><span class="s2">&quot;Plugged In&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">is_plugged_in</span> <span class="k">else</span> <span class="s2">&quot;No&quot;</span><span class="p">),</span>
+                <span class="n">_row</span><span class="p">(</span><span class="s2">&quot;Low Power&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">is_low_power_mode</span> <span class="k">else</span> <span class="s2">&quot;No&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+            <span class="n">alignment</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">HorizontalAlignment</span><span class="o">.</span><span class="n">LEADING</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nib</span><span class="o">.</span><span class="n">HStack</span><span class="p">(</span>
+        <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">foreground_color</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">SECONDARY</span><span class="p">),</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">Spacer</span><span class="p">(),</span>
+            <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="batteryinfo-fields">BatteryInfo fields<a class="headerlink" href="#batteryinfo-fields" title="Permanent link">&para;</a></h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>level</code></td>
+<td><code>float</code> or <code>None</code></td>
+<td>Battery percentage (0--100)</td>
+</tr>
+<tr>
+<td><code>is_charging</code></td>
+<td><code>bool</code></td>
+<td>Currently charging</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>BatteryState</code></td>
+<td>Detailed state (charging, discharging, full, etc.)</td>
+</tr>
+<tr>
+<td><code>is_low_power_mode</code></td>
+<td><code>bool</code></td>
+<td>Low Power Mode enabled</td>
+</tr>
+<tr>
+<td><code>has_battery</code></td>
+<td><code>bool</code></td>
+<td>Device has a battery</td>
+</tr>
+<tr>
+<td><code>time_remaining</code></td>
+<td><code>int</code> or <code>None</code></td>
+<td>Minutes until empty</td>
+</tr>
+<tr>
+<td><code>time_to_full</code></td>
+<td><code>int</code> or <code>None</code></td>
+<td>Minutes until fully charged</td>
+</tr>
+<tr>
+<td><code>is_plugged_in</code></td>
+<td><code>bool</code> or <code>None</code></td>
+<td>Connected to power</td>
+</tr>
+<tr>
+<td><code>thermal_state</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>Current thermal state</td>
+</tr>
+<tr>
+<td><code>wattage</code></td>
+<td><code>float</code> or <code>None</code></td>
+<td>Power draw in watts</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="battery-health">Battery health<a class="headerlink" href="#battery-health" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">health</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">battery</span><span class="o">.</span><span class="n">get_health</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cycle count: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">cycle_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Health: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">health_percent</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Condition: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temperature: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">temperature_celsius</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">C&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="prevent-sleep">Prevent sleep<a class="headerlink" href="#prevent-sleep" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">nib.services.battery</span><span class="w"> </span><span class="kn">import</span> <span class="n">SleepType</span>
+
+<span class="c1"># Prevent idle sleep during a long task</span>
+<span class="n">assertion</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">battery</span><span class="o">.</span><span class="n">prevent_sleep</span><span class="p">(</span>
+    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Processing data&quot;</span><span class="p">,</span>
+    <span class="n">sleep_type</span><span class="o">=</span><span class="n">SleepType</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># ... do work ...</span>
+
+<span class="c1"># Allow sleep again</span>
+<span class="n">app</span><span class="o">.</span><span class="n">battery</span><span class="o">.</span><span class="n">allow_sleep</span><span class="p">(</span><span class="n">assertion</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="connectivity">Connectivity<a class="headerlink" href="#connectivity" title="Permanent link">&para;</a></h2>
+<p>Check network status, connection type, and WiFi information.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">status</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">is_connected</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># &quot;wifi&quot;, &quot;ethernet&quot;, &quot;cellular&quot;, &quot;none&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WiFi SSID: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">ssid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expensive: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">is_expensive</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># True for cellular</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Constrained: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">is_constrained</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Low Data Mode</span>
+</code></pre></div>
+
+<h3 id="connectivityinfo-fields">ConnectivityInfo fields<a class="headerlink" href="#connectivityinfo-fields" title="Permanent link">&para;</a></h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_connected</code></td>
+<td><code>bool</code></td>
+<td>Active network connection</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>ConnectionType</code></td>
+<td><code>WIFI</code>, <code>ETHERNET</code>, <code>CELLULAR</code>, <code>NONE</code>, <code>OTHER</code></td>
+</tr>
+<tr>
+<td><code>is_expensive</code></td>
+<td><code>bool</code></td>
+<td>Metered connection (cellular)</td>
+</tr>
+<tr>
+<td><code>is_constrained</code></td>
+<td><code>bool</code></td>
+<td>Low Data Mode active</td>
+</tr>
+<tr>
+<td><code>ssid</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>WiFi network name</td>
+</tr>
+<tr>
+<td><code>interface_name</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>Network interface name</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="example-connectivity-indicator">Example: connectivity indicator<a class="headerlink" href="#example-connectivity-indicator" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">status</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;wifi&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;wifi&quot;</span> <span class="k">else</span> <span class="s2">&quot;network&quot;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">GREEN</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;wifi.slash&quot;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">HStack</span><span class="p">(</span>
+    <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">foreground_color</span><span class="o">=</span><span class="n">color</span><span class="p">),</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Online&quot;</span> <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">is_connected</span> <span class="k">else</span> <span class="s2">&quot;Offline&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="screen">Screen<a class="headerlink" href="#screen" title="Permanent link">&para;</a></h2>
+<p>Get display information, control brightness, check dark mode, and take screenshots.</p>
+<h3 id="get-screen-info">Get screen info<a class="headerlink" href="#get-screen-info" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">info</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Display: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resolution: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2"> @</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">scale</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Brightness: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">brightness</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Refresh rate: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">refresh_rate</span><span class="si">}</span><span class="s2">Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Native: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">native_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">native_height</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="set-brightness">Set brightness<a class="headerlink" href="#set-brightness" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">set_brightness</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 50% brightness</span>
+</code></pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Brightness control only works on the built-in display.</p>
+</div>
+<h3 id="dark-mode">Dark mode<a class="headerlink" href="#dark-mode" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check dark mode</span>
+<span class="n">dark_info</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_dark_mode</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dark mode: </span><span class="si">{</span><span class="n">dark_info</span><span class="o">.</span><span class="n">is_dark_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Toggle dark mode (requires Accessibility permission for System Events)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">set_dark_mode</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">set_dark_mode</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="list-displays">List displays<a class="headerlink" href="#list-displays" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">displays</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">list_displays</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">displays</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> @</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="take-a-screenshot">Take a screenshot<a class="headerlink" href="#take-a-screenshot" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">screenshot</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;/tmp/screenshot.png&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2"> screenshot&quot;</span><span class="p">)</span>
+
+<span class="c1"># Capture a specific region</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Screenshots require the Screen Recording permission. macOS will prompt the user on first use.</p>
+</div>
+<hr />
+<h2 id="keychain">Keychain<a class="headerlink" href="#keychain" title="Permanent link">&para;</a></h2>
+<p>Store and retrieve sensitive data (passwords, API tokens) securely in the macOS Keychain.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Store a credential</span>
+<span class="n">app</span><span class="o">.</span><span class="n">keychain</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">,</span> <span class="s2">&quot;user@example.com&quot;</span><span class="p">,</span> <span class="s2">&quot;secret-password&quot;</span><span class="p">)</span>
+
+<span class="c1"># Retrieve a credential</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">keychain</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">,</span> <span class="s2">&quot;user@example.com&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Password: </span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check if an entry exists</span>
+<span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">keychain</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">,</span> <span class="s2">&quot;user@example.com&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Credential found&quot;</span><span class="p">)</span>
+
+<span class="c1"># Delete a credential</span>
+<span class="n">app</span><span class="o">.</span><span class="n">keychain</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">,</span> <span class="s2">&quot;user@example.com&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="method-reference">Method reference<a class="headerlink" href="#method-reference" title="Permanent link">&para;</a></h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Parameters</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set</code></td>
+<td><code>service, account, password</code></td>
+<td><code>bool</code></td>
+<td>Store or update a credential</td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td><code>service, account</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>Retrieve a credential</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td><code>service, account</code></td>
+<td><code>bool</code></td>
+<td>Delete a credential</td>
+</tr>
+<tr>
+<td><code>exists</code></td>
+<td><code>service, account</code></td>
+<td><code>bool</code></td>
+<td>Check if a credential exists</td>
+</tr>
+</tbody>
+</table></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the app name as the <code>service</code> parameter and a username or identifier as the <code>account</code> parameter.</p>
+</div>
+<hr />
+<h2 id="camera">Camera<a class="headerlink" href="#camera" title="Permanent link">&para;</a></h2>
+<p>List camera devices, capture photos, and stream video frames.</p>
+<h3 id="list-devices">List devices<a class="headerlink" href="#list-devices" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">devices</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">list_devices</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (id=</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, position=</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="capture-a-photo">Capture a photo<a class="headerlink" href="#capture-a-photo" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Capture with the default camera</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">capture_photo</span><span class="p">()</span>
+<span class="n">frame</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;/tmp/photo.jpg&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Captured </span><span class="si">{</span><span class="n">frame</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">frame</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">frame</span><span class="o">.</span><span class="n">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Capture with a specific device</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">capture_photo</span><span class="p">(</span><span class="n">device_id</span><span class="o">=</span><span class="s2">&quot;some-device-id&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="stream-video-frames">Stream video frames<a class="headerlink" href="#stream-video-frames" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">nib.services.camera</span><span class="w"> </span><span class="kn">import</span> <span class="n">CameraFrame</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CameraFrame</span><span class="p">):</span>
+    <span class="c1"># Process frame (e.g., for ML inference)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frame: </span><span class="si">{</span><span class="n">frame</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">frame</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Start streaming at 15 FPS</span>
+<span class="n">app</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">start_stream</span><span class="p">(</span><span class="n">on_frame</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="c1"># Later, stop streaming</span>
+<span class="n">app</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">stop_stream</span><span class="p">()</span>
+</code></pre></div>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Camera access requires the Camera permission. Use <code>app.permissions.request(nib.Permission.CAMERA)</code> to request it.</p>
+</div>
+<hr />
+<h2 id="launch-at-login">Launch at Login<a class="headerlink" href="#launch-at-login" title="Permanent link">&para;</a></h2>
+<p>Enable or disable automatic app launch when the user logs in. Uses <code>SMAppService</code> on macOS 13+.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check current state</span>
+<span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">launch_at_login</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;App launches at login&quot;</span><span class="p">)</span>
+
+<span class="c1"># Enable (always in response to user action)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">launch_at_login</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Disable</span>
+<span class="n">app</span><span class="o">.</span><span class="n">launch_at_login</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="toggle-with-a-control">Toggle with a control<a class="headerlink" href="#toggle-with-a-control" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">nib</span><span class="o">.</span><span class="n">Toggle</span><span class="p">(</span>
+    <span class="s2">&quot;Launch at Login&quot;</span><span class="p">,</span>
+    <span class="n">is_on</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">launch_at_login</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">,</span>
+    <span class="n">on_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">is_on</span><span class="p">:</span> <span class="n">app</span><span class="o">.</span><span class="n">launch_at_login</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">is_on</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Per Mac App Store guidelines, Launch at Login should only be enabled in direct response to a user action (e.g., a toggle or button click). Do not enable it silently.</p>
+</div>
+<hr />
+<h2 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Permanent link">&para;</a></h2>
+<p>Check and request Camera, Microphone, and Notification permissions through a unified API.</p>
+<h3 id="check-a-permission">Check a permission<a class="headerlink" href="#check-a-permission" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">nib.services.permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">PermissionStatus</span>
+
+<span class="n">status</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">CAMERA</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">AUTHORIZED</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Camera access granted&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">NOT_DETERMINED</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Permission not yet requested&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">DENIED</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Camera access denied&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">RESTRICTED</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Camera access restricted by policy&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="request-a-permission">Request a permission<a class="headerlink" href="#request-a-permission" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">granted</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">CAMERA</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">granted</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Camera access granted&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Camera access denied&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="available-permissions">Available permissions<a class="headerlink" href="#available-permissions" title="Permanent link">&para;</a></h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Constant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Camera</td>
+<td><code>Permission.CAMERA</code></td>
+</tr>
+<tr>
+<td>Microphone</td>
+<td><code>Permission.MICROPHONE</code></td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td><code>Permission.NOTIFICATIONS</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="permission-flow-example">Permission flow example<a class="headerlink" href="#permission-flow-example" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">nib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nib.services.permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">PermissionStatus</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">nib</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Permissions&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">icon</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">SFSymbol</span><span class="p">(</span><span class="s2">&quot;lock.shield&quot;</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">280</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="n">status_label</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Checking...&quot;</span><span class="p">,</span> <span class="n">foreground_color</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">SECONDARY</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_camera</span><span class="p">():</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">CAMERA</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">AUTHORIZED</span><span class="p">:</span>
+            <span class="n">status_label</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Camera: Authorized&quot;</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">PermissionStatus</span><span class="o">.</span><span class="n">NOT_DETERMINED</span><span class="p">:</span>
+            <span class="n">granted</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">CAMERA</span><span class="p">)</span>
+            <span class="n">status_label</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Camera: </span><span class="si">{</span><span class="s1">&#39;Authorized&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">granted</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Denied&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">status_label</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Camera: </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span>
+            <span class="n">controls</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">&quot;Permission Check&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">Font</span><span class="o">.</span><span class="n">HEADLINE</span><span class="p">),</span>
+                <span class="n">nib</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Check Camera&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">check_camera</span><span class="p">),</span>
+                <span class="n">status_label</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">nib</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</code></pre></div>
+  </div>
+</article>
+                                <div class="mx-auto flex flex-wrap h-16 w-full max-w-2xl items-center gap-2 px-4 md:px-0">
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 shadow-none"
+        href="/guides/notifications/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-left ">
+            <path d="M5 12l14 0"></path>
+            <path d="M5 12l6 6"></path>
+            <path d="M5 12l6 -6"></path>
+        </svg>
+        <span class="max-[500px]:hidden">Notifications</span>
+    </a>
+    
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 ml-auto shadow-none"
+        href="/guides/file-dialogs/">
+        <span class="max-[500px]:hidden">File Dialogs</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-right ">
+            <path d="M5 12l14 0"></path>
+            <path d="M13 18l6 -6"></path>
+            <path d="M13 6l6 6"></path>
+        </svg>
+    </a>
+    
+</div>
+                                <dialog id="bottom-sidebar" onclick="onBottomSidebarDialogClick(event)" class="bg-transparent"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0px, 58px); min-width: max-content; --radix-popper-transform-origin: 0% 0px; will-change: transform; z-index: 50; --radix-popper-available-width: 504px; --radix-popper-available-height: 857px; --radix-popper-anchor-width: 72.94999694824219px; --radix-popper-anchor-height: 32px;">
+    <div data-side="bottom" data-align="start" data-state="open" role="dialog" data-slot="popover-content"
+        class="text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) border outline-hidden bg-background/90 no-scrollbar h-(--radix-popper-available-height) w-(--radix-popper-available-width) overflow-y-auto rounded-none border-none p-0 shadow-none backdrop-blur duration-100"
+        style="--radix-popover-content-transform-origin: var(--radix-popper-transform-origin); --radix-popover-content-available-width: var(--radix-popper-available-width); --radix-popover-content-available-height: var(--radix-popper-available-height); --radix-popover-trigger-width: var(--radix-popper-anchor-width); --radix-popover-trigger-height: var(--radix-popper-anchor-height);"
+        tabindex="-1">
+        <div class="flex flex-col gap-12 overflow-auto px-6 py-6">
+            
+            
+            
+
+            
+            <div class="flex flex-col gap-4">
+                <div class="text-muted-foreground text-sm font-medium">Menu</div>
+                <div class="flex flex-col gap-3">
+                    
+                    <a class="text-2xl font-medium" href="../..">
+                        
+                        Home
+                        
+                    </a>
+                    
+                </div>
+            </div>
+            
+
+            
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Getting Started</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/installation/">
+                            
+                            Installation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/quickstart/">
+                            
+                            Quick Start
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/first-app/">
+                            
+                            Your First App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/project-structure/">
+                            
+                            Project Structure
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Concepts</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/architecture/">
+                            
+                            Architecture
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/reactivity/">
+                            
+                            Reactivity
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/view-tree/">
+                            
+                            The View Tree
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/modifiers/">
+                            
+                            Modifiers
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../concepts/event-handling/">
+                            
+                            Event Handling
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Guides</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../layouts/">
+                            
+                            Building Layouts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../styling/">
+                            
+                            Styling & Theming
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../colors-gradients/">
+                            
+                            Colors & Gradients
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../typography/">
+                            
+                            Typography & Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../animations/">
+                            
+                            Animations & Transitions
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../context-menu/">
+                            
+                            Context Menu
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../settings/">
+                            
+                            Settings & Persistence
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../notifications/">
+                            
+                            Notifications
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="./">
+                            
+                            System Services
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../file-dialogs/">
+                            
+                            File Dialogs
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../canvas/">
+                            
+                            Canvas Drawing
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../charts/">
+                            
+                            Charts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../navigation/">
+                            
+                            Navigation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../drag-drop/">
+                            
+                            Drag & Drop
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../hotkeys-clipboard/">
+                            
+                            Hotkeys & Clipboard
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../custom-fonts/">
+                            
+                            Custom Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../assets/">
+                            
+                            Assets
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">CLI</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../cli/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/create/">
+                            
+                            nib create
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/run/">
+                            
+                            nib run
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/build/">
+                            
+                            nib build
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/pyproject-config/">
+                            
+                            pyproject.toml Config
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">API Reference</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../reference/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Examples</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../examples/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/counter/">
+                            
+                            Counter App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/todo/">
+                            
+                            Todo App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/system-monitor/">
+                            
+                            System Monitor
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/drawing-app/">
+                            
+                            Drawing App
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            
+
+        </div>
+    </div>
+</dialog>
+                            </div>
+                            <div
+                                class="sticky top-[calc(var(--header-height)+1px)] z-30 ml-auto hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] w-72 flex-col gap-4 overflow-hidden overscroll-none pb-8 xl:flex">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <div view-transition-name="toc" class="no-scrollbar overflow-y-auto px-8">
+    <div class="flex flex-col gap-2 p-4 pt-0 text-sm">
+        <p class="text-muted-foreground bg-background sticky top-0 h-6 text-xs">On This Page</p>
+        
+        
+        
+        
+        <a href="#battery"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Battery
+        </a>
+        
+        
+        <a href="#batteryinfo-fields"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            BatteryInfo fields
+        </a>
+        
+        <a href="#battery-health"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Battery health
+        </a>
+        
+        <a href="#prevent-sleep"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Prevent sleep
+        </a>
+        
+        
+
+        
+        <a href="#connectivity"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Connectivity
+        </a>
+        
+        
+        <a href="#connectivityinfo-fields"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            ConnectivityInfo fields
+        </a>
+        
+        <a href="#example-connectivity-indicator"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Example: connectivity indicator
+        </a>
+        
+        
+
+        
+        <a href="#screen"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Screen
+        </a>
+        
+        
+        <a href="#get-screen-info"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Get screen info
+        </a>
+        
+        <a href="#set-brightness"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Set brightness
+        </a>
+        
+        <a href="#dark-mode"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Dark mode
+        </a>
+        
+        <a href="#list-displays"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            List displays
+        </a>
+        
+        <a href="#take-a-screenshot"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Take a screenshot
+        </a>
+        
+        
+
+        
+        <a href="#keychain"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Keychain
+        </a>
+        
+        
+        <a href="#method-reference"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Method reference
+        </a>
+        
+        
+
+        
+        <a href="#camera"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Camera
+        </a>
+        
+        
+        <a href="#list-devices"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            List devices
+        </a>
+        
+        <a href="#capture-a-photo"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Capture a photo
+        </a>
+        
+        <a href="#stream-video-frames"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Stream video frames
+        </a>
+        
+        
+
+        
+        <a href="#launch-at-login"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Launch at Login
+        </a>
+        
+        
+        <a href="#toggle-with-a-control"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Toggle with a control
+        </a>
+        
+        
+
+        
+        <a href="#permissions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Permissions
+        </a>
+        
+        
+        <a href="#check-a-permission"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Check a permission
+        </a>
+        
+        <a href="#request-a-permission"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Request a permission
+        </a>
+        
+        <a href="#available-permissions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Available permissions
+        </a>
+        
+        <a href="#permission-flow-example"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Permission flow example
+        </a>
+        
+        
+
+        
+        
+        
+        
+
+    </div>
+    <div class="h-12"></div>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer view-transition-name="footer"
+    class="group-has-[.section-soft]/body:bg-surface/40 3xl:fixed:bg-transparent dark:bg-transparent">
+    <div class="container-wrapper px-4 xl:px-6">
+        <div class="flex h-(--footer-height) items-center justify-between">
+            <div class="text-muted-foreground w-full text-center text-xs leading-loose sm:text-sm">
+                
+                <a href="https://github.com/asiffer/mkdocs-shadcn">shadcn theme</a> provided by
+                <a href="https://github.com/asiffer">@asiffer</a>
+            </div>
+        </div>
+    </div>
+</footer>
+    </div>
+     
+
+<script src="../../search/main.js"></script>
+
+
+    
+
+    <script src="../../js/copy-button.js"></script>
+    <script>updatePygmentsStylesheet();</script>
+    
+    <script>fetchStargazers("None");</script>
+    
+    
+    
+    <script type="speculationrules">
+{
+  "prerender": [
+    {
+      "where": {
+          "selector_matches": ["#next-button", "#previous-button"],
+      }
+    }
+  ]
+}
+</script>
+</body>
+
+</html>

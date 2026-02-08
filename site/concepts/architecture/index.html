@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // for search plugin notably
+        const base_url = "https://nib.dev/";
+    </script>
+    <script>
+    const darkTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    darkTheme.onchange = (e) => {
+        if (e.matches) {
+            document.documentElement.classList.add("dark")
+            localStorage.theme = 'dark';
+        } else {
+            document.documentElement.classList.remove("dark")
+            localStorage.removeItem("theme")
+        }
+    };
+
+    // On page load. Priotiry to lcaolStorage
+    if (localStorage.theme === "dark") {
+        document.documentElement.classList.add("dark")
+    } else if (localStorage.theme === "light") {
+        document.documentElement.classList.remove("dark")
+    } else if (darkTheme.matches) {
+        document.documentElement.classList.add("dark")
+    } else {
+        document.documentElement.classList.remove("dark")
+    }
+
+    // set the layout based on localStorage
+    document.documentElement.classList.add(localStorage.getItem("html-layout") || "layout-fixed");
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Architecture - Nib</title>
+    
+
+
+<title>Architecture</title>
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://nib.dev/concepts/architecture/">
+
+
+<!-- Open Graph (Facebook, LinkedIn) -->
+
+<meta property="og:title" content="Architecture">
+
+
+
+
+
+<meta property="og:url" content="https://nib.dev/concepts/architecture/">
+
+
+
+
+
+
+<!-- Twitter Card -->
+
+<meta name="twitter:title" content="Architecture">
+
+
+
+
+
+
+<!-- JSON-LD Structured Data -->
+
+
+
+    <link rel="icon" href="../../assets/img/nib-logo.svg">
+
+    <link href="../../css/base.css" rel="stylesheet">
+    <link href="../../css/geist.css" rel="stylesheet">
+
+    
+    
+
+<link id="pygments-light" rel="stylesheet"
+    href="../../css/pygments/shadcn-light.css">
+<link id="pygments-dark" rel="stylesheet"
+    href="../../css/pygments/github-dark.css"
+    media="(prefers-color-scheme: dark)">
+
+
+    
+    <link href="../../assets/css/custom.css" rel="stylesheet">
+
+    
+
+    <script src="../../js/callbacks.js"></script>
+
+    
+
+    
+
+    
+
+</head>
+
+<body
+    class="text-foreground group/body overscroll-none font-sans antialiased [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] xl:[--footer-height:calc(var(--spacing)*24)] theme-default">
+    <div id="inner-body" class="bg-background relative z-10 flex min-h-svh flex-col">
+        <header class="bg-background sticky top-0 z-50 w-full" view-transition-name="header">
+    <div class="container-wrapper 3xl:fixed:px-0 px-6">
+        <div class="3xl:fixed:container flex h-(--header-height) items-center gap-2 **:data-[slot=separator]:!h-4">
+            <button id="menu-button" data-slot="popover-trigger" onclick="onMobileMenuButtonClick(event)"
+                class="group whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground px-4 py-2 has-[&gt;svg]:px-3 extend-touch-target h-8 touch-manipulation items-center justify-start gap-2.5 !p-0 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 active:bg-transparent dark:hover:bg-transparent flex lg:hidden"
+                type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«Rmplb»"
+                data-state="closed">
+                <div class="relative flex h-8 w-4 items-center justify-center">
+                    <div class="relative size-4">
+                        <!-- 16px x 16px -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" x2="16" y1="5" y2="5"
+                                class="group-data-[state=open]:translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:rotate-45 transition-all duration-300 origin-center" />
+                            <line x1="0" x2="16" y1="11" y2="11"
+                                class="group-data-[state=open]:-translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:-rotate-45 transition-all duration-300 origin-center" />
+                        </svg>
+                    </div>
+
+                    <span class="sr-only">Toggle Menu</span>
+                </div>
+                <span class="flex h-8 items-center text-lg leading-none font-medium">Menu</span>
+            </button>
+            <a data-slot="button"
+                class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 hidden h-8 lg:flex"
+                href="https://nib.dev/">
+                <span class="size-8 flex flex-row justify-center items-center">
+                    
+
+<img class="size-5" src="../../assets/img/nib-logo.svg" alt="icon">
+
+
+                </span>
+
+                
+                <h1 class="pr-2">Nib</h1>
+                
+            </a>
+            
+            <nav class="items-center gap-0.5 hidden lg:flex">
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../getting-started/">
+        Getting Started
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../">
+        Concepts
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../guides/">
+        Guides
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../cli/">
+        CLI
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../reference/">
+        API Reference
+    </a>
+    
+    
+    
+    
+    <a class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5"
+        data-slot="button" href="../../examples/">
+        Examples
+    </a>
+    
+    
+</nav>
+            
+            <div class="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+                <div class="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+                    <button data-slot="dialog-trigger" onclick="onSearchBarClick(event)"
+    class="inline-flex items-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-secondary/80 px-4 py-2 has-[&gt;svg]:px-3 bg-surface text-surface-foreground/60 dark:bg-card relative h-8 w-full justify-start pl-2.5 font-normal shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64"
+    type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«R66plb»" data-state="closed">
+    <span class="text-muted-foreground hidden lg:inline-flex">Search documentation...</span>
+    <span class="text-muted-foreground inline-flex lg:hidden">Search...</span>
+    <div class="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
+        <kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">Ctrl</kbd><kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3 aspect-square">K</kbd>
+    </div>
+</button>
+<dialog id="search-dialog" onclick="onSearchDialogClick(event)"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-lg border overflow-hidden p-0">
+    <div class="w-lg gap-4">
+        <div class="flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground">
+            <div data-slot="command-input-wrapper" class="flex h-9 items-center gap-2 border-b px-3"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-search size-4 shrink-0 opacity-50">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input data-slot="command-input"
+                    class="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search documentation..." cmdk-input="" autocomplete="off" autocorrect="off"
+                    spellcheck="false" aria-autocomplete="list" role="combobox" aria-expanded="true"
+                    aria-controls="radix-«r1t6»" aria-labelledby="radix-«r1t7»" id="radix-«r1t8»" type="text" value=""
+                    aria-activedescendant="radix-«r1th»" oninput="onInputHandler(event)">
+            </div>
+        </div>
+        <div id="mkdocs-search-results">
+            <!-- search results go there -->
+        </div>
+    </div>
+</dialog>
+<script>
+    document.removeEventListener("keydown", searchShortcutHandler);
+    document.addEventListener("keydown", searchShortcutHandler);
+</script>
+                </div>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px ml-2 hidden lg:block">
+                </div>
+                <a target="_blank" rel="noreferrer" data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 h-8 shadow-none"
+                    href="None">
+                    <svg viewBox="0 0 438.549 438.549">
+                        <path fill="currentColor"
+                            d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z">
+                        </path>
+                    </svg>
+                    
+                    <span id="stargazers" class="text-muted-foreground w-8 text-xs tabular-nums" onload="test()">
+                    </span>
+                    
+                </a>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px 3xl:flex hidden">
+                </div>
+                <button data-slot="button"
+                    class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-8 3xl:flex hidden"
+                    title="Toggle layout" onclick="toggleLayout(event)">
+                    <span class="sr-only">Toggle layout</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-gallery-horizontal">
+                        <path d="M2 3v18"></path>
+                        <rect width="12" height="18" x="6" y="3" rx="2"></rect>
+                        <path d="M22 3v18"></path>
+                    </svg>
+                </button>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px">
+                </div>
+                <button data-slot="button"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 group/toggle extend-touch-target size-8"
+                    title="Toggle theme" onclick="onThemeSwitch(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="size-4.5">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                        <path d="M12 3l0 18"></path>
+                        <path d="M12 9l4.65 -4.65"></path>
+                        <path d="M12 14.3l7.37 -7.37"></path>
+                        <path d="M12 19.6l8.85 -8.85"></path>
+                    </svg>
+                    <span class="sr-only">Toggle theme</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+        <main class="flex flex-1 flex-col">
+            <div class="container-wrapper flex flex-1 flex-col px-2">
+                <div data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
+                    class="group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex w-full 3xl:fixed:container 3xl:fixed:px-3 min-h-min flex-1 items-start px-0 [--sidebar-width:220px] [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--sidebar-width:240px] lg:[--top-spacing:calc(var(--spacing)*4)]">
+                    <div data-slot="sidebar"
+                        class="text-sidebar-foreground w-(--sidebar-width) flex-col sticky top-[calc(var(--header-height)+1px)] z-30 hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] bg-transparent lg:flex">
+                        <div data-slot="sidebar-content" data-sidebar="content"
+                            class="flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden no-scrollbar px-2 pb-12">
+                            <div class="h-(--top-spacing) shrink-0"></div>
+                            <div view-transition-name="sidebar" data-slot="sidebar-group" data-sidebar="group"
+    class="relative flex w-full min-w-0 flex-col p-2 no-scrollbar">
+    
+
+    
+    
+    
+
+    
+
+    
+    
+
+    
+    <div data-slot="sidebar-group" data-sidebar="group" class="relative flex w-full min-w-0 flex-col p-2">
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="w-full text-sm">
+            <ul data-slot="sidebar-menu" data-sidebar="menu" class="flex w-full min-w-0 flex-col gap-0.5">
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Index
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="true" data-sidebar="menu-button"
+        data-size="default" href="/concepts/architecture/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Architecture
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/reactivity/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Reactivity
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/view-tree/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        The View Tree
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/modifiers/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Modifiers
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/concepts/event-handling/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Event Handling
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+    
+
+    
+
+
+    
+</div>
+                        </div>
+                    </div>
+                    <div class="h-full w-full">
+                        <div data-slot="docs" class="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
+                            <div class="flex min-w-0 flex-1 flex-col">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <article class="w-full" view-transition-name="page">
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
+      <div id="page-header" class="flex items-start justify-between">
+        <h1
+          class="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl"
+        >
+          Architecture
+        </h1>
+
+        <div class="flex items-center gap-2 pt-1.5">
+          
+<button onclick="fetch(`https://nib.dev/concepts/architecture.md`).then((r) => r.blob()).then((blob) => navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]))" 
+        data-slot="button" 
+        class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md gap-1.5 px-3 has-[&>svg]:px-2.5 h-8 shadow-none md:h-7 md:text-[0.8rem]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-copy ">
+    <path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"></path><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"></path>
+</svg>
+<span class="max-md:hidden">Copy Page</span>
+</button> 
+          
+          <a
+            data-slot="button"
+            id="previous-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/concepts/"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-left"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M5 12l6 6"></path>
+              <path d="M5 12l6 -6"></path>
+            </svg>
+            <span class="sr-only">Previous</span>
+          </a>
+           
+          
+          <a
+            data-slot="button"
+            id="next-button"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 extend-touch-target size-8 shadow-none md:size-7"
+            href="/concepts/reactivity/"
+          >
+            <span class="sr-only">Next</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="tabler-icon tabler-icon-arrow-right"
+            >
+              <path d="M5 12l14 0"></path>
+              <path d="M13 18l6 -6"></path>
+              <path d="M13 6l6 6"></path>
+            </svg>
+          </a>
+          
+        </div>
+      </div>
+      
+    </div>
+    <div class="flex justify-end items-center">
+       
+    </div>
+  </div>
+  <div class="typography w-full flex-1 *:data-[slot=alert]:first:mt-0">
+    <p>Nib is a two-process system. Python owns the logic. Swift owns the screen. They talk over a Unix socket using MessagePack.</p>
+<h2 id="the-two-process-model">The Two-Process Model<a class="headerlink" href="#the-two-process-model" title="Permanent link">&para;</a></h2>
+<p>Every Nib application runs as two cooperating processes:</p>
+<p><strong>Python process</strong> -- your code. It owns the app logic, the view tree, state management, and event handling. When something changes, Python computes the new UI and sends it across the socket.</p>
+<p><strong>Swift process</strong> -- the runtime. It owns native macOS rendering via SwiftUI, system APIs (notifications, clipboard, file dialogs, keychain), and the menu bar icon. It receives view descriptions from Python, renders them natively, and sends user interactions back.</p>
+<p>Neither process directly accesses the other's memory. All communication happens through serialized messages over a Unix domain socket.</p>
+<p><img alt="Architecture diagram showing Python and Swift communicating over a Unix socket" src="../../assets/img/architecture.svg" /></p>
+<h2 id="communication-protocol">Communication Protocol<a class="headerlink" href="#communication-protocol" title="Permanent link">&para;</a></h2>
+<p>Messages are sent as length-prefixed MessagePack payloads. Each message has a 4-byte big-endian length header followed by the packed data.</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="mi">4</span><span class="w"> </span><span class="n">bytes</span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="p">][</span><span class="n">MessagePack</span><span class="w"> </span><span class="n">payload</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Python and Swift exchange three categories of messages:</p>
+<h3 id="render-full-view-tree">render -- Full View Tree<a class="headerlink" href="#render-full-view-tree" title="Permanent link">&para;</a></h3>
+<p>Sent from Python to Swift. Contains the complete view tree as a flat node list, along with app configuration (icon, title, window size, menu items, hotkeys, fonts).</p>
+<p>This is sent on every update. Python re-serializes the entire view tree and sends it to Swift, which replaces the current UI.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Internal structure (you don&#39;t build this manually)</span>
+<span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flatRender&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>          <span class="c1"># Flat list of view nodes</span>
+        <span class="s2">&quot;rootId&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>           <span class="c1"># ID of the root node</span>
+        <span class="s2">&quot;statusBar&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="s2">&quot;star.fill&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;My App&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;menu&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>           <span class="c1"># Right-click menu items</span>
+        <span class="s2">&quot;hotkeys&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;cmd+k&quot;</span><span class="p">],</span>    <span class="c1"># Global keyboard shortcuts</span>
+        <span class="s2">&quot;fonts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>           <span class="c1"># Custom font paths</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="patch-incremental-updates">patch -- Incremental Updates<a class="headerlink" href="#patch-incremental-updates" title="Permanent link">&para;</a></h3>
+<p>Defined in the protocol but currently unused. Nib sends full renders on every update instead of computing incremental patches. The diff engine exists (<code>diff.py</code>) but full renders proved more reliable for the Swift-side view reconciliation.</p>
+<h3 id="event-user-interactions">event -- User Interactions<a class="headerlink" href="#event-user-interactions" title="Permanent link">&para;</a></h3>
+<p>Sent from Swift to Python. Carries a node ID and an event string describing what happened.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Internal structure</span>
+<span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nodeId&quot;</span><span class="p">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>        <span class="c1"># Which view triggered the event</span>
+    <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;tap&quot;</span>            <span class="c1"># What happened</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Event string formats:</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Format</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button tap</td>
+<td><code>tap</code></td>
+<td><code>tap</code></td>
+</tr>
+<tr>
+<td>Value change</td>
+<td><code>change:&lt;value&gt;</code></td>
+<td><code>change:hello</code></td>
+</tr>
+<tr>
+<td>Submit</td>
+<td><code>submit:&lt;value&gt;</code></td>
+<td><code>submit:search query</code></td>
+</tr>
+<tr>
+<td>Drop files</td>
+<td><code>drop:&lt;paths&gt;</code></td>
+<td><code>drop:/path/to/file.txt</code></td>
+</tr>
+<tr>
+<td>Hover</td>
+<td><code>hover:&lt;bool&gt;</code></td>
+<td><code>hover:true</code></td>
+</tr>
+<tr>
+<td>Click</td>
+<td><code>click</code></td>
+<td><code>click</code></td>
+</tr>
+<tr>
+<td>Canvas pan</td>
+<td><code>pan:&lt;type&gt;:&lt;x&gt;,&lt;y&gt;</code></td>
+<td><code>pan:update:150.0,200.0</code></td>
+</tr>
+<tr>
+<td>Hotkey</td>
+<td><code>hotkey:&lt;shortcut&gt;</code></td>
+<td><code>hotkey:cmd+shift+n</code></td>
+</tr>
+<tr>
+<td>Lifecycle</td>
+<td><code>appear</code> / <code>disappear</code></td>
+<td><code>appear</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="execution-modes">Execution Modes<a class="headerlink" href="#execution-modes" title="Permanent link">&para;</a></h2>
+<h3 id="development-mode-nib-run">Development Mode (<code>nib run</code>)<a class="headerlink" href="#development-mode-nib-run" title="Permanent link">&para;</a></h3>
+<p>Python is the parent process. It launches the Swift runtime as a subprocess, passing the socket path via environment variable.</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">Python</span><span class="w"> </span><span class="ss">(</span><span class="nv">parent</span><span class="ss">)</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="nv">Spawns</span><span class="w"> </span><span class="nv">Swift</span><span class="w"> </span><span class="nv">runtime</span><span class="w"> </span><span class="nv">subprocess</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="nv">Creates</span><span class="w"> </span><span class="nv">Unix</span><span class="w"> </span><span class="nv">socket</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="o">/</span><span class="nv">tmp</span><span class="o">/</span><span class="nv">nib</span><span class="o">-&lt;</span><span class="nv">pid</span><span class="o">&gt;</span>.<span class="nv">sock</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="nv">Connects</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">starts</span><span class="w"> </span><span class="nv">message</span><span class="w"> </span><span class="k">loop</span>
+</code></pre></div>
+
+<p>In this mode, <code>nib run</code> also watches your Python files for changes and restarts the app automatically (hot reload).</p>
+<h3 id="bundled-mode-standalone-app">Bundled Mode (standalone <code>.app</code>)<a class="headerlink" href="#bundled-mode-standalone-app" title="Permanent link">&para;</a></h3>
+<p>Swift is the parent process. The <code>.app</code> bundle contains both the Swift runtime and your Python code. When launched, Swift starts and spawns Python as a child process.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Swift</span><span class="w"> </span><span class="n">Runtime</span><span class="w"> </span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">inside</span><span class="w"> </span><span class="o">.</span><span class="n">app</span><span class="w"> </span><span class="n">bundle</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="n">Creates</span><span class="w"> </span><span class="n">Unix</span><span class="w"> </span><span class="n">socket</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="n">Spawns</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">NIB_SOCKET</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="k">var</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+--</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">connects</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">provided</span><span class="w"> </span><span class="n">socket</span>
+</code></pre></div>
+
+<p>The <code>NIB_SOCKET</code> environment variable tells Python it is running in bundled mode and where to find the socket.</p>
+<div class="admonition info">
+<p class="admonition-title">Same protocol, different launcher</p>
+<p>The message protocol is identical in both modes. The only difference is which process starts first and who creates the socket. Your Python code does not need to change between development and production.</p>
+</div>
+<h2 id="data-flow-from-property-change-to-pixel">Data Flow: From Property Change to Pixel<a class="headerlink" href="#data-flow-from-property-change-to-pixel" title="Permanent link">&para;</a></h2>
+<p>Here is the complete path when you mutate a view property:</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">Python</span><span class="p">:</span><span class="w"> </span><span class="n">text</span><span class="mf">.</span><span class="kr">cont</span><span class="n">ent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;new value&quot;</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">View</span><span class="mf">.</span><span class="n">__setattr__</span><span class="w"> </span><span class="n">detects</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="n">app</span><span class="mf">.</span><span class="n">_trigger_rerender</span><span class="p">()</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">App</span><span class="w"> </span><span class="n">sets</span><span class="w"> </span><span class="n">_render_requested</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="p">(</span><span class="n">threading</span><span class="mf">.</span><span class="n">Event</span><span class="p">)</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">Render</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="n">wakes</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="n">_render</span><span class="p">()</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">App</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="n">body</span><span class="p">()</span><span class="w"> </span><span class="kr">to</span><span class="w"> </span><span class="kr">get</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="n">view</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">6.</span><span class="w"> </span><span class="n">App</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="n">_collect_actions</span><span class="p">()</span><span class="w"> </span><span class="kr">to</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="n">IDs</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">register</span><span class="w"> </span><span class="n">callbacks</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">7.</span><span class="w"> </span><span class="n">Root</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="n">serialized</span><span class="w"> </span><span class="kr">to</span><span class="w"> </span><span class="n">flat</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="kr">list</span><span class="w"> </span><span class="n">via</span><span class="w"> </span><span class="kr">to</span><span class="n">_flat_list</span><span class="p">()</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">8.</span><span class="w"> </span><span class="n">Connection</span><span class="mf">.</span><span class="n">send_flat_render</span><span class="p">()</span><span class="w"> </span><span class="n">packs</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">MessagePack</span><span class="p">,</span><span class="w"> </span><span class="n">sends</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">socket</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">9.</span><span class="w"> </span><span class="n">Swift</span><span class="w"> </span><span class="n">SocketServer</span><span class="w"> </span><span class="kr">read</span><span class="n">s</span><span class="w"> </span><span class="nb">len</span><span class="n">gth</span><span class="o">-</span><span class="n">prefixed</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">unpacks</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">10.</span><span class="w"> </span><span class="n">Swift</span><span class="w"> </span><span class="n">AppDelegate</span><span class="w"> </span><span class="n">routes</span><span class="w"> </span><span class="kr">to</span><span class="w"> </span><span class="n">ViewStore</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">11.</span><span class="w"> </span><span class="n">SwiftUI</span><span class="w"> </span><span class="n">observes</span><span class="w"> </span><span class="n">ViewStore</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="n">re</span><span class="o">-</span><span class="n">renders</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="n">views</span>
+<span class="w">       </span><span class="err">|</span>
+<span class="mf">12.</span><span class="w"> </span><span class="n">Native</span><span class="w"> </span><span class="n">macOS</span><span class="w"> </span><span class="n">pixels</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="kr">on</span><span class="w"> </span><span class="n">screen</span>
+</code></pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Coalesced rendering</p>
+<p>Multiple rapid property changes are coalesced into a single render. The render loop uses a threading Event that is set on any change and cleared when a render begins. This means if you change three properties in quick succession, only one render happens. The render loop is throttled to approximately 500 frames per second maximum.</p>
+</div>
+<h2 id="other-message-types">Other Message Types<a class="headerlink" href="#other-message-types" title="Permanent link">&para;</a></h2>
+<p>Beyond the core three, Python sends additional message types for system integration:</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Message Type</th>
+<th>Direction</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quit</code></td>
+<td>Python to Swift</td>
+<td>Terminate the runtime</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td>Python to Swift</td>
+<td>Show a macOS notification</td>
+</tr>
+<tr>
+<td><code>clipboard</code></td>
+<td>Python to Swift</td>
+<td>Read/write the system clipboard</td>
+</tr>
+<tr>
+<td><code>fileDialog</code></td>
+<td>Python to Swift</td>
+<td>Open/save file picker dialogs</td>
+</tr>
+<tr>
+<td><code>userDefaults</code></td>
+<td>Python to Swift</td>
+<td>Persist settings via UserDefaults</td>
+</tr>
+<tr>
+<td><code>service</code></td>
+<td>Python to Swift</td>
+<td>Query system services (battery, screen, etc.)</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>Python to Swift</td>
+<td>Trigger view-specific actions (WebView reload, etc.)</td>
+</tr>
+<tr>
+<td><code>settingsRender</code></td>
+<td>Python to Swift</td>
+<td>Send settings window UI</td>
+</tr>
+<tr>
+<td><code>notification</code></td>
+<td>Python to Swift</td>
+<td>Push/schedule/cancel notifications</td>
+</tr>
+<tr>
+<td><code>serviceResponse</code></td>
+<td>Swift to Python</td>
+<td>System service query results</td>
+</tr>
+<tr>
+<td><code>notificationResponse</code></td>
+<td>Swift to Python</td>
+<td>Notification action responses</td>
+</tr>
+<tr>
+<td><code>fileDialogResponse</code></td>
+<td>Swift to Python</td>
+<td>File dialog selections</td>
+</tr>
+</tbody>
+</table></div>
+  </div>
+</article>
+                                <div class="mx-auto flex flex-wrap h-16 w-full max-w-2xl items-center gap-2 px-4 md:px-0">
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 shadow-none"
+        href="/concepts/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-left ">
+            <path d="M5 12l14 0"></path>
+            <path d="M5 12l6 6"></path>
+            <path d="M5 12l6 -6"></path>
+        </svg>
+        <span class="max-[500px]:hidden">Index</span>
+    </a>
+    
+    
+    <a data-slot="button"
+        class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 ml-auto shadow-none"
+        href="/concepts/reactivity/">
+        <span class="max-[500px]:hidden">Reactivity</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="tabler-icon tabler-icon-arrow-right ">
+            <path d="M5 12l14 0"></path>
+            <path d="M13 18l6 -6"></path>
+            <path d="M13 6l6 6"></path>
+        </svg>
+    </a>
+    
+</div>
+                                <dialog id="bottom-sidebar" onclick="onBottomSidebarDialogClick(event)" class="bg-transparent"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0px, 58px); min-width: max-content; --radix-popper-transform-origin: 0% 0px; will-change: transform; z-index: 50; --radix-popper-available-width: 504px; --radix-popper-available-height: 857px; --radix-popper-anchor-width: 72.94999694824219px; --radix-popper-anchor-height: 32px;">
+    <div data-side="bottom" data-align="start" data-state="open" role="dialog" data-slot="popover-content"
+        class="text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) border outline-hidden bg-background/90 no-scrollbar h-(--radix-popper-available-height) w-(--radix-popper-available-width) overflow-y-auto rounded-none border-none p-0 shadow-none backdrop-blur duration-100"
+        style="--radix-popover-content-transform-origin: var(--radix-popper-transform-origin); --radix-popover-content-available-width: var(--radix-popper-available-width); --radix-popover-content-available-height: var(--radix-popper-available-height); --radix-popover-trigger-width: var(--radix-popper-anchor-width); --radix-popover-trigger-height: var(--radix-popper-anchor-height);"
+        tabindex="-1">
+        <div class="flex flex-col gap-12 overflow-auto px-6 py-6">
+            
+            
+            
+
+            
+            <div class="flex flex-col gap-4">
+                <div class="text-muted-foreground text-sm font-medium">Menu</div>
+                <div class="flex flex-col gap-3">
+                    
+                    <a class="text-2xl font-medium" href="../..">
+                        
+                        Home
+                        
+                    </a>
+                    
+                </div>
+            </div>
+            
+
+            
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Getting Started</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/installation/">
+                            
+                            Installation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/quickstart/">
+                            
+                            Quick Start
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/first-app/">
+                            
+                            Your First App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../getting-started/project-structure/">
+                            
+                            Project Structure
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Concepts</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="./">
+                            
+                            Architecture
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../reactivity/">
+                            
+                            Reactivity
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../view-tree/">
+                            
+                            The View Tree
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../modifiers/">
+                            
+                            Modifiers
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../event-handling/">
+                            
+                            Event Handling
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Guides</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../guides/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/layouts/">
+                            
+                            Building Layouts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/styling/">
+                            
+                            Styling & Theming
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/colors-gradients/">
+                            
+                            Colors & Gradients
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/typography/">
+                            
+                            Typography & Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/animations/">
+                            
+                            Animations & Transitions
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/context-menu/">
+                            
+                            Context Menu
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/settings/">
+                            
+                            Settings & Persistence
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/notifications/">
+                            
+                            Notifications
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/services/">
+                            
+                            System Services
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/file-dialogs/">
+                            
+                            File Dialogs
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/canvas/">
+                            
+                            Canvas Drawing
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/charts/">
+                            
+                            Charts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/navigation/">
+                            
+                            Navigation
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/drag-drop/">
+                            
+                            Drag & Drop
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/hotkeys-clipboard/">
+                            
+                            Hotkeys & Clipboard
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/custom-fonts/">
+                            
+                            Custom Fonts
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../guides/assets/">
+                            
+                            Assets
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">CLI</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../cli/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/create/">
+                            
+                            nib create
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/run/">
+                            
+                            nib run
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/build/">
+                            
+                            nib build
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../cli/pyproject-config/">
+                            
+                            pyproject.toml Config
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">API Reference</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../reference/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Examples</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../../examples/">
+                            
+                            Index
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/counter/">
+                            
+                            Counter App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/todo/">
+                            
+                            Todo App
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/system-monitor/">
+                            
+                            System Monitor
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../../examples/drawing-app/">
+                            
+                            Drawing App
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            
+
+        </div>
+    </div>
+</dialog>
+                            </div>
+                            <div
+                                class="sticky top-[calc(var(--header-height)+1px)] z-30 ml-auto hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] w-72 flex-col gap-4 overflow-hidden overscroll-none pb-8 xl:flex">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <div view-transition-name="toc" class="no-scrollbar overflow-y-auto px-8">
+    <div class="flex flex-col gap-2 p-4 pt-0 text-sm">
+        <p class="text-muted-foreground bg-background sticky top-0 h-6 text-xs">On This Page</p>
+        
+        
+        
+        
+        <a href="#the-two-process-model"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            The Two-Process Model
+        </a>
+        
+
+        
+        <a href="#communication-protocol"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Communication Protocol
+        </a>
+        
+        
+        <a href="#render-full-view-tree"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            render -- Full View Tree
+        </a>
+        
+        <a href="#patch-incremental-updates"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            patch -- Incremental Updates
+        </a>
+        
+        <a href="#event-user-interactions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            event -- User Interactions
+        </a>
+        
+        
+
+        
+        <a href="#execution-modes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Execution Modes
+        </a>
+        
+        
+        <a href="#development-mode-nib-run"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Development Mode (nib run)
+        </a>
+        
+        <a href="#bundled-mode-standalone-app"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Bundled Mode (standalone .app)
+        </a>
+        
+        
+
+        
+        <a href="#data-flow-from-property-change-to-pixel"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Data Flow: From Property Change to Pixel
+        </a>
+        
+
+        
+        <a href="#other-message-types"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Other Message Types
+        </a>
+        
+
+        
+        
+        
+        
+
+    </div>
+    <div class="h-12"></div>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer view-transition-name="footer"
+    class="group-has-[.section-soft]/body:bg-surface/40 3xl:fixed:bg-transparent dark:bg-transparent">
+    <div class="container-wrapper px-4 xl:px-6">
+        <div class="flex h-(--footer-height) items-center justify-between">
+            <div class="text-muted-foreground w-full text-center text-xs leading-loose sm:text-sm">
+                
+                <a href="https://github.com/asiffer/mkdocs-shadcn">shadcn theme</a> provided by
+                <a href="https://github.com/asiffer">@asiffer</a>
+            </div>
+        </div>
+    </div>
+</footer>
+    </div>
+     
+
+<script src="../../search/main.js"></script>
+
+
+    
+
+    <script src="../../js/copy-button.js"></script>
+    <script>updatePygmentsStylesheet();</script>
+    
+    <script>fetchStargazers("None");</script>
+    
+    
+    
+    <script type="speculationrules">
+{
+  "prerender": [
+    {
+      "where": {
+          "selector_matches": ["#next-button", "#previous-button"],
+      }
+    }
+  ]
+}
+</script>
+</body>
+
+</html>

@@ -1,0 +1,3 @@
+.dark img[alt="icon"] {
+  filter: invert(1);
+}

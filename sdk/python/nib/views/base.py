@@ -577,6 +577,24 @@ class View:
                     child_ids.append(child_id)
                     stack.append((child, child_path, depth + 1, view_id))
 
+            # Handle chart marks (_marks are BaseMark objects, not Views)
+            if hasattr(view, "_marks") and view._marks:
+                for i, mark in enumerate(view._marks):
+                    mark_path = f"{current_path}.{i}"
+                    mark_dict = mark.to_dict(mark_path)
+                    child_ids.append(mark_dict["id"])
+                    # Add mark as a flat node directly (marks are not Views)
+                    nodes.append({
+                        "id": mark_dict["id"],
+                        "type": mark_dict["type"],
+                        "props": mark_dict["props"],
+                        "modifiers": None,
+                        "parentId": view_id,
+                        "childIds": None,
+                        "backgroundId": None,
+                        "overlayId": None,
+                    })
+
             # Background and overlay
             background_id = None
             if hasattr(view, "_background_view") and view._background_view is not None:

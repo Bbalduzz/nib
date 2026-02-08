@@ -1,0 +1,198 @@
+site_name: Nib
+site_description: Build native macOS menu bar apps in Python
+site_url: https://nib.dev
+
+theme:
+  name: shadcn
+  show_title: true
+  icon: assets/img/nib-logo.svg
+  favicon: assets/img/favicon.png
+  topbar_sections: true
+  pygments_style:
+    light: shadcn-light
+    dark: github-dark
+
+extra_css:
+  - assets/css/custom.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - codehilite
+  - fenced_code
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.blocks.details
+  - admonition
+  - attr_list
+  - toc:
+      permalink: true
+  - def_list
+  - tables
+  - footnotes
+
+nav:
+  - Home: index.md
+
+  - Getting Started:
+      - getting-started/index.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Your First App: getting-started/first-app.md
+      - Project Structure: getting-started/project-structure.md
+
+  - Concepts:
+      - concepts/index.md
+      - Architecture: concepts/architecture.md
+      - Reactivity: concepts/reactivity.md
+      - The View Tree: concepts/view-tree.md
+      - Modifiers: concepts/modifiers.md
+      - Event Handling: concepts/event-handling.md
+
+  - Guides:
+      - guides/index.md
+      - Building Layouts: guides/layouts.md
+      - Styling & Theming: guides/styling.md
+      - Colors & Gradients: guides/colors-gradients.md
+      - Typography & Fonts: guides/typography.md
+      - Animations & Transitions: guides/animations.md
+      - Context Menu: guides/context-menu.md
+      - Settings & Persistence: guides/settings.md
+      - Notifications: guides/notifications.md
+      - System Services: guides/services.md
+      - File Dialogs: guides/file-dialogs.md
+      - Canvas Drawing: guides/canvas.md
+      - Charts: guides/charts.md
+      - Navigation: guides/navigation.md
+      - Drag & Drop: guides/drag-drop.md
+      - Hotkeys & Clipboard: guides/hotkeys-clipboard.md
+      - Custom Fonts: guides/custom-fonts.md
+      - Assets: guides/assets.md
+
+  - CLI:
+      - cli/index.md
+      - nib create: cli/create.md
+      - nib run: cli/run.md
+      - nib build: cli/build.md
+      - pyproject.toml Config: cli/pyproject-config.md
+
+  - API Reference:
+      - reference/index.md
+      - Core:
+          - reference/core/index.md
+          - App: reference/core/app.md
+          - run(): reference/core/run.md
+          - SFSymbol: reference/core/sfsymbol.md
+          - MenuItem & MenuDivider: reference/core/menu.md
+          - State & Binding: reference/core/state.md
+          - Settings: reference/core/settings.md
+          - UserDefaults: reference/core/user-defaults.md
+          - FilePicker: reference/core/file-picker.md
+          - SettingsPage & SettingsTab: reference/core/settings-page.md
+      - Views - Controls:
+          - reference/views/controls/index.md
+          - Text: reference/views/controls/text.md
+          - Button: reference/views/controls/button.md
+          - TextField: reference/views/controls/textfield.md
+          - SecureField: reference/views/controls/securefield.md
+          - TextEditor: reference/views/controls/texteditor.md
+          - Toggle: reference/views/controls/toggle.md
+          - Slider: reference/views/controls/slider.md
+          - Picker: reference/views/controls/picker.md
+          - ProgressView: reference/views/controls/progressview.md
+          - Gauge: reference/views/controls/gauge.md
+          - Image: reference/views/controls/image.md
+          - Video: reference/views/controls/video.md
+          - Label: reference/views/controls/label.md
+          - Link: reference/views/controls/link.md
+          - Markdown: reference/views/controls/markdown.md
+          - ShareLink: reference/views/controls/sharelink.md
+          - WebView: reference/views/controls/webview.md
+          - CameraPreview: reference/views/controls/camerapreview.md
+          - Table: reference/views/controls/table.md
+          - Map: reference/views/controls/map.md
+          - Divider: reference/views/controls/divider.md
+      - Views - Layout:
+          - reference/views/layout/index.md
+          - VStack: reference/views/layout/vstack.md
+          - HStack: reference/views/layout/hstack.md
+          - ZStack: reference/views/layout/zstack.md
+          - ScrollView: reference/views/layout/scrollview.md
+          - List: reference/views/layout/list.md
+          - Section: reference/views/layout/section.md
+          - Form: reference/views/layout/form.md
+          - Group: reference/views/layout/group.md
+          - Spacer: reference/views/layout/spacer.md
+          - Grid & GridRow: reference/views/layout/grid.md
+          - LazyVGrid & LazyHGrid: reference/views/layout/lazy-grid.md
+          - NavigationStack & NavigationLink: reference/views/layout/navigation.md
+          - DisclosureGroup: reference/views/layout/disclosure-group.md
+      - Views - Shapes:
+          - reference/views/shapes/index.md
+          - Rectangle: reference/views/shapes/rectangle.md
+          - Circle: reference/views/shapes/circle.md
+          - Ellipse: reference/views/shapes/ellipse.md
+          - Capsule: reference/views/shapes/capsule.md
+          - Path & Shape: reference/views/shapes/path.md
+          - Gradients: reference/views/shapes/gradients.md
+      - Views - Charts:
+          - reference/views/charts/index.md
+          - Chart: reference/views/charts/chart.md
+          - LineMark: reference/views/charts/linemark.md
+          - BarMark: reference/views/charts/barmark.md
+          - AreaMark: reference/views/charts/areamark.md
+          - PointMark: reference/views/charts/pointmark.md
+          - RuleMark: reference/views/charts/rulemark.md
+          - RectMark: reference/views/charts/rectmark.md
+          - SectorMark: reference/views/charts/sectormark.md
+          - ChartAxis & ChartLegend: reference/views/charts/axis-legend.md
+      - Views - Effects:
+          - reference/views/effects/index.md
+          - VisualEffectBlur: reference/views/effects/blur.md
+          - Canvas: reference/views/effects/canvas.md
+      - Draw Module:
+          - reference/draw/index.md
+          - Primitives: reference/draw/primitives.md
+          - Paint & Gradients: reference/draw/paint.md
+          - Path Elements: reference/draw/path-elements.md
+          - Image & Text: reference/draw/image-text.md
+      - Types & Enums:
+          - reference/types/index.md
+          - Color: reference/types/color.md
+          - Font: reference/types/font.md
+          - Animation: reference/types/animation.md
+          - Transition: reference/types/transition.md
+          - TextStyle & AttributedString: reference/types/text-style.md
+          - Offset & CornerRadius: reference/types/geometry.md
+          - Style Enums: reference/types/style-enums.md
+          - Alignment Enums: reference/types/alignment-enums.md
+          - Image Enums: reference/types/image-enums.md
+          - BlendMode: reference/types/blend-mode.md
+      - Services:
+          - reference/services/index.md
+          - Battery: reference/services/battery.md
+          - Connectivity: reference/services/connectivity.md
+          - Screen: reference/services/screen.md
+          - Keychain: reference/services/keychain.md
+          - Camera: reference/services/camera.md
+          - LaunchAtLogin: reference/services/launch-at-login.md
+          - Permissions: reference/services/permissions.md
+      - Notifications:
+          - reference/notifications/index.md
+          - Notification: reference/notifications/notification.md
+          - NotificationManager: reference/notifications/manager.md
+          - Sound & Actions: reference/notifications/types.md
+      - Modifiers:
+          - reference/modifiers/index.md
+          - Layout Modifiers: reference/modifiers/layout.md
+          - Appearance Modifiers: reference/modifiers/appearance.md
+          - Typography Modifiers: reference/modifiers/typography.md
+          - Effect Modifiers: reference/modifiers/effects.md
+
+  - Examples:
+      - examples/index.md
+      - Counter App: examples/counter.md
+      - Todo App: examples/todo.md
+      - System Monitor: examples/system-monitor.md
+      - Drawing App: examples/drawing-app.md
