@@ -113,42 +113,93 @@ def get_python_standalone_url(arch: Literal["arm64", "x86_64"]) -> str:
     Raises:
         RuntimeError: If no matching Python build is found for this version.
     """
+    import json
     import re
 
     arch_map = {
         "arm64": "aarch64",
         "x86_64": "x86_64",
     }
+    if arch not in arch_map:
+        raise ValueError(f"Unsupported architecture: {arch}")
+
     pbs_arch = arch_map[arch]
-    base_url = f"https://github.com/astral-sh/python-build-standalone/releases/download/{PBS_VERSION}"
+    base_url = (
+        "https://github.com/astral-sh/python-build-standalone/releases/download"
+        f"/{PBS_VERSION}"
+    )
+
+    def _head_ok(url: str) -> bool:
+        try:
+            req = urllib.request.Request(
+                url,
+                method="HEAD",
+                headers={"User-Agent": "nib-build/1.0"},
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return resp.status == 200
+        except (urllib.error.HTTPError, urllib.error.URLError, OSError):
+            return False
 
     # pattern: cpython-3.12.X+DATE-ARCH-apple-darwin-install_only.tar.gz
     pattern = re.compile(
-        rf"cpython-{PYTHON_VERSION}\.\d+\+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only\.tar\.gz"
+        rf"^cpython-{PYTHON_VERSION}\.(\d+)\+{PBS_VERSION}-"
+        rf"{pbs_arch}-apple-darwin-install_only\.tar\.gz$"
     )
     full_version = (
         f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
     )
-    exact_filename = f"cpython-{full_version}+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
+    exact_filename = (
+        f"cpython-{full_version}+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
+    )
     exact_url = f"{base_url}/{exact_filename}"
-    try:
-        req = urllib.request.Request(exact_url, method="HEAD")
-        urllib.request.urlopen(req)
+    if _head_ok(exact_url):
         return exact_url
-    except urllib.error.HTTPError:
-        pass
-    # exact micro not available, query the release page for a matching build
-    api_url = f"https://api.github.com/repos/astral-sh/python-build-standalone/releases/tags/{PBS_VERSION}"
-    try:
-        with urllib.request.urlopen(api_url) as resp:
-            import json
 
+    def _pick_best_asset(assets: list[dict]) -> Optional[str]:
+        best = None
+        best_micro = -1
+        for asset in assets:
+            name = asset.get("name", "")
+            m = pattern.match(name)
+            if not m:
+                continue
+            micro = int(m.group(1))
+            if micro > best_micro:
+                best_micro = micro
+                best = asset.get("browser_download_url")
+        return best
+
+    api_url = (
+        "https://api.github.com/repos/astral-sh/python-build-standalone"
+        f"/releases/tags/{PBS_VERSION}"
+    )
+    try:
+        req = urllib.request.Request(
+            api_url,
+            headers={
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "nib-build/1.0",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
             release = json.loads(resp.read())
-            for asset in release.get("assets", []):
-                if pattern.match(asset["name"]):
-                    return asset["browser_download_url"]
-    except Exception:
-        pass
+            best = _pick_best_asset(release.get("assets", []))
+            if best:
+                return best
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            raise RuntimeError(
+                "GitHub API rate limit or access denied while resolving "
+                "python-build-standalone. Set GITHUB_TOKEN or retry later."
+            )
+        raise RuntimeError(
+            f"GitHub API error {e.code} while resolving python-build-standalone."
+        )
+    except Exception as e:
+        raise RuntimeError(
+            f"Failed to query GitHub API for python-build-standalone: {e}"
+        )
 
     raise RuntimeError(
         f"No python-build-standalone build found for Python {PYTHON_VERSION} "
@@ -170,7 +221,7 @@ def download_python_standalone(arch: str) -> Path:
     """
     cache_dir = get_cache_dir()
     url = get_python_standalone_url(arch)
-    filename = url.split("/")[-1]
+    filename = urllib.parse.unquote(url.split("/")[-1])
     cached_path = cache_dir / filename
 
     if cached_path.exists():
@@ -1236,6 +1287,24 @@ def _phase_python_env(
         shutil.move(str(python_extracted), str(paths["python_dir"]))
 
     python_bin = paths["python_dir"] / "bin" / "python3"
+
+    if not python_bin.exists():
+        # Cached archive may be corrupted — delete and retry once
+        logger.warning("Python binary not found after extraction, clearing cache and retrying...")
+        python_archive.unlink(missing_ok=True)
+        if paths["python_dir"].exists():
+            shutil.rmtree(paths["python_dir"])
+        python_archive = download_python_standalone(cfg.arch)
+        with tempfile.TemporaryDirectory() as tmpdir2:
+            tmpdir_path2 = Path(tmpdir2)
+            python_extracted = extract_python_standalone(python_archive, tmpdir_path2)
+            shutil.move(str(python_extracted), str(paths["python_dir"]))
+        python_bin = paths["python_dir"] / "bin" / "python3"
+        if not python_bin.exists():
+            raise RuntimeError(
+                f"Python binary not found at {python_bin} after extraction. "
+                f"Archive may be invalid. Try deleting ~/.cache/nib/ and rebuilding."
+            )
 
     logger.info("Installing dependencies...")
     vendor_dependencies(python_bin, paths["vendor_dir"], packages)

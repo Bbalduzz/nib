@@ -3,6 +3,8 @@ package/.build/
 # Built runtime binary (built via `make build-runtime`)
 sdk/python/nib/bin/nib-runtime
 
+# Build artifacts
+dist/
 examples/tests/*/dist/
 *.app/
 *.pyo
@@ -10,6 +12,7 @@ examples/tests/*/dist/
 *.pyc
 __pycache__/
 *.db
+**/.DS_Store
 media/demo.mov
 /architecture.md
 
