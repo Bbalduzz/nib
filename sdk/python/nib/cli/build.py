@@ -423,7 +423,7 @@ def cleanup_python_distribution(python_dir: Path, optimize: bool = False) -> Non
     # We only need python3/python3.12 for runtime
     bin_dir = python_dir / "bin"
     if bin_dir.exists():
-        keep_patterns = {"python3", "python3.12"}
+        keep_patterns = {"python3", f"python{PYTHON_VERSION}"}
         for item in bin_dir.iterdir():
             if item.is_file() and item.name not in keep_patterns:
                 try:
