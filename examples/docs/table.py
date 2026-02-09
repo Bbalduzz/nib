@@ -2,42 +2,39 @@ import nib
 
 
 def main(app: nib.App):
-    app.title = "Table"
-    app.icon = nib.SFSymbol("tablecells")
+    app.title = "Table Example"
+    app.icon = nib.SFSymbol("tablecells.fill")
     app.width = 400
-    app.height = 350
+    app.height = 300
 
-    selected_label = nib.Text("No selection", font=nib.Font.CAPTION, foreground_color=nib.Color.SECONDARY)
-
-    def on_selection(ids):
-        if ids:
-            selected_label.content = f"Selected: {', '.join(ids)}"
-        else:
-            selected_label.content = "No selection"
+    files = [
+        {"name": "Document.txt", "size": "4 KB", "modified": "Today"},
+        {"name": "Image.png", "size": "1.2 MB", "modified": "Yesterday"},
+        {"name": "Archive.zip", "size": "45 MB", "modified": "Last week"},
+    ]
 
     app.build(
-        nib.VStack(
-            controls=[
-                nib.Table(
-                    columns=[
-                        nib.TableColumn("name", "Name", "name"),
-                        nib.TableColumn("type", "Type", "type", width=80),
-                        nib.TableColumn("size", "Size", "size", width=80, alignment="trailing"),
-                    ],
-                    rows=[
-                        {"id": "1", "name": "README.md", "type": "Markdown", "size": "2 KB"},
-                        {"id": "2", "name": "main.py", "type": "Python", "size": "4 KB"},
-                        {"id": "3", "name": "icon.png", "type": "Image", "size": "32 KB"},
-                        {"id": "4", "name": "config.json", "type": "JSON", "size": "1 KB"},
-                        {"id": "5", "name": "style.css", "type": "CSS", "size": "8 KB"},
-                    ],
-                    on_selection=on_selection,
-                    height=250,
+        nib.Table(
+            rows=files,
+            columns=[
+                nib.TableColumn(
+                    "Name",
+                    key=lambda f: f["name"],
+                    width=nib.ColumnWidth.range(min=50, ideal=150, max=300),
                 ),
-                selected_label,
+                nib.TableColumn(
+                    "Size",
+                    key=lambda f: f["size"],
+                    alignment="trailing",
+                    width=nib.ColumnWidth.fixed(80),
+                ),
+                nib.TableColumn(
+                    "Modified",
+                    key=lambda f: f["modified"],
+                    width=nib.ColumnWidth.fixed(100),
+                ),
             ],
-            spacing=8,
-            padding=20,
+            on_select=lambda rows: print(f"Selected: {[r['name'] for r in rows]}"),
         )
     )
 

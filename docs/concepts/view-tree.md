@@ -160,9 +160,9 @@ def hide_error():
 
 When `visible=False`, the view is completely removed from the serialized tree. It does not take up layout space. This is different from `opacity=0`, which hides the view visually but still reserves its space in the layout.
 
-## Background and Overlay Views
+## Background, Overlay, and Context Menu Views
 
-Any view can have a `background` or `overlay` that is itself a view. These are serialized as separate nodes in the flat list, linked by `backgroundId` and `overlayId`:
+Any view can have a `background`, `overlay`, or `context_menu` that contains other views. These are serialized as separate nodes in the flat list, linked by `backgroundId`, `overlayId`, and `contextMenuIds`:
 
 ```python
 nib.VStack(
@@ -173,11 +173,16 @@ nib.VStack(
         stroke="#2a2a4e",
         stroke_width=1,
     ),
+    context_menu=[
+        nib.Button("Copy", action=copy_fn),
+        nib.Divider(),
+        nib.Button("Delete", action=delete_fn, role="destructive"),
+    ],
     padding=16,
 )
 ```
 
-The background view is rendered behind the main view. The overlay view is rendered on top.
+The background view is rendered behind the main view. The overlay view is rendered on top. Context menu views appear in a native macOS right-click menu.
 
 ## Serialization Format
 
@@ -193,4 +198,5 @@ Each node in the flat list contains:
 | `childIds` | list or null | IDs of child nodes |
 | `backgroundId` | string or null | ID of background view node |
 | `overlayId` | string or null | ID of overlay view node |
+| `contextMenuIds` | list or null | IDs of context menu item nodes |
 | `animationContext` | dict or null | Per-view animation configuration |

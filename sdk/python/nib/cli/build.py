@@ -149,9 +149,7 @@ def get_python_standalone_url(arch: Literal["arm64", "x86_64"]) -> str:
     full_version = (
         f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
     )
-    exact_filename = (
-        f"cpython-{full_version}+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
-    )
+    exact_filename = f"cpython-{full_version}+{PBS_VERSION}-{pbs_arch}-apple-darwin-install_only.tar.gz"
     exact_url = f"{base_url}/{exact_filename}"
     if _head_ok(exact_url):
         return exact_url
@@ -420,10 +418,10 @@ def cleanup_python_distribution(python_dir: Path, optimize: bool = False) -> Non
                 pass
 
     # Remove unnecessary executables from bin directory
-    # We only need python3/python3.12 for runtime
+    # We only need python3/python3.X for runtime
     bin_dir = python_dir / "bin"
     if bin_dir.exists():
-        keep_patterns = {"python3", "python3.12"}
+        keep_patterns = {"python3", f"python{PYTHON_VERSION}"}
         for item in bin_dir.iterdir():
             if item.is_file() and item.name not in keep_patterns:
                 try:
@@ -1290,7 +1288,9 @@ def _phase_python_env(
 
     if not python_bin.exists():
         # Cached archive may be corrupted — delete and retry once
-        logger.warning("Python binary not found after extraction, clearing cache and retrying...")
+        logger.warning(
+            "Python binary not found after extraction, clearing cache and retrying..."
+        )
         python_archive.unlink(missing_ok=True)
         if paths["python_dir"].exists():
             shutil.rmtree(paths["python_dir"])

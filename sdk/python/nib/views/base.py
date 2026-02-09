@@ -233,6 +233,8 @@ class View:
         on_click: Optional[Callable[[], None]] = None,
         # Tooltip
         tooltip: Optional[Union[str, "View"]] = None,
+        # Context menu (right-click menu items)
+        context_menu: Optional[List["View"]] = None,
         # Visibility (if False, view is removed from tree entirely)
         visible: bool = True,
     ) -> None:
@@ -304,6 +306,9 @@ class View:
             self._overlay_view = overlay
         else:
             self._overlay_view = None
+
+        # Context menu views
+        self._context_menu_views: List["View"] = context_menu if context_menu else []
 
         # Build kwargs for modifier registry - store for later mutation
         self._modifier_kwargs = {
@@ -608,6 +613,16 @@ class View:
                 overlay_id = view._overlay_view._id if view._overlay_view._id else ov_path
                 stack.append((view._overlay_view, ov_path, depth + 1, view_id))
 
+            # Context menu views
+            context_menu_ids = None
+            if hasattr(view, "_context_menu_views") and view._context_menu_views:
+                context_menu_ids = []
+                for i, ctx_view in enumerate(view._context_menu_views):
+                    ctx_path = f"{current_path}.ctx.{i}"
+                    ctx_id = ctx_view._id if ctx_view._id is not None else ctx_path
+                    context_menu_ids.append(ctx_id)
+                    stack.append((ctx_view, ctx_path, depth + 1, view_id))
+
             # Build flat node
             node = {
                 "id": view_id,
@@ -618,6 +633,7 @@ class View:
                 "childIds": child_ids if child_ids else None,
                 "backgroundId": background_id,
                 "overlayId": overlay_id,
+                "contextMenuIds": context_menu_ids,
             }
 
             # Add animation context if present
@@ -748,3 +764,7 @@ class View:
         # Set on overlay view if present
         if hasattr(self, "_overlay_view") and self._overlay_view is not None:
             self._overlay_view._set_app(app)
+        # Set on context menu views if present
+        if hasattr(self, "_context_menu_views") and self._context_menu_views:
+            for child in self._context_menu_views:
+                child._set_app(app)

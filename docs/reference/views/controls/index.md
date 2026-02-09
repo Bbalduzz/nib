@@ -31,7 +31,7 @@ Control views are interactive UI elements for displaying content, capturing user
 
 | View | Description |
 |------|-------------|
-| [Table](table.md) | Displays structured data in rows and columns with sorting and selection. |
+| [Table](table.md) | A native macOS table view for displaying Python objects in rows and columns, with sorting, selection, and custom cell views. |
 | [Map](map.md) | An interactive MapKit map with markers, annotations, and overlays. |
 | [WebView](webview.md) | Embeds web content from a URL or raw HTML using WKWebView. |
 | [CameraPreview](camerapreview.md) | Displays a live camera feed from a connected device. |

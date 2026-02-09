@@ -77,3 +77,4 @@ nib.Text(
 | `on_click` | `Callable[[], None]` | `None` | Callback when the view is clicked. |
 | `tooltip` | `str \| View` | `None` | Tooltip text shown on hover. |
 | `overlay` | `View` | `None` | View rendered on top of this view. |
+| `context_menu` | `list[View]` | `None` | Right-click context menu items. Accepts `Button`, `Toggle`, `Picker`, `Divider`, `Text`, `ShareLink`. See [Context Menu guide](../../guides/context-menu.md#view-context-menu). |

@@ -25,7 +25,7 @@ from .map_view import (
 )
 from .gauge import Gauge, GaugeStyle
 from .text_editor import TextEditor
-from .table import Table, TableColumn
+from .table import Table, TableColumn, ColumnWidth
 from .share_link import ShareLink
 from .camera_preview import CameraPreview
 from .web_view import WebView
@@ -59,6 +59,7 @@ __all__ = [
     "TextEditor",
     "Table",
     "TableColumn",
+    "ColumnWidth",
     "ShareLink",
     "CameraPreview",
     "WebView",

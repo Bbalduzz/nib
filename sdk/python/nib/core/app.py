@@ -1256,9 +1256,10 @@ class App:
         if hasattr(view, "_on_change") and view._on_change is not None:
             self._change_map[view._id] = view._on_change
 
-        # Store view._handle_event for views that need internal state sync
-        # (e.g. TextEditor updates _text before calling _on_change)
-        if hasattr(view, "_handle_event") and hasattr(view, "_on_change") and view._on_change is not None:
+        # Store view._handle_event for views that need internal event routing
+        # (e.g. TextEditor syncs _text before calling _on_change,
+        #  Table routes selection/sort events)
+        if hasattr(view, "_handle_event") and callable(view._handle_event):
             self._view_event_map[view._id] = view._handle_event
 
         # Collect submit handlers (TextField, SecureField)
@@ -1302,6 +1303,11 @@ class App:
             for i, child in enumerate(view._destination):
                 if isinstance(child, View):
                     self._collect_actions(child, f"{path}.{i}")
+
+        # Handle context menu views
+        if hasattr(view, "_context_menu_views") and view._context_menu_views:
+            for i, child in enumerate(view._context_menu_views):
+                self._collect_actions(child, f"{path}.ctx.{i}")
 
     def _handle_event(self, node_id: str, event: str) -> None:
         """Handle an event from the Swift runtime."""
@@ -1447,6 +1453,14 @@ class App:
                 handler(value_str)
             except Exception as e:
                 logger.error("Error in submit handler", exc=e, node_id=node_id)
+
+        # Fallback: delegate to view's _handle_event for custom event types
+        # (e.g. Table selection/sort/doubleClick events)
+        elif node_id in self._view_event_map:
+            try:
+                self._view_event_map[node_id](event)
+            except Exception as e:
+                logger.error("Error in view event handler", exc=e, node_id=node_id)
 
     def _handle_pan_event(self, node_id: str, event: str) -> None:
         """Handle canvas pan events (pan:start, pan:update, pan:end)."""

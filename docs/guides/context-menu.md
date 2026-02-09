@@ -1,12 +1,19 @@
 # Context Menu
 
-The context menu appears when a user right-clicks (or Control-clicks) the status bar icon. Set it with `app.menu`, passing a list of `MenuItem` and `MenuDivider` objects.
+Nib supports two kinds of context menus:
 
-![Context menu with custom items and keyboard shortcuts](../assets/img/demo-right-click.png)
+1. **Status bar menu** (`app.menu`) -- appears when the user right-clicks the menu bar icon. Built with `MenuItem` and `MenuDivider` objects.
+2. **View context menu** (`context_menu=`) -- appears when the user right-clicks any view in your app. Built with nib views like `Button`, `Toggle`, `Picker`, `Divider`, `Text`, and `ShareLink`.
 
 ---
 
-## Basic Menu
+## Status Bar Menu
+
+The status bar context menu appears when a user right-clicks (or Control-clicks) the menu bar icon. Set it with `app.menu`, passing a list of `MenuItem` and `MenuDivider` objects.
+
+![Context menu with custom items and keyboard shortcuts](../assets/img/demo-right-click.png)
+
+### Basic Menu
 
 ```python
 import nib
@@ -31,9 +38,7 @@ def main(app: nib.App):
 nib.run(main)
 ```
 
----
-
-## MenuItem Parameters
+### MenuItem Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -48,9 +53,7 @@ nib.run(main)
 | `menu` | `list` | Child items for a submenu |
 | `height` | `float` | Custom height for content-based items |
 
----
-
-## Icons
+### Icons
 
 Pass a string for a simple SF Symbol icon, or an `SFSymbol` instance for styled icons:
 
@@ -66,9 +69,7 @@ nib.MenuItem(
 )
 ```
 
----
-
-## Keyboard Shortcuts
+### Keyboard Shortcuts
 
 Use the `shortcut` parameter with modifier keys joined by `+`:
 
@@ -82,9 +83,7 @@ nib.MenuItem("Toggle", action=toggle, shortcut="opt+t")
 
 Supported modifiers: `cmd`, `shift`, `opt` (or `alt`), `ctrl`.
 
----
-
-## Badges
+### Badges
 
 Badges display a small label on the right side of the menu item. They are useful for showing counts or status.
 
@@ -96,9 +95,7 @@ nib.MenuItem("Messages", action=open_messages, badge="New")
 !!! note
     Badges require macOS 14 (Sonoma) or later.
 
----
-
-## State Indicators
+### State Indicators
 
 The `state` parameter shows a checkmark, no mark, or a mixed indicator:
 
@@ -131,9 +128,7 @@ def rebuild_menu():
     ]
 ```
 
----
-
-## Disabled Items
+### Disabled Items
 
 Set `enabled=False` to gray out an item and prevent clicks:
 
@@ -142,9 +137,7 @@ nib.MenuItem("Unavailable", enabled=False)
 nib.MenuItem("Premium Only", action=upgrade, enabled=is_premium)
 ```
 
----
-
-## Menu Dividers
+### Menu Dividers
 
 `MenuDivider` draws a horizontal separator line between items:
 
@@ -157,9 +150,7 @@ app.menu = [
 ]
 ```
 
----
-
-## Submenus
+### Submenus
 
 Nest menus by passing a `menu` list to a `MenuItem`:
 
@@ -190,9 +181,7 @@ nib.MenuItem(
 )
 ```
 
----
-
-## Custom View Content
+### Custom View Content
 
 For rich menu items, use the `content` parameter with any Nib view. When using `content`, the `title` and `icon` parameters are ignored.
 
@@ -221,9 +210,7 @@ nib.MenuItem(
 !!! tip
     Set the `height` parameter when using `content` to ensure the menu item has enough vertical space for your custom view.
 
----
-
-## Full Example
+### Full Status Bar Menu Example
 
 A complete menu demonstrating all features:
 
@@ -316,6 +303,175 @@ def main(app: nib.App):
 
     update_menu()
     app.build(nib.Text("Right-click the menu bar icon to see the menu.", padding=24))
+
+nib.run(main)
+```
+
+---
+
+## View Context Menu
+
+Any nib view supports a `context_menu` parameter. When set, right-clicking that view shows a native macOS context menu with the specified items. This uses SwiftUI's `.contextMenu` modifier under the hood.
+
+### Basic Usage
+
+```python
+nib.Text(
+    "Right-click me",
+    context_menu=[
+        nib.Button("Copy", action=copy_fn),
+        nib.Button("Paste", action=paste_fn),
+        nib.Divider(),
+        nib.Button("Delete", action=delete_fn, role="destructive"),
+    ],
+    padding=20,
+)
+```
+
+The `context_menu` parameter accepts a list of nib views. It works on any view -- `Text`, `VStack`, `Image`, `Button`, etc.
+
+### Supported Menu Item Views
+
+SwiftUI context menus support a specific set of views as menu items:
+
+| View | Description |
+|------|-------------|
+| `Button` | Clickable action item. Supports `role="destructive"` for red delete-style items. |
+| `Button` with `content=` | Custom button layout with icon + text using `HStack`. |
+| `Divider` | Horizontal separator between groups of items. |
+| `Toggle` | On/off switch inside the menu. |
+| `Picker` | Inline selection from a list of options. |
+| `Text` | Static, non-interactive label (e.g., version info). |
+| `ShareLink` | Opens the native macOS share sheet. |
+
+!!! note
+    Layout views like `VStack`, `HStack`, `Image`, and `List` are **not** rendered inside context menus. SwiftUI only supports menu-compatible views in the `.contextMenu` builder.
+
+### Button Variants
+
+Buttons are the most common menu item. You can create plain buttons, icon buttons, and destructive buttons:
+
+```python
+context_menu=[
+    # Plain text button
+    nib.Button("Copy", action=copy_fn),
+
+    # Button with icon
+    nib.Button(
+        content=nib.HStack(
+            controls=[nib.SFSymbol("doc.on.doc"), nib.Text("Duplicate")]
+        ),
+        action=duplicate_fn,
+    ),
+
+    # Destructive button (shown in red)
+    nib.Button("Delete", action=delete_fn, role="destructive"),
+]
+```
+
+### Toggle and Picker
+
+Interactive controls work inside context menus:
+
+```python
+dark_mode = False
+
+def toggle_dark(value):
+    nonlocal dark_mode
+    dark_mode = value
+
+def on_pick(value):
+    print(f"Selected: {value}")
+
+context_menu=[
+    nib.Toggle("Dark Mode", is_on=dark_mode, on_change=toggle_dark),
+    nib.Picker(
+        "Size",
+        selection="Medium",
+        options=["Small", "Medium", "Large"],
+        on_change=on_pick,
+    ),
+]
+```
+
+### Works on Any View
+
+Since `context_menu` is a base `View` parameter, it works on containers, controls, shapes -- anything:
+
+```python
+# On a container
+nib.VStack(
+    controls=[nib.Text("Content")],
+    context_menu=[nib.Button("Refresh", action=refresh)],
+    padding=16,
+)
+
+# On an image
+nib.Image(
+    "photo.jpg",
+    context_menu=[
+        nib.Button("Save", action=save),
+        nib.Button("Copy", action=copy),
+        nib.ShareLink(items=["photo.jpg"], label="Share"),
+    ],
+)
+```
+
+### Full View Context Menu Example
+
+```python
+import nib
+
+def main(app: nib.App):
+    app.title = "Context Menu"
+    app.icon = nib.SFSymbol("cursorarrow.click.2")
+    app.width = 300
+    app.height = 200
+
+    label = nib.Text("Right-click anywhere", font=nib.Font.HEADLINE)
+    dark_mode = False
+
+    def copy_text():
+        app.clipboard = label.content
+        label.content = "Copied!"
+
+    def toggle_dark(value):
+        nonlocal dark_mode
+        dark_mode = value
+        label.content = f"Dark mode: {'on' if value else 'off'}"
+
+    def on_pick(value):
+        label.content = f"Selected: {value}"
+
+    app.build(
+        nib.VStack(
+            controls=[label],
+            context_menu=[
+                nib.Button("Copy Text", action=copy_text),
+                nib.Button(
+                    content=nib.HStack(
+                        controls=[nib.SFSymbol("info"), nib.Text("Info")]
+                    ),
+                    action=lambda: None,
+                ),
+                nib.Button(
+                    "Delete", action=lambda: print("Deleted"), role="destructive"
+                ),
+                nib.Divider(),
+                nib.Toggle("Dark Mode", is_on=dark_mode, on_change=toggle_dark),
+                nib.Picker(
+                    "Size",
+                    selection="Medium",
+                    options=["Small", "Medium", "Large"],
+                    on_change=on_pick,
+                ),
+                nib.Divider(),
+                nib.Text("v1.0.0", foreground_color="#888"),
+                nib.ShareLink(items=["Hello from nib!"], label="Share"),
+            ],
+            padding=40,
+        )
+    )
 
 nib.run(main)
 ```

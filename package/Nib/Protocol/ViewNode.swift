@@ -10,6 +10,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
     // Use array to avoid recursive value type issue (arrays are reference-counted)
     var backgroundViews: [ViewNode]?
     var overlayViews: [ViewNode]?
+    var contextMenuViews: [ViewNode]?
     // Slot identifier for views used as named children (e.g., Gauge labels)
     var slot: String?
     // Animation context for per-view reactive animations
@@ -35,6 +36,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         lhs.modifiers == rhs.modifiers &&
         lhs.backgroundViews == rhs.backgroundViews &&
         lhs.overlayViews == rhs.overlayViews &&
+        lhs.contextMenuViews == rhs.contextMenuViews &&
         lhs.slot == rhs.slot &&
         lhs.animationContext == rhs.animationContext
     }
@@ -68,6 +70,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         modifiers: [ViewModifier]?,
         backgroundViews: [ViewNode]?,
         overlayViews: [ViewNode]?,
+        contextMenuViews: [ViewNode]? = nil,
         slot: String?,
         animationContext: AnimationContext?
     ) {
@@ -78,6 +81,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         self.modifiers = modifiers
         self.backgroundViews = backgroundViews
         self.overlayViews = overlayViews
+        self.contextMenuViews = contextMenuViews
         self.slot = slot
         self.animationContext = animationContext
     }
@@ -104,10 +108,11 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         } else {
             overlayViews = nil
         }
+        contextMenuViews = try container.decodeIfPresent([ViewNode].self, forKey: .contextMenuViews)
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, type, props, children, modifiers, backgroundView, backgroundViews, overlayView, overlayViews, slot, animationContext
+        case id, type, props, children, modifiers, backgroundView, backgroundViews, overlayView, overlayViews, contextMenuViews, slot, animationContext
     }
 
     func encode(to encoder: Encoder) throws {
@@ -118,6 +123,7 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
         try container.encodeIfPresent(children, forKey: .children)
         try container.encodeIfPresent(modifiers, forKey: .modifiers)
         try container.encodeIfPresent(backgroundViews, forKey: .backgroundViews)
+        try container.encodeIfPresent(contextMenuViews, forKey: .contextMenuViews)
         try container.encodeIfPresent(slot, forKey: .slot)
         try container.encodeIfPresent(animationContext, forKey: .animationContext)
     }
@@ -401,8 +407,11 @@ struct ViewNode: Codable, Identifiable, Equatable, Hashable {
 
         // Table
         var tableColumns: [TableColumnSpec]?
-        var tableRowsJson: String?  // JSON-encoded array of row objects
-        var rowIdKey: String?
+        var numColumns: Int?
+        var rowIds: [String]?
+        var tableSelection: [String]?
+        var tableSortColumn: String?
+        var tableSortAscending: Bool?
 
         // ShareLink
         var items: [String]?
@@ -450,6 +459,7 @@ struct FlatViewNode: Codable {
     var childIds: [String]?
     var backgroundId: String?
     var overlayId: String?
+    var contextMenuIds: [String]?
 }
 
 // MARK: - Iterative Tree Reconstruction
@@ -499,6 +509,15 @@ extension ViewNode {
                 overlayViews = nil
             }
 
+            // Resolve context menu views
+            let contextMenuViews: [ViewNode]?
+            if let ctxIds = flat.contextMenuIds {
+                let resolved = ctxIds.compactMap { viewNodeMap[$0] }
+                contextMenuViews = resolved.isEmpty ? nil : resolved
+            } else {
+                contextMenuViews = nil
+            }
+
             let node = ViewNode(
                 id: flat.id,
                 type: flat.type,
@@ -507,6 +526,7 @@ extension ViewNode {
                 modifiers: flat.modifiers,
                 backgroundViews: backgroundViews,
                 overlayViews: overlayViews,
+                contextMenuViews: contextMenuViews,
                 slot: flat.slot,
                 animationContext: flat.animationContext
             )

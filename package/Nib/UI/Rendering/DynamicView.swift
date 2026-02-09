@@ -13,6 +13,7 @@ struct DynamicView: View {
             .applyAnimationContext(node.animationContext, nodeHash: node.hashValue)
             .applyBackgroundView(node.backgroundView, onEvent: onEvent)
             .applyOverlayView(node.overlayView, onEvent: onEvent)
+            .applyContextMenu(node.contextMenuViews, onEvent: onEvent)
             .applyInteractionHandlers(
                 onDrop: node.props.onDrop,
                 onHover: node.props.onHover,

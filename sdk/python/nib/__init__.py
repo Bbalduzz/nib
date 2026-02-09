@@ -220,6 +220,7 @@ from .views import (
     SymbolShape,
     Table,
     TableColumn,
+    ColumnWidth,
     # Controls
     Text,
     TextEditor,
@@ -238,7 +239,7 @@ from .views import (
     ZStack,
 )
 
-__version__ = "0.1.9"
+__version__ = "0.1.10"
 __all__ = [
     # Core
     "App",
@@ -308,6 +309,7 @@ __all__ = [
     "TextEditor",
     "Table",
     "TableColumn",
+    "ColumnWidth",
     "ShareLink",
     # Shapes
     "Rectangle",

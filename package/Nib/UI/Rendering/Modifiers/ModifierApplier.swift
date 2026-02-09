@@ -27,6 +27,20 @@ extension View {
             self
         }
     }
+
+    /// Apply a context menu with dynamic menu items
+    @ViewBuilder
+    func applyContextMenu(_ menuNodes: [ViewNode]?, onEvent: @escaping (String, String) -> Void) -> some View {
+        if let nodes = menuNodes, !nodes.isEmpty {
+            self.contextMenu {
+                ForEach(nodes, id: \.id) { node in
+                    DynamicView(node: node, onEvent: onEvent)
+                }
+            }
+        } else {
+            self
+        }
+    }
 }
 
 // MARK: - Modifier Application

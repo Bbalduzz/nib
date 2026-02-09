@@ -17,10 +17,16 @@ extension ViewNode {
     struct TableColumnSpec: Codable, Equatable {
         var id: String
         var title: String
-        var key: String
-        var width: CGFloat?
-        var minWidth: CGFloat?
-        var maxWidth: CGFloat?
         var alignment: String?
+        var sortable: Bool?
+        var width: ColumnWidthSpec?
+
+        struct ColumnWidthSpec: Codable, Equatable {
+            var type: String    // "fixed" or "range"
+            var value: CGFloat? // for fixed
+            var min: CGFloat?   // for range
+            var ideal: CGFloat? // for range
+            var max: CGFloat?   // for range
+        }
     }
 }

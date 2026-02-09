@@ -118,6 +118,7 @@ extension OptimizedViewDispatcher {
                         .applyModifiers(childNode.modifiers)
                         .applyBackgroundView(childNode.backgroundView, onEvent: onEvent)
                         .applyOverlayView(childNode.overlayView, onEvent: onEvent)
+                        .applyContextMenu(childNode.contextMenuViews, onEvent: onEvent)
                         .applyInteractionHandlers(
                             onDrop: childNode.props.onDrop,
                             onHover: childNode.props.onHover,
