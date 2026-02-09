@@ -311,6 +311,8 @@ nib.run(main)
 
 ## View Context Menu
 
+![View context menu](../assets/img/controls/contextmenu.png)
+
 Any nib view supports a `context_menu` parameter. When set, right-clicking that view shows a native macOS context menu with the specified items. This uses SwiftUI's `.contextMenu` modifier under the hood.
 
 ### Basic Usage
