@@ -12,7 +12,6 @@
   Write your app logic in Python with a declarative, SwiftUI-inspired API. Nib compiles to a native macOS app with real SwiftUI rendering.
 </p>
 
-
 ## Example
 <img width="40%" src="media/demo-column.png" align="right"/>
         
@@ -101,7 +100,7 @@ Nib runs as two processes connected by a Unix socket. Your Python code builds a 
 
 **Context Menu** — Right-click menu on the status bar icon with nested items, shortcuts, badges
 
-## Installation
+## Installation ![version](https://img.shields.io/pypi/v/pynib?label=&color=white&style=flat-square)
 
 **Requirements:** macOS 14+, Python 3.10+
 
