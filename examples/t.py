@@ -2,26 +2,37 @@ import nib
 
 
 def main(app: nib.App):
-    app.title = "test"
-    status = nib.Text("Off")
+    app.title = "Todo"
+    app.icon = nib.SFSymbol("checklist")
+    app.width = 340
+    app.height = 450
 
-    def on_toggle(is_on: bool):
-        status.content = "On" if is_on else "Off"
+    """
+    nib.ScrollView(
+        [
+            nib.Text("Todo List"),
+            nib.Button("Add Item"),
+            nib.Button("Remove Item"),
+        ]
+    ),
+    """
 
-    app.build(
-        nib.VStack(
-            controls=[
-                nib.Toggle(
-                    "Enable notifications",
-                    is_on=False,
-                    on_change=on_toggle,
-                ),
-                status,
-            ],
-            spacing=12,
-            padding=16,
-        )
-    )
+    app.menu = [
+        nib.MenuItem(
+            content=nib.ScrollView(
+                [
+                    nib.Text("Todo List"),
+                    nib.Button("Add Item"),
+                    nib.Button("Remove Item"),
+                ]
+            ),
+            height=200,
+        ),
+        nib.MenuDivider(),
+        nib.MenuItem("New"),
+    ]
+
+    app.build(nib.Text("Hello World"))
 
 
 nib.run(main)

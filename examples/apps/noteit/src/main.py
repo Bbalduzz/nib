@@ -173,6 +173,16 @@ def main(app: nib.App):
         menu_items = []
 
         if notes:
+            scroll_view_notes = nib.MenuItem(
+                content=nib.ScrollView(
+                    controls=[],
+                    # background=nib.Color.RED,
+                    width=100,
+                    padding=0,
+                    margin=0,
+                ),
+                height=200,
+            )
             for note in notes:
                 did = note["id"]
 
@@ -186,34 +196,29 @@ def main(app: nib.App):
                 date_str = dt.strftime("%b %d, %H:%M")
                 wc = f"{note['word_count']}w"
 
-                menu_items.append(
-                    nib.MenuItem(
-                        content=nib.VStack(
-                            [
-                                nib.Text(
-                                    note["title"][:20] + "...",
-                                    font=nib.Font.custom("Iosevka", size=12),
-                                ),
-                                nib.Text(
-                                    f"{date_str}  {wc}",
-                                    font=nib.Font.CAPTION,
-                                    foreground_color=nib.Color.WHITE.with_opacity(0.5),
-                                ),
-                            ],
-                            alignment=nib.Alignment.LEADING,
-                            margin={"leading": -35},
-                        ),
-                        action=make_load_action(did),
-                        height=38,
-                        menu=[
-                            nib.MenuItem(
-                                "Delete",
-                                icon="trash",
-                                action=make_delete_action(did),
+                scroll_view_notes.content.controls.append(
+                    nib.VStack(
+                        [
+                            nib.Text(
+                                note["title"][:20] + "...",
+                                font=nib.Font.custom("Iosevka", size=12),
                             ),
+                            nib.Text(
+                                f"{date_str}  {wc}",
+                                font=nib.Font.CAPTION,
+                                foreground_color=nib.Color.WHITE.with_opacity(0.5),
+                            ),
+                        ],
+                        on_click=make_load_action(did),
+                        alignment=nib.Alignment.LEADING,
+                        # margin={"leading": -35},
+                        width=200,
+                        context_menu=[
+                            nib.Button("Delete", action=make_delete_action(did)),
                         ],
                     )
                 )
+            menu_items.append(scroll_view_notes)
         else:
             menu_items.append(
                 nib.MenuItem(

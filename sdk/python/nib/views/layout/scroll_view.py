@@ -138,6 +138,17 @@ class ScrollView(View):
         self._axes = axes
         self._shows_indicators = shows_indicators
 
+    @property
+    def controls(self) -> ListType[View]:
+        """Get the child views."""
+        return self._children
+
+    @controls.setter
+    def controls(self, value: ListType[View]) -> None:
+        """Set the child views and trigger UI update."""
+        self._children = value
+        self._trigger_update()
+
     def _get_props(self) -> dict:
         """Get the ScrollView-specific properties for serialization.
 
